@@ -1,0 +1,4 @@
+{
+  "powershell.integratedConsole.forceClearScrollbackBuffer": false,
+  "python.terminal.activateEnvironment": false
+}
