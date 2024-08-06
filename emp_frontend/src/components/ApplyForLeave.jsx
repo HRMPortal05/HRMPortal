@@ -147,13 +147,13 @@ const ApplyForLeave = () => {
   };
 
   const handleSearch = () => {
-    if (!fromDate || !toDate) {
-      enqueueSnackbar("Please select both From Date and To Date", {
-        variant: "warning",
-        autoHideDuration: 3000,
-      });
-      return;
-    }
+    // if (!fromDate || !toDate) {
+    //   enqueueSnackbar("Please select both From Date and To Date", {
+    //     variant: "warning",
+    //     autoHideDuration: 3000,
+    //   });
+    //   return;
+    // }
 
     const formattedFromDate = dayjs(fromDate).startOf("day");
     const formattedToDate = dayjs(toDate).endOf("day");
