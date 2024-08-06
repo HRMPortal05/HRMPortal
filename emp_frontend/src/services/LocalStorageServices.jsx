@@ -16,6 +16,15 @@ const getToken = () => {
 const removeToken = () => {
   localStorage.removeItem("access_token");
   localStorage.removeItem("refresh_token");
+  localStorage.removeItem("username");
+  localStorage.removeItem("email");
 };
 
-export { storeToken, getToken, removeToken };
+const storeUserProfile = (value) => {
+  const { username, email } = value;
+
+  localStorage.setItem("username", username);
+  localStorage.setItem("email", email);
+};
+
+export { storeToken, getToken, removeToken, storeUserProfile };
