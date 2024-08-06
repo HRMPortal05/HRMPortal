@@ -31,3 +31,14 @@ class LeaveFetchSerializer(serializers.ModelSerializer):
 
     def get_is_admin(self, obj):
         return obj.emp_details.user.is_admin
+    
+# class LeaveSearchSerializer(serializers.ModelSerializer):
+#     from_date = serializers.DateField()
+#     to_date = serializers.DateField()
+    
+#     class Meta:
+#         model = LeaveManagement
+#         fields = ['from_date', 'to_date', 'status']
+        
+#     def search(self, validate_data):
+#         return LeaveManagement.objects.filter(from_date__gte=validate_data['from_date'], to_date__gte=validate_data['to_date'])

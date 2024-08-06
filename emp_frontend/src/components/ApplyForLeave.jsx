@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { useState } from "react";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -119,30 +119,64 @@ const Row = (props) => {
   );
 };
 
+// Main Component
+
 const ApplyForLeave = () => {
   const [openModal, setOpenModal] = useState(false);
+  const [reset, setReset] = useState(false);
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
+  const select = useRef(null);
 
   const [createleave] = useCreateleaveMutation();
-
-  const handleOpenModal = () => {
-    console.log("Open");
-    setOpenModal(true);
-  };
-  const handleCloseModal = () => {
-    // if (!serverError) {
-    //   console.log("Hi");
-    //   handleOpen();
-    // }
-    setOpenModal(false);
-  };
-
   const [fetchleave] = useFetchleaveMutation();
-  const [row, setRow] = useState(null);
+  const [row, setRow] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
 
   const [serverError, setServerError] = useState(null);
   const { enqueueSnackbar } = useSnackbar();
 
   const access_token = localStorage.getItem("access_token");
+
+  const handleOpenModal = () => {
+    setOpenModal(true);
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+  };
+
+  const handleSearch = () => {
+    if (!fromDate || !toDate) {
+      enqueueSnackbar("Please select both From Date and To Date", {
+        variant: "warning",
+        autoHideDuration: 3000,
+      });
+      return;
+    }
+
+    const formattedFromDate = dayjs(fromDate).startOf("day");
+    const formattedToDate = dayjs(toDate).endOf("day");
+    const selectedStatus = select.current.value;
+
+    const filtered = filteredData.filter((item) => {
+      const itemFromDate = dayjs(item.from_date).startOf("day");
+      const itemToDate = dayjs(item.to_date).endOf("day");
+
+      const dateOverlaps =
+        (itemFromDate.isSame(formattedFromDate) ||
+          itemFromDate.isAfter(formattedFromDate)) &&
+        (itemToDate.isSame(formattedToDate) ||
+          itemToDate.isBefore(formattedToDate));
+
+      const statusMatches =
+        selectedStatus === "Select" || item.status === selectedStatus;
+
+      return dateOverlaps && statusMatches;
+    });
+
+    setRow(filtered);
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -167,6 +201,7 @@ const ApplyForLeave = () => {
 
         if (response.data) {
           setRow(response.data);
+          setFilteredData(response.data);
         }
       } catch (error) {
         console.error("Leave fetch error:", error);
@@ -174,7 +209,7 @@ const ApplyForLeave = () => {
     };
 
     fetchData();
-  }, [access_token, setRow]);
+  }, [access_token, setRow, reset]);
 
   const handleSubmit = async ({
     event,
@@ -200,8 +235,6 @@ const ApplyForLeave = () => {
       const response = await createleave({ data, access_token });
 
       if (response.error) {
-        console.log(response.error);
-        // handleOpenModal();
         if (response.error.data.errors.non_field_errors) {
           console.log(response.error.data.errors.non_field_errors);
           enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
@@ -213,7 +246,6 @@ const ApplyForLeave = () => {
         }
       }
       if (response.data) {
-        console.log(response.data);
         enqueueSnackbar(response.data.msg, {
           variant: "success",
           autoHideDuration: 3000,
@@ -241,19 +273,41 @@ const ApplyForLeave = () => {
             <StyledDatePicker
               label={"From Date"}
               className="w-full sm:w-auto mb-4 sm:mb-0"
+              value={fromDate}
+              onChange={(newValue) => {
+                console.log("New From Date:", newValue);
+                setFromDate(newValue);
+              }}
             />
+
             <StyledDatePicker
               label={"To Date"}
               className="w-full sm:w-auto mb-4 sm:mb-0"
+              value={toDate}
+              onChange={(newValue) => {
+                console.log("New To Date:", newValue);
+                setToDate(newValue);
+              }}
             />
-            <select className="border border-primary_color text-[#01008A] rounded-md px-4 h-[35px] w-[180px] mb-4 sm:mb-0">
+            <select
+              className="border border-primary_color text-[#01008A] rounded-md px-4 h-[35px] w-[180px] mb-4 sm:mb-0"
+              ref={select}
+            >
               <option>Select</option>
-              {/* Add more options here */}
+              <option>APPROVED</option>
+              <option>PENDING</option>
+              <option>REJECTED</option>
             </select>
-            <button className="bg-primary_color text-white h-[35px] px-6 sm:px-10 rounded-md w-[180px] mb-4 sm:mb-0">
+            <button
+              className="bg-primary_color text-white h-[35px] px-6 sm:px-10 rounded-md w-[180px] mb-4 sm:mb-0"
+              onClick={handleSearch}
+            >
               Search
             </button>
-            <button className="border border-primary_color bg-[#F0F0FF] text-primary_color h-[35px] w-[180px] rounded-md mb-4 sm:mb-0">
+            <button
+              className="border border-primary_color bg-[#F0F0FF] text-primary_color h-[35px] w-[180px] rounded-md mb-4 sm:mb-0"
+              onClick={() => setReset(!reset)}
+            >
               Reset
             </button>
             <div className="flex justify-center w-full sm:w-auto">

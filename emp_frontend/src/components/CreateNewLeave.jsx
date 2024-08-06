@@ -13,47 +13,6 @@ function CreateNewLeave({ handleClose, handleSubmit, serverError }) {
   const reason = useRef();
   const pending_work_of_employee = useRef();
 
-  // const handleSubmit = async (event) => {
-  //   event.preventDefault();
-
-  //   const data = {
-  //     email: email.current.value,
-  //     leave_type: leave_type.current.value,
-  //     from_date: fromDate ? dayjs(fromDate).format("YYYY-MM-DD") : null,
-  //     to_date: toDate ? dayjs(toDate).format("YYYY-MM-DD") : null,
-  //     reason: reason.current.value,
-  //     pending_work_of_employee: pending_work_of_employee.current.value,
-  //   };
-
-  //   try {
-  //     const response = await createleave({ data, access_token });
-
-  //     if (response.error) {
-  //       console.log(response.error);
-  //       handleOpen();
-  //       if (response.error.data.errors.non_field_errors) {
-  //         console.log(response.error.data.errors.non_field_errors);
-  //         enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
-  //           variant: "error",
-  //           autoHideDuration: 3000,
-  //         });
-  //       } else {
-  //         setServerError(response.error.data.errors);
-  //       }
-  //     }
-  //     if (response.data) {
-  //       console.log(response.data);
-  //       enqueueSnackbar(response.data.msg, {
-  //         variant: "success",
-  //         autoHideDuration: 3000,
-  //       });
-  //       handleClose();
-  //     }
-  //   } catch (error) {
-  //     console.error("Create Leave error:", error);
-  //   }
-  // };
-
   return (
     <div className="bg-white p-3 md:p-8 lg:p-8 mb-4 rounded-lg shadow-xl w-full max-w-lg mx-3 mt-12 sm:mt-24">
       <h2 className="text-2xl font-semibold mb-6 text-primary_color text-center">

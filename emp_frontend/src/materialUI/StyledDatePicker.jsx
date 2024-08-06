@@ -1,15 +1,14 @@
-import React, { useState } from "react";
+import React from "react";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 
-export default function StyledDatePicker({ label }) {
-  const [value, setValue] = useState(null);
-
+export default function StyledDatePicker({ label, value, onChange }) {
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <DatePicker
         label={label}
-        onChange={(newValue) => setValue(newValue)}
+        value={value}
+        onChange={onChange}
         slotProps={{
           textField: {
             variant: "outlined",
