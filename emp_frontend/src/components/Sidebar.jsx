@@ -29,12 +29,12 @@ const Sidebar = ({ isOpen }) => {
       >
         <ul className="list-none p-0 mt-24">
           <li>
-            <a
-              href="#dashboard"
+            <Link
+              to="/"
               className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
             >
               <RxDashboard className="mr-3 text-xl text-[#01008A]" /> Dashboard
-            </a>
+            </Link>
           </li>
           <li>
             <a

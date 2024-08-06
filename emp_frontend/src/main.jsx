@@ -11,12 +11,24 @@ import { SnackbarProvider } from "notistack";
 import EmailSent from "./components/EmailSent.jsx";
 import ApplyForLeave from "./components/ApplyForLeave.jsx";
 import ChangePassword from "./components/ChangePassword.jsx";
+import DashboardHeader from "./components/DashBoardHeader.jsx";
+import DashboardBox from "./components/DashboardBox.jsx";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
+      {
+        path: "/",
+        element: <DashboardHeader />,
+        children: [
+          {
+            path: "/",
+            element: <DashboardBox />,
+          },
+        ],
+      },
       {
         path: "/applyForLeave",
         element: (
