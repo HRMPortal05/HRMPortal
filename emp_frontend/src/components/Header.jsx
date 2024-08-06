@@ -3,6 +3,7 @@ import { VscThreeBars } from "react-icons/vsc";
 import { RxCross1 } from "react-icons/rx";
 
 const Header = ({ isOpen, setIsOpen }) => {
+  const username = localStorage.getItem("username");
   return (
     <header className="bg-primary_color text-white fixed top-0 left-0 w-full flex items-center justify-between p-5 z-[1000] md:z-[1000]">
       <div className="flex flex-col items-center cursor-pointer">
@@ -39,9 +40,9 @@ const Header = ({ isOpen, setIsOpen }) => {
         <CiSettings className="text-2xl cursor-pointer" />
         <div className="flex items-center cursor-pointer">
           <div className="bg-white text-[#01008A] rounded-full px-2 py-2 mr-2 font-bold">
-            MS
+            {username[0]}
           </div>
-          <span className="text-lg font-metrophobic">Mirav</span>
+          <span className="text-lg font-metrophobic">{username}</span>
         </div>
       </div>
       <div className="block md:hidden">

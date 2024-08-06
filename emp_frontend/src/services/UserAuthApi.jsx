@@ -64,6 +64,17 @@ export const UserAuthApi = createApi({
         };
       },
     }),
+    fetchprofile: builder.mutation({
+      query: (access_token) => {
+        return {
+          url: "profile/",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -73,4 +84,5 @@ export const {
   useForgotpasswordMutation,
   useResetpasswordMutation,
   useChangepasswordMutation,
+  useFetchprofileMutation,
 } = UserAuthApi;
