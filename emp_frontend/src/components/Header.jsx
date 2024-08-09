@@ -40,7 +40,7 @@ const Header = ({ isOpen, setIsOpen }) => {
         <CiSettings className="text-2xl cursor-pointer" />
         <div className="flex items-center cursor-pointer">
           <div className="bg-white text-[#01008A] rounded-full px-2 py-2 mr-2 font-bold">
-            {username[0]}
+            TV
           </div>
           <span className="text-lg font-metrophobic">{username}</span>
         </div>
