@@ -1,33 +1,25 @@
-/emp_backend/EMS/.gitignore
-.env 
-.venv 
-env/ 
-venv/ 
-ENV/ 
-env.bak/ 
-venv.bak/
+# Ignore virtual environment
+env/
+
+# Ignore VSCode workspace settings
+.vscode/
+
+# Node.js dependencies (if used in emp_frontend)
+emp_frontend/node_modules/
+emp_frontend/.env/
+
+# Python-related
+*.pyc
+__pycache__/
+*.pyo
+*.pyd
+
+# Django secret key file (if any)
+emp_backend/.env
 
 # Logs
-logs
 *.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# OS files
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?.env
+Thumbs.db
