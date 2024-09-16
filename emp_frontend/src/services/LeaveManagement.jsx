@@ -29,8 +29,35 @@ export const LeaveManagement = createApi({
         };
       },
     }),
+    fetchAdminleave: builder.mutation({
+      query: (access_token) => {
+        return {
+          url: "fetchLeaveForAdmin/",
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        };
+      },
+    }),
+    updateLeaveStatus: builder.mutation({
+      query: ({ status, leave_id, access_token }) => {
+        return {
+          url: `updateLeaveStatus/${leave_id}/`,
+          method: "PUT",
+          body: { status },
+          headers: {
+            Authorization: `Bearer ${access_token}`,
+          },
+        };
+      },
+    }),
   }),
 });
 
-export const { useCreateleaveMutation, useFetchleaveMutation } =
-  LeaveManagement;
+export const {
+  useCreateleaveMutation,
+  useFetchleaveMutation,
+  useFetchAdminleaveMutation,
+  useUpdateLeaveStatusMutation,
+} = LeaveManagement;

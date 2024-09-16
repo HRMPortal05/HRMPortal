@@ -43,15 +43,17 @@ INSTALLED_APPS = [
     
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
     'corsheaders',
     
     'account',
     'attendance',
     'employee',
     'leavemanagement',
+    'salaryslip',
 ]
 
-CORS_ALLOWED_ORIGINS = ['http://localhost:5173']
+# CORS_ALLOW_ALL_ORIGINS = True
 
 ROOT_URLCONF = 'EMS.urls'
 
@@ -162,6 +164,9 @@ SECURE_SSL_REDIRECT = False
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=10),
+    
+    'BLACKLIST_AFTER_ROTATION': True,
+    'TOKEN_BLACKLIST_ENABLED': True,
 
     'AUTH_HEADER_TYPES': ('Bearer',),
     'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
@@ -183,3 +188,9 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:3000",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+}

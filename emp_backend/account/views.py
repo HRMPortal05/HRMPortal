@@ -2,7 +2,7 @@ from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
-from account.serializers import SendPasswordResetEmailSerializer, UserChangePasswordSerializer, UserLoginSerializer, UserPasswordResetSerializer, UserProfileSerializer, UserRegistrationSerializer
+from account.serializers import SendPasswordResetEmailSerializer, UserChangePasswordSerializer, UserLoginSerializer, UserPasswordResetSerializer, UserProfileSerializer, UserRegistrationSerializer, LogoutSerializer
 from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -13,11 +13,15 @@ from .models import User
 
 # Generate Token Manually
 def get_tokens_for_user(user):
-  refresh = RefreshToken.for_user(user)
-  return {
-      'refresh': str(refresh),
-      'access': str(refresh.access_token),
-  }
+    refresh = RefreshToken.for_user(user)
+
+    # Add custom claims (add role here)
+    refresh['is_admin'] = user.is_admin
+
+    return {
+        'refresh': str(refresh),
+        'access': str(refresh.access_token),
+    }
 
 class UserRegistrationView(APIView):
   renderer_classes = [UserRenderer]
@@ -87,5 +91,44 @@ class UserPasswordResetView(APIView):
     serializer = UserPasswordResetSerializer(data=request.data, context={'uid':uid, 'token':token})
     serializer.is_valid(raise_exception=True)
     return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
+
+# class LogoutView(APIView):
+#     def post(self, request, format=None):
+#         try:
+#             # Extract the token from the request
+#             refresh_token = request.data.get('refresh')
+#             if not refresh_token:
+#                 return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+#             # Decode and blacklist the refresh token
+#             token = RefreshToken(refresh_token)
+#             token.blacklist()  # Requires `django-rest-framework-simplejwt` with blacklist support
+            
+#             return Response({'detail': 'Logout successful.'}, status=status.HTTP_205_RESET_CONTENT)
+#         except Exception as e:
+#             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+          
+from django.contrib.auth import logout
+from rest_framework_simplejwt.tokens import RefreshToken
+
+class LogoutView(APIView):
+    permission_classes = (IsAuthenticated,)
+    renderer_classes = [UserRenderer]
+    
+    def post(self, request, format=None):
+        serializer = LogoutSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
+        refresh_token = serializer.validated_data.get('refresh')
+        try:
+            token = RefreshToken(refresh_token)
+            token.blacklist()
+            logout(request)
+            return Response({'message': 'Logout successful.'}, status=status.HTTP_200_OK)
+        except Exception as e:
+            return Response({'exception': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 

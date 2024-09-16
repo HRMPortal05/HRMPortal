@@ -1,6 +1,7 @@
 import React from "react";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 export default function StyledDatePicker({ label, value, onChange }) {
   return (
@@ -9,6 +10,7 @@ export default function StyledDatePicker({ label, value, onChange }) {
         label={label}
         value={value}
         onChange={onChange}
+        maxDate={dayjs()}
         slotProps={{
           textField: {
             variant: "outlined",

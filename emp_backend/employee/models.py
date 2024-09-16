@@ -9,6 +9,7 @@ class EmployeeDetails(models.Model):
     last_name = models.CharField(max_length=50)
     personal_mailid = models.EmailField(max_length=100, blank=True, null=True)
     working_designation = models.CharField(max_length=50, blank=True, null=True)
+    department = models.CharField(max_length=50, blank=True, null=True)
     salary = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
     phone_number = models.CharField(max_length=20, blank=True, null=True)
     working_emailid = models.EmailField(max_length=100, unique=True)
@@ -19,5 +20,10 @@ class EmployeeDetails(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    # def __str__(self):
+    #     return f"{self.first_name} {self.last_name}"
+    
     def __str__(self):
-        return f"{self.first_name} {self.last_name}"
+        if hasattr(self, 'use_email') and self.use_email:
+            return self.working_emailid
+        return self.user.username

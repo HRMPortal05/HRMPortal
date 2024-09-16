@@ -108,4 +108,6 @@ class UserPasswordResetSerializer(serializers.Serializer):
     except DjangoUnicodeDecodeError as identifier:
       PasswordResetTokenGenerator().check_token(user, token)
       raise serializers.ValidationError('Token is not Valid or Expired')
-  
+
+class LogoutSerializer(serializers.Serializer):
+    refresh = serializers.CharField()  

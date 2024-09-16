@@ -2,6 +2,7 @@ import React from "react";
 import { DatePicker } from "@mui/x-date-pickers";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
 
 const StyledDateForLeave = ({
   label,
@@ -18,7 +19,8 @@ const StyledDateForLeave = ({
         </label>
         <DatePicker
           {...props}
-          format="DD/MM/YY"
+          format="YYYY-MM-DD"
+          minDate={dayjs()}
           slotProps={{
             textField: {
               variant: "outlined",

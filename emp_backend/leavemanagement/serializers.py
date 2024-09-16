@@ -24,13 +24,38 @@ class LeaveManagementSerializer(serializers.ModelSerializer):
     
 class LeaveFetchSerializer(serializers.ModelSerializer):
     is_admin = serializers.SerializerMethodField()
+    # id = serializers.IntegerField(source='id')
 
     class Meta:
         model = LeaveManagement
-        fields = ['emp_details', 'leave_type', 'from_date', 'to_date', 'reason', 'status', 'pending_work_of_employee', 'is_admin']
+        fields = [ 'emp_details', 'leave_type', 'from_date', 'to_date', 'reason', 'status', 'pending_work_of_employee', 'is_admin']
 
     def get_is_admin(self, obj):
         return obj.emp_details.user.is_admin
+    
+    # def get_emp_id(self, obj):
+    #     # This will return the working_emailid of the related EmployeeDetails model
+    #     return obj.emp_details.working_emailid
+    
+class AdminLeaveFetchSerializer(serializers.ModelSerializer):
+    emp_id = serializers.SerializerMethodField()  # Use SerializerMethodField for custom logic
+    ID = serializers.IntegerField(source='pk')  # Add the primary key as 'leave_no'
+
+    class Meta:
+        model = LeaveManagement
+        fields = ['ID', 'emp_details', 'leave_type', 'from_date', 'to_date', 'reason', 'status', 'pending_work_of_employee', 'emp_id']
+
+    def get_emp_id(self, obj):
+        # This will return the working_emailid of the related EmployeeDetails model
+        return obj.emp_details.working_emailid
+
+    
+class LeaveStatusUpdateSerializer(serializers.ModelSerializer):
+    status = serializers.ChoiceField(choices=LeaveManagement.STATUS_CHOICES)
+
+    class Meta:
+        model = LeaveManagement
+        fields = ['status']
     
 # class LeaveSearchSerializer(serializers.ModelSerializer):
 #     from_date = serializers.DateField()

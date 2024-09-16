@@ -10,7 +10,7 @@ const Header = ({ isOpen, setIsOpen }) => {
         <span className="font-michroma font-extrabold">Employee</span>
         <span className="font-michroma font-normal text-xs">Governance</span>
       </div>
-      <nav className="hidden md:flex gap-4">
+      <nav className="hidden md:flex gap-10">
         <a href="#dashboard" className="text-white text-lg font-metrophobic">
           Dashboard
         </a>
@@ -31,19 +31,26 @@ const Header = ({ isOpen, setIsOpen }) => {
         </a>
       </nav>
       <div className="flex items-center gap-4">
-        <div className="relative">
+        {/* <div className="relative">
           <CiBellOn className="text-2xl cursor-pointer" />
           <span className="absolute top-[-5px] right-[-10px] bg-red-500 text-white rounded-full px-1 py-0 text-xs cursor-pointer">
             10
           </span>
-        </div>
+        </div> */}
         <CiSettings className="text-2xl cursor-pointer" />
-        <div className="flex items-center cursor-pointer">
-          <div className="bg-white text-[#01008A] rounded-full px-2 py-2 mr-2 font-bold">
-            {username[0]}
+        {username ? (
+          <div className="flex items-center cursor-pointer">
+            <div className="bg-white text-[#01008A] rounded-full px-2 py-2 mr-2 font-bold">
+              {username ? username.slice(0, 2).toUpperCase() : ""}
+            </div>
+            <span className="text-lg font-metrophobic">
+              {" "}
+              {username.charAt(0).toUpperCase() + username.slice(1)}
+            </span>
           </div>
-          <span className="text-lg font-metrophobic">{username}</span>
-        </div>
+        ) : (
+          <div></div>
+        )}
       </div>
       <div className="block md:hidden">
         <button

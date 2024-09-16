@@ -52,7 +52,10 @@ const DashboardHeader = () => {
       <div className="hidden mt-6 ml-3 md:flex lg:flex justify-between items-center p-4 bg-gray-100 shadow-md">
         <div className="md:flex lg:flex flex-col">
           <h1 className="text-3xl font-bold">
-            Hello {username}
+            Hello{" "}
+            {username
+              ? username.charAt(0).toUpperCase() + username.slice(1)
+              : ""}
             <span role="img" aria-label="wave">
               👋
             </span>
@@ -69,8 +72,8 @@ const DashboardHeader = () => {
   );
 };
 
-DashboardHeader.propTypes = {
-  username: PropTypes.string.isRequired,
-};
+// DashboardHeader.propTypes = {
+//   username: PropTypes.string.isRequired,
+// };
 
 export default DashboardHeader;

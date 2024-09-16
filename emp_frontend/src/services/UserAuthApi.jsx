@@ -75,6 +75,16 @@ export const UserAuthApi = createApi({
         };
       },
     }),
+    userLogout: builder.mutation({
+      query: ({ refresh, access_token }) => ({
+        url: "logout/",
+        method: "POST",
+        body: { refresh },
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }),
+    }),
   }),
 });
 
@@ -85,4 +95,5 @@ export const {
   useResetpasswordMutation,
   useChangepasswordMutation,
   useFetchprofileMutation,
+  useUserLogoutMutation,
 } = UserAuthApi;
