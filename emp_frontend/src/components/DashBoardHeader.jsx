@@ -53,7 +53,7 @@ const DashboardHeader = () => {
         <div className="md:flex lg:flex flex-col">
           <h1 className="text-3xl font-bold">
             <span role="img" aria-label="wave">
-              👋
+              Hello {username}👋
             </span>
           </h1>
           <p className="text-gray-600">You can manage your things from here</p>

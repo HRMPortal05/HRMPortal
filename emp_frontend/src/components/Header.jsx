@@ -47,11 +47,11 @@ const Header = ({ isOpen, setIsOpen }) => {
               {" "}
               {username.charAt(0).toUpperCase() + username.slice(1)}
             </span>
-            <div className="flex items-center cursor-pointer">
+            {/* <div className="flex items-center cursor-pointer">
               <div className="bg-white text-[#01008A] rounded-full px-2 py-2 mr-2 font-bold">
                 TV
               </div>
-            </div>
+            </div> */}
           </div>
         ) : (
           <div></div>
