@@ -24,6 +24,8 @@ chrome-user-data
 *.swp
 *.swo
 
+.env
+
 **/node_modules
 node_modules/
 
