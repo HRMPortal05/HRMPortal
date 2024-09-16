@@ -1,5 +1,7 @@
 # Ignore virtual environment
 env/
+env
+/env
 
 # Ignore VSCode workspace settings
 .vscode/
