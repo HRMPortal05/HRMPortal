@@ -17,8 +17,13 @@ import SalarySlip from "./components/SalarySlip/SalarySlip.jsx";
 import SalarySlipView from "./components/SalarySlip/SalarySlipView.jsx";
 import FOFPage from "./components/Auth/FOFPage.jsx";
 import GoToLogin from "./components/Auth/GoToLogin.jsx";
+import Dashboard from "./components/Dashboard.jsx";
 
 const router = createBrowserRouter([
+  // {
+  //   path: "",
+  //   element: <FOFPage />,
+  // },
   {
     path: "/",
     element: <App />,
@@ -29,7 +34,7 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <DashboardBox />,
+            element: <Dashboard />,
           },
         ],
       },

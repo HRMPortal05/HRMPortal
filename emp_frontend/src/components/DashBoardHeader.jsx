@@ -1,41 +1,19 @@
-// import { useState, useEffect } from "react";
-import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
-import { AiOutlineUser } from "react-icons/ai";
-// import DashboardBox from "./DashboardBox";
+import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
 import { useFetchprofileMutation } from "../services/UserAuthApi";
 import { storeUserProfile } from "../services/LocalStorageServices";
+import Dh1_img from "../static/images/Dashboardheader1.svg";
+import Dh2_img from "../static/images/Dashboardheader2.svg";
 
 const DashboardHeader = () => {
   const [fetchprofile] = useFetchprofileMutation();
-
   const username = localStorage.getItem("username");
-
   const access_token = localStorage.getItem("access_token");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await fetchprofile(access_token);
-
-        if (response.error) {
-          console.log(response.error);
-          // if (response.error.data.errors.non_field_errors) {
-          //   enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
-          //     variant: "error",
-          //     autoHideDuration: 3000,
-          //   });
-          // } else if (response.error.data.errors.detail) {
-          //   enqueueSnackbar(response.error.data.errors.detail, {
-          //     variant: "error",
-          //     autoHideDuration: 3000,
-          //   });
-          // } else {
-          //   setServerError(response.error.data.errors);
-          // }
-        }
-
         if (response.data) {
           storeUserProfile(response.data);
         }
@@ -45,31 +23,32 @@ const DashboardHeader = () => {
     };
 
     fetchData();
-  }, [access_token]);
+  }, [access_token, fetchprofile]);
 
   return (
     <>
-      <div className="hidden mt-6 ml-3 md:flex lg:flex justify-between items-center p-4 bg-gray-100 shadow-md">
-        <div className="md:flex lg:flex flex-col">
-          <h1 className="text-3xl font-bold">
-            <span role="img" aria-label="wave">
-              Hello {username}👋
-            </span>
-          </h1>
-          <p className="text-gray-600">You can manage your things from here</p>
-        </div>
-        <div className="md:flex lg:flex items-center">
-          <AiOutlineUser className="text-2xl mr-2" />
-          <h1 className="text-lg font-medium">Welcome</h1>
+      <div className="mt-6 bg-elight_primary rounded-xl p-4 shadow-md">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-primary_color">
+              Hello {username} 👋
+            </h1>
+            <p className="text-primary_color mt-1 text-lg">
+              You can manage your things from here
+            </p>
+          </div>
+          <div className="flex items-center">
+            <img src={Dh1_img} className="h-28 w-auto mr-2" alt="Decorative" />
+            <h2 className="text-4xl font-bold text-primary_color mx-2">
+              Welcome
+            </h2>
+            <img src={Dh2_img} className="h-28 w-auto ml-2" alt="Decorative" />
+          </div>
         </div>
       </div>
       <Outlet />
     </>
   );
 };
-
-// DashboardHeader.propTypes = {
-//   username: PropTypes.string.isRequired,
-// };
 
 export default DashboardHeader;

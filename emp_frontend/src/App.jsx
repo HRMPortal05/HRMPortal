@@ -59,7 +59,7 @@ function App() {
         <Header setIsOpen={setIsOpen} isOpen={isOpen} />
 
         {/* Extra components */}
-        <div className="mt-20 p-4 md:mt-14 sm:will-change-contents">
+        <div className="mt-20 mx-5 p-4 w-auto md:mt-14 sm:will-change-contents">
           <Outlet />
         </div>
       </div>

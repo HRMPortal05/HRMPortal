@@ -50,6 +50,10 @@ const Sidebar = ({ isOpen }) => {
           console.warn("Token is already blacklisted.");
           removeToken("access_token");
           removeToken("refresh_token");
+          localStorage.removeItem("username");
+          localStorage.removeItem("email");
+          localStorage.removeItem("mapbox.eventData.uuid:");
+          localStorage.removeItem("language");
           navigate("/login");
         } else {
           console.error("Logout error:", response.error);
