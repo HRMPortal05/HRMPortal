@@ -1,0 +1,564 @@
+{
+	"info": {
+		"_postman_id": "84a12f7f-cc83-4b3a-94ee-29b752650e4e",
+		"name": "DjangoAuthAPI",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37040534"
+	},
+	"item": [
+		{
+			"name": "User Registration",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"sonam@example.com\",\r\n    \"name\":\"Sonam\",\r\n    \"password\":\"123456\",\r\n    \"password2\":\"123456\",\r\n    \"tc\":\"True\"   \r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/register/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"register",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Login User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODAyMTY5LCJpYXQiOjE3MjU3MTU3NjksImp0aSI6IjU0ZmJhNTE3YzAwMzRiY2VhMWY5ZGI4YWZkNTI0OWVmIiwidXNlcl9pZCI6MSwiaXNfYWRtaW4iOnRydWV9.XbybN8OkQds1yT8NhgKsnGxd49v9rVkLy2gCByekWEM",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"developer.mirav@gmail.com\",\r\n    \"password\":\"12\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/login/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"login",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "User Profile",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ3MDE5ODcxLCJpYXQiOjE2NDcwMTg2NzEsImp0aSI6ImFlNmI0NGZkMDZmNzQ1YTM4ZmNmMDAwNzYyZTBmMWY3IiwidXNlcl9pZCI6M30.CoFApzWegFkj-j-zXpp9gixPQusKm3Jr0wkxGfGVjQQ",
+						"type": "default"
+					}
+				],
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/profile/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"profile",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change User Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					},
+					{
+						"key": "Authorization",
+						"value": "Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQ3MDI1ODk4LCJpYXQiOjE2NDcwMjQ2OTgsImp0aSI6IjBiZGVmMmZlMGExZjQwYzBhYTMxYThjNDIyNTk2YWVjIiwidXNlcl9pZCI6M30.VayLoMpf6wT0MYKLDXPZGtov-k1vDV6OJKAc1wB4Qko",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\":\"hello\",\r\n    \"password2\":\"hello\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/changepassword/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"changepassword",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Send Password Reset Email",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIxNDg5NzEyLCJpYXQiOjE3MjE0ODg1MTIsImp0aSI6IjdmYzE4NTAwMGZjMzQ4ZmM4N2UwNGRlMDFmYzM4YjQ1IiwidXNlcl9pZCI6MX0.knsUNjxIreRo-03cSLASxzVba3CbGiQLIkgoewLLcqI",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\":\"developer.mirav@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/send-reset-password-email/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"send-reset-password-email",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Reset User Password",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Accept",
+						"value": "application/json",
+						"type": "default"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"password\":\"hello123\",\r\n    \"password2\":\"hello123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/reset-password/NQ/b25g11-b9b46ea0cf2f1ec6d8f0cd15a1706036/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"reset-password",
+						"NQ",
+						"b25g11-b9b46ea0cf2f1ec6d8f0cd15a1706036",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Attendance",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIxODQwOTUyLCJpYXQiOjE3MjE4Mzk3NTIsImp0aSI6ImJmYjYzMzhiYTUxZjQ0MjJiMmRmOGY0ZGFkNzg1YjA2IiwidXNlcl9pZCI6MX0.qIlvD3lSfP1RijrBxVzlHkVSa8hGK1y036HCrkXua8c",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "[\r\n    {\r\n        \"user\": \"developer.mirav@gmail.com\",\r\n        \"is_present\": true\r\n    },\r\n    {\r\n        \"user\": \"hrmportal05@gmail.com\",\r\n        \"is_present\": false\r\n    }\r\n]",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/attendance/employe_attendance/add/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"attendance",
+						"employe_attendance",
+						"add",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Leave",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIyNjcxNjg3LCJpYXQiOjE3MjI2NzA0ODcsImp0aSI6ImI1NzE4MjZmYmVhMzRmYzM5NDFiNWE4YWZjNzdlZmU0IiwidXNlcl9pZCI6MX0.FsDInqVvcfkPyAotePItysx_L0cnXMTG5xKBYArE3Kg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"developer.mirav@gmail.com\",\r\n  \"leave_type\": \"Personal Leave\",\r\n  \"from_date\": \"2024-08-07\",\r\n  \"to_date\": \"2024-08-10\",\r\n  \"reason\": \"For attend Marriage\",\r\n  \"status\": \"PENDING\",\r\n  \"pending_work_of_employee\": \"Complete project attendence module\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/leavemanagement/createLeave/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"leavemanagement",
+						"createLeave",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Leave Fetch",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzIyNjY2NjEwLCJpYXQiOjE3MjI2NjU0MTAsImp0aSI6IjRjYzY4MTE4YzRjYTQyMTRiMTg5N2ExZTQ0NDI3ZmU0IiwidXNlcl9pZCI6MX0.ZAej7wKlN5389FhYYVA1aZMlvaAoTuZ8iuVbK9V1hpA",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"email\": \"developer.mirav@gmail.com\",\r\n  \"leave_type\": \"Sick Leave\",\r\n  \"from_date\": \"2024-08-01\",\r\n  \"to_date\": \"2024-08-05\",\r\n  \"reason\": \"Medical reasons\",\r\n  \"status\": \"PENDING\",\r\n  \"pending_work_of_employee\": \"Complete project report\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/leavemanagement/createLeave/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"leavemanagement",
+						"createLeave",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Logout User",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODAyMTg2LCJpYXQiOjE3MjU3MTU3ODYsImp0aSI6ImU2MDE4MjY0YzU5ZDRlMjdiN2ZjMjdhODRmY2Y5NGQ0IiwidXNlcl9pZCI6MSwiaXNfYWRtaW4iOnRydWV9.__TG0gkpt5EVMMT8M8TOL0cieBzYA_K3SE4zCtqvaVs",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refresh_token\" : \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTcyNjU3OTc4NiwiaWF0IjoxNzI1NzE1Nzg2LCJqdGkiOiJlNTI3YTUyZWIyZTM0ZjM1YjY1YzE3MmFiODNiNDg3OCIsInVzZXJfaWQiOjEsImlzX2FkbWluIjp0cnVlfQ.SUrF57LnwVQILoUQPnEGXcgAZtVz8cral0-7nNsH2pU\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/api/user/logout/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"api",
+						"user",
+						"logout",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Generate Salary Slip",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODcwOTM3LCJpYXQiOjE3MjU3ODQ1MzcsImp0aSI6ImY1MDRiZTZkNzAxNzQ1OGZiNmJhZGU3YmYxNGVlOWI4IiwidXNlcl9pZCI6MSwiaXNfYWRtaW4iOnRydWV9.SfGDhjU3BxgEjFrQsBKYWGR_2GpalVZPzJUZcIcb_bg",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"employee\": 3,\r\n    \"emp_id\": \"0103\",\r\n    \"designation\": \"Software Engineer\",\r\n    \"department\": \"IT\",\r\n    \"date_of_joining\": \"2022-06-15\",\r\n    \"basic_salary\": 50000,\r\n    \"allowances\": 10000,\r\n    \"deductions\": 5000,\r\n    \"net_pay\": 55000,\r\n    \"prepared_by\": \"developer.mirav@gmail.com\",\r\n    \"approved_by\": \"miravsavaliya2004@gmail.com\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/salaryslip/generateSalarySlip/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"salaryslip",
+						"generateSalarySlip",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch Emp Data",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzI1ODg1Mzc5LCJpYXQiOjE3MjU3OTg5NzksImp0aSI6Ijg2YzU4ZGQwMTk1YjRkNzU4ZDRkYTdhNGZiNjEyNzhkIiwidXNlcl9pZCI6MSwiaXNfYWRtaW4iOnRydWV9.OKdyWpmYUUmUhDXLsP0HM8RzB7au2u53nVX-0sdmIts",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:8000/employee/fetchEmployee/0103/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"employee",
+						"fetchEmployee",
+						"0103",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "New Request",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"developer.mirav@gmail.com\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:8000/salaryslip/salarySlips/",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8000",
+					"path": [
+						"salaryslip",
+						"salarySlips",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
