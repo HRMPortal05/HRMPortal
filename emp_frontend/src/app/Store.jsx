@@ -4,6 +4,7 @@ import { UserAuthApi } from "../services/UserAuthApi";
 import { LeaveManagement } from "../services/LeaveManagement";
 import { SalarySlip } from "..//services/SalarySlip";
 import { Employee } from "../services/Employee";
+import { Dashboard } from "../services/Dashboard";
 
 export const store = configureStore({
   reducer: {
@@ -11,13 +12,15 @@ export const store = configureStore({
     [LeaveManagement.reducerPath]: LeaveManagement.reducer,
     [SalarySlip.reducerPath]: SalarySlip.reducer,
     [Employee.reducerPath]: Employee.reducer,
+    [Dashboard.reducerPath]: Dashboard.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
       UserAuthApi.middleware,
       LeaveManagement.middleware,
       SalarySlip.middleware,
-      Employee.middleware
+      Employee.middleware,
+      Dashboard.middleware
     ),
 });
 

@@ -29,8 +29,12 @@ const FOFPage = () => {
         </div>
 
         {/* Right side: Image (FOF_bg) */}
-        <div className="md:fixed lg:fixed lg:w-3/6 lg:mt-[-150px] lg:ml-[500px]">
-          <img src={FOF_bg} alt="FOF background" className="w-full h-auto" />
+        <div className="md:fixed lg:fixed md:w-3/6 md:mt-[-150px] md:ml-[500px] lg:w-3/6 lg:mt-[-150px] lg:ml-[500px]">
+          <img
+            src={FOF_bg}
+            alt="FOF background"
+            className="hidden md:block lg:block w-full h-auto"
+          />
         </div>
       </div>
 

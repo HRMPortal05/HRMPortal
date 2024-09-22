@@ -9,4 +9,5 @@ urlpatterns = [
     path('leavemanagement/', include('leavemanagement.urls')),
     path('salaryslip/', include('salaryslip.urls')),
     path('employee/', include('employee.urls')),
+    path('dashboard/', include('dashboard.urls')),
 ]

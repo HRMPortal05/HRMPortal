@@ -31,13 +31,14 @@ const DashboardHeader = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-primary_color">
-              Hello {username} 👋
+              Hello {username}{" "}
+              <span className="hidden md:block lg:block">👋</span>
             </h1>
-            <p className="text-primary_color mt-1 text-lg">
+            <p className="text-primary_color text-lg mt-5 md:mt-1 lg:mt-1">
               You can manage your things from here
             </p>
           </div>
-          <div className="flex items-center">
+          <div className="hidden md:flex lg:flex items-center">
             <img src={Dh1_img} className="h-28 w-auto mr-2" alt="Decorative" />
             <h2 className="text-4xl font-bold text-primary_color mx-2">
               Welcome
