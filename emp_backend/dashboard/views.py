@@ -1,3 +1,4 @@
+from django.shortcuts import get_object_or_404
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
@@ -5,7 +6,7 @@ from django.utils.timezone import now
 from rest_framework import status
 from attendance.models import Attendance
 from account.renderers import UserRenderer
-from dashboard.serializers import TodayTaskSerializer
+from .serializers import FetchTaskSerializer, TodayTaskSerializer
 from dashboard.models import TodayTasks
 from employee.models import EmployeeDetails
 from django.utils import timezone
@@ -15,23 +16,18 @@ class AttendanceCountAPIView(APIView):
     renderer_classes = [UserRenderer]
     
     def get(self, request, *args, **kwargs):
-        # Get the current user
         user = request.user
         
-        # Get the current date
         current_date = now()
 
-        # Filter attendance records for the current user and the current month
         attendance_records = Attendance.objects.filter(
             user=user,
             created_date__year=current_date.year,
             created_date__month=current_date.month
         )
         
-        # Count the number of days the user was present
         present_count = attendance_records.filter(is_present=True).count()
         
-        # Count the total days (either present or absent) in the current month
         total_days = attendance_records.count()
 
         data = {
@@ -53,11 +49,13 @@ class TodayTaskAPIView(APIView):
         if not employee:
             return Response({'error': 'Employee details not found for the current user.'}, status=status.HTTP_404_NOT_FOUND)
         
-        today = timezone.now().date()
-        tasks = TodayTasks.objects.filter(employee=employee, created_date=today)
+        today = timezone.now()
+        print(today)
+        tasks = TodayTasks.objects.filter(employee=employee, created_date__date=today)
 
         task_data = [
             {
+                'id': task.id,
                 'task_description': task.task_description,
                 'task_status': task.task_status,
             }
@@ -69,6 +67,21 @@ class TodayTaskAPIView(APIView):
         }
         
         return Response(data, status=status.HTTP_200_OK)
+    
+    def delete(self, request, task_id):
+        user = request.user
+        
+        employee = EmployeeDetails.objects.filter(user=user).first()
+        
+        if not employee:
+            return Response({'error': 'Employee details not found.'}, status=status.HTTP_404_NOT_FOUND)
+        
+        task = get_object_or_404(TodayTasks, id=task_id, employee=employee)
+        
+        task.delete()
+        
+        return Response({'message': 'Task deleted successfully.'}, status=status.HTTP_204_NO_CONTENT)
+    
 
     def post(self, request, *args, **kwargs):
         user = request.user
@@ -84,7 +97,7 @@ class TodayTaskAPIView(APIView):
             task = serializer.save(employee=employee)
             return Response({
                 'message': 'Your task added successfully',
-                'task': TodayTaskSerializer(task).data
+                'task': FetchTaskSerializer(task).data
             }, status=status.HTTP_201_CREATED)
         else:
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

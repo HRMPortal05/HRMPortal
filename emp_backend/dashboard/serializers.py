@@ -14,3 +14,8 @@ class TodayTaskSerializer(serializers.ModelSerializer):
         
     # def get_employee_name(self, obj):
     #     return obj.employee.username if obj.employee else None
+    
+class FetchTaskSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TodayTasks
+        fields = ['id', 'task_description']

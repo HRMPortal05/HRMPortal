@@ -11,12 +11,14 @@ import { SnackbarProvider } from "notistack";
 import EmailSent from "./components/Auth/EmailSent.jsx";
 import ApplyForLeave from "./components/ApplyForLeave/ApplyForLeave.jsx";
 import ChangePassword from "./components/Auth/ChangePassword.jsx";
-import DashboardHeader from "./components/DashBoardHeader.jsx";
+import DashboardHeader from "./components/Dashboard/DashBoardHeader.jsx";
 import SalarySlip from "./components/SalarySlip/SalarySlip.jsx";
 import SalarySlipView from "./components/SalarySlip/SalarySlipView.jsx";
 import FOFPage from "./components/Auth/FOFPage.jsx";
 import GoToLogin from "./components/Auth/GoToLogin.jsx";
-import Dashboard from "./components/Dashboard.jsx";
+import Dashboard from "./components/Dashboard/Dashboard.jsx";
+import Calendar from "./components/Calender/Calender.jsx";
+import NoticeList from "./components/Notice/NoticeList.jsx";
 
 const router = createBrowserRouter([
   {
@@ -29,7 +31,11 @@ const router = createBrowserRouter([
         children: [
           {
             path: "",
-            element: <Dashboard />,
+            element: (
+              <SnackbarProvider maxSnack={3}>
+                <Dashboard />
+              </SnackbarProvider>
+            ),
           },
         ],
       },
@@ -38,6 +44,14 @@ const router = createBrowserRouter([
         element: (
           <SnackbarProvider maxSnack={3}>
             <ApplyForLeave />
+          </SnackbarProvider>
+        ),
+      },
+      {
+        path: "notice",
+        element: (
+          <SnackbarProvider maxSnack={3}>
+            <NoticeList />
           </SnackbarProvider>
         ),
       },
@@ -54,6 +68,14 @@ const router = createBrowserRouter([
         element: (
           <SnackbarProvider maxSnack={3}>
             <SalarySlipView />
+          </SnackbarProvider>
+        ),
+      },
+      {
+        path: "calendar",
+        element: (
+          <SnackbarProvider maxSnack={3}>
+            <Calendar />
           </SnackbarProvider>
         ),
       },

@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     'leavemanagement',
     'salaryslip',
     'dashboard',
+    'notice',
 ]
 
 # CORS_ALLOW_ALL_ORIGINS = True

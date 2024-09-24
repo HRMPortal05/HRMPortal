@@ -1,9 +1,9 @@
 import React, { useEffect } from "react";
 import { Outlet } from "react-router-dom";
-import { useFetchprofileMutation } from "../services/UserAuthApi";
-import { storeUserProfile } from "../services/LocalStorageServices";
-import Dh1_img from "../static/images/Dashboardheader1.svg";
-import Dh2_img from "../static/images/Dashboardheader2.svg";
+import { useFetchprofileMutation } from "../../services/UserAuthApi";
+import { storeUserProfile } from "../../services/LocalStorageServices";
+import Dh1_img from "../../static/images/Dashboardheader1.svg";
+import Dh2_img from "../../static/images/Dashboardheader2.svg";
 
 const DashboardHeader = () => {
   const [fetchprofile] = useFetchprofileMutation();
@@ -31,8 +31,7 @@ const DashboardHeader = () => {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-3xl font-bold text-primary_color">
-              Hello {username}{" "}
-              <span className="hidden md:block lg:block">👋</span>
+              Hello {username} 👋
             </h1>
             <p className="text-primary_color text-lg mt-5 md:mt-1 lg:mt-1">
               You can manage your things from here

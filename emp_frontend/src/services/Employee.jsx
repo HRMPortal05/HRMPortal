@@ -15,6 +15,15 @@ export const Employee = createApi({
         },
       }),
     }),
+    fetchAttendance: builder.mutation({
+      query: (access_token) => ({
+        url: "attendance/user/",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }),
+    }),
   }),
 });
 

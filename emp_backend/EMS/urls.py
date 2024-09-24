@@ -10,4 +10,5 @@ urlpatterns = [
     path('salaryslip/', include('salaryslip.urls')),
     path('employee/', include('employee.urls')),
     path('dashboard/', include('dashboard.urls')),
+    path('notice/', include('notice.urls')),
 ]

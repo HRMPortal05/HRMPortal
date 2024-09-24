@@ -5,6 +5,7 @@ import { LeaveManagement } from "../services/LeaveManagement";
 import { SalarySlip } from "..//services/SalarySlip";
 import { Employee } from "../services/Employee";
 import { Dashboard } from "../services/Dashboard";
+import { Attendance } from "../services/Attendance";
 
 export const store = configureStore({
   reducer: {
@@ -13,6 +14,7 @@ export const store = configureStore({
     [SalarySlip.reducerPath]: SalarySlip.reducer,
     [Employee.reducerPath]: Employee.reducer,
     [Dashboard.reducerPath]: Dashboard.reducer,
+    [Attendance.reducerPath]: Attendance.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -20,7 +22,8 @@ export const store = configureStore({
       LeaveManagement.middleware,
       SalarySlip.middleware,
       Employee.middleware,
-      Dashboard.middleware
+      Dashboard.middleware,
+      Attendance.middleware
     ),
 });
 

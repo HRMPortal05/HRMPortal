@@ -20,3 +20,8 @@ class AttendanceSerializer(serializers.ModelSerializer):
         user = validated_data.pop('user')
         attendance = Attendance.objects.create(user=user, **validated_data)
         return attendance
+    
+class AttendanceGetSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attendance
+        fields = ['id', 'user', 'is_present', 'created_date']

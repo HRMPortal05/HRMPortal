@@ -3,4 +3,7 @@ from attendance.models import Attendance
 
 # Register your models here.
 
-admin.site.register(Attendance)
+class AttendanceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'is_present', 'created_date')
+
+admin.site.register(Attendance, AttendanceAdmin)

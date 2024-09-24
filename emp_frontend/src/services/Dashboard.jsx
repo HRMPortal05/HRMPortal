@@ -35,6 +35,15 @@ export const Dashboard = createApi({
         },
       }),
     }),
+    deleteTask: builder.mutation({
+      query: ({ task_id, access_token }) => ({
+        url: `delete/${task_id}/`, // API endpoint for task deletion
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }),
+    }),
   }),
 });
 
@@ -42,4 +51,5 @@ export const {
   useFetchAttendanceMutation,
   useCreateTaskMutation,
   useFetchTasksMutation,
+  useDeleteTaskMutation,
 } = Dashboard;

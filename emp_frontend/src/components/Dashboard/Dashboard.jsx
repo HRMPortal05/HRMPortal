@@ -5,39 +5,67 @@ import {
   useFetchAttendanceMutation,
   useCreateTaskMutation,
   useFetchTasksMutation,
-} from "../services/Dashboard";
+  useDeleteTaskMutation,
+} from "../../services/Dashboard";
+import { enqueueSnackbar } from "notistack";
 
-const AttendanceChart = ({ percentage, attendanceData }) => {
-  const chartData = [{ value: percentage }, { value: 100 - percentage }];
+const ResponsiveAttendanceOverview = ({ attendanceData }) => {
+  const { present_days = 5, totalDays = 24 } = attendanceData || {};
+  const percentage = ((present_days / totalDays) * 100).toFixed(2);
+  const missedDays = totalDays - present_days;
+
+  const chartData = [{ value: present_days }, { value: missedDays }];
 
   return (
-    <div className="relative w-full h-full flex items-center justify-center">
-      <ResponsiveContainer width="100%" height={200}>
-        <PieChart>
-          <Pie
-            data={chartData}
-            cx="50%"
-            cy="50%"
-            innerRadius={60}
-            outerRadius={80}
-            fill="#7676DC"
-            dataKey="value"
-            startAngle={90}
-            endAngle={-270}
-          >
-            <Cell key="cell-0" fill="#7676DC" />
-            <Cell key="cell-1" fill="#E8E8FF" />
-          </Pie>
-        </PieChart>
-      </ResponsiveContainer>
-      <div className="absolute inset-0 flex flex-col items-center justify-center">
-        {attendanceData ? (
-          <span className="text-2xl font-bold text-primary_color">
-            {attendanceData.present_days}/{attendanceData.totalDays}
-          </span>
-        ) : (
-          <span className="text-2xl font-bold text-primary_color">0/0</span>
-        )}
+    <div className="p-4 w-full max-w-4xl mx-auto">
+      <div className="flex flex-col md:flex-row items-center justify-between">
+        <div className="relative w-full md:w-1/2 mb-4 md:mb-0 flex items-center justify-center">
+          <ResponsiveContainer width="100%" height={200}>
+            <PieChart>
+              <Pie
+                data={chartData}
+                cx="50%"
+                cy="50%"
+                innerRadius={60}
+                outerRadius={80}
+                startAngle={90}
+                endAngle={-270}
+                dataKey="value"
+              >
+                <Cell key="cell-0" fill="#7676DC" />
+                <Cell key="cell-1" fill="#E8E8FF" />
+              </Pie>
+            </PieChart>
+          </ResponsiveContainer>
+          {/* Absolute div to center the text */}
+          <div className="absolute inset-0 flex flex-col items-center justify-center">
+            <span className="text-3xl font-bold text-primary_color">
+              {present_days}/{totalDays}
+            </span>
+          </div>
+        </div>
+        <div className="w-full md:w-1/2 flex flex-col items-start justify-center space-y-2 md:pl-4">
+          <h2 className="text-2xl font-bold text-primary_color">
+            Attendance Overview
+          </h2>
+          <p className="text-4xl font-bold text-light_primary">{percentage}%</p>
+          <p className="text-para">Total Days: {totalDays}</p>
+          <p className="text-para">Days Attended: {present_days}</p>
+          <p className="text-para">Days Missed: {missedDays}</p>
+          <div className="mt-2">
+            <span
+              className={`px-2 py-1 rounded ${
+                parseFloat(percentage) >= 75
+                  ? "bg-form_base text-white"
+                  : "bg-light_primary text-white"
+              }`}
+            >
+              {parseFloat(percentage) >= 75
+                ? "Good Standing"
+                : "Needs Improvement"}
+            </span>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -131,6 +159,7 @@ const TaskList = () => {
   const [fetchTasks, { data: fetchedTasks, isLoading, error: fetchError }] =
     useFetchTasksMutation();
   const [createTask] = useCreateTaskMutation();
+  const [deleteTask] = useDeleteTaskMutation();
   const access_token = localStorage.getItem("access_token");
   const newTask = useRef();
 
@@ -168,7 +197,10 @@ const TaskList = () => {
         });
 
         if (response.data) {
-          console.log("Task created successfully:", response.data);
+          enqueueSnackbar("Task created successfully", {
+            variant: "success",
+            autoHideDuration: 3000,
+          });
           setTasks((prevTasks) => [...prevTasks, response.data.task]);
           newTask.current.value = "";
         } else {
@@ -180,18 +212,29 @@ const TaskList = () => {
     }
   };
 
-  const toggleTask = (task_description) => {
-    setTasks(
-      tasks.map((task) =>
-        task.task_description === task_description
-          ? {
-              ...task,
-              task_status:
-                task.task_status === "COMPLETED" ? "PENDING" : "COMPLETED",
-            }
-          : task
-      )
-    );
+  const handleDeleteTask = async (e, task_id) => {
+    e.preventDefault();
+    try {
+      const response = await deleteTask({ task_id, access_token });
+      if (response?.error) {
+        console.error("Failed to delete task:", response.error);
+        enqueueSnackbar("Failed to delete task", {
+          variant: "error",
+          autoHideDuration: 3000,
+        });
+      } else {
+        console.log("Task deleted successfully");
+        enqueueSnackbar("Task deleted successfully", {
+          variant: "success",
+          autoHideDuration: 3000,
+        });
+        setTasks((prevTasks) =>
+          prevTasks.filter((task) => task.id !== task_id)
+        );
+      }
+    } catch (err) {
+      console.error("Failed to delete task:", err);
+    }
   };
 
   return (
@@ -228,13 +271,16 @@ const TaskList = () => {
             }
             return (
               <li
-                key={task.task_description}
+                key={task.id}
                 className="flex items-center p-3 bg-white rounded-md shadow-sm transition-all duration-200 hover:shadow-md"
               >
                 <input
                   type="checkbox"
                   checked={task.task_status === "COMPLETED"}
-                  onChange={() => toggleTask(task.task_description)}
+                  onChange={(e) => {
+                    handleDeleteTask(e, task.id);
+                  }}
+                  // onClick={() => }
                   className="form-checkbox h-5 w-5 text-blue-600 rounded focus:ring-blue-400 mr-3 cursor-pointer"
                 />
                 <span
@@ -323,56 +369,74 @@ const Dashboard = () => {
   const attendedDays = attendanceData ? attendanceData.present_days : 0;
 
   return (
-    <div className="flex flex-col gap-4 min-h-screen w-full p-4 my-4 border-2 rounded-lg border-elight_primary">
-      {/* Performance Overview */}
-      <div className="bg-white rounded-lg shadow-md p-4 h-auto md:h-96">
-        <PerformanceOverview />
-      </div>
-
-      {/* Attendance Overview */}
-      <div className="bg-white rounded-lg shadow-md p-4">
-        <div className="flex flex-col md:flex-row items-center justify-between h-full">
-          <div className="w-full md:w-1/2 mb-4 md:mb-0">
-            <AttendanceChart
-              percentage={attendancePercentage}
-              attendanceData={attendanceData}
-            />
-          </div>
-          <div className="w-full md:w-1/2 flex flex-col items-start justify-center space-y-2">
-            <h2 className="text-2xl font-bold text-primary_color">
-              Attendance Overview
-            </h2>
-            <p className="text-4xl font-bold text-light_primary">
-              {attendancePercentage}%
-            </p>
-            <p className="text-para">Total Days: {totalDays}</p>
-            <p className="text-para">Days Attended: {attendedDays}</p>
-            <p className="text-para">Days Missed: {totalDays - attendedDays}</p>
-            <div className="mt-2">
-              <span
-                className={`px-2 py-1 rounded ${
-                  attendancePercentage >= 75
-                    ? "bg-form_base text-white"
-                    : "bg-light_primary text-white"
-                }`}
-              >
-                {attendancePercentage >= 75
-                  ? "Good Standing"
-                  : "Needs Improvement"}
-              </span>
+    <div className="flex flex-col md:flex-row gap-4 min-h-screen w-full p-4 my-4 border-2 rounded-lg border-elight_primary">
+      {/* Left Column */}
+      <div className="flex flex-col gap-4 w-full md:w-1/2">
+        {/* Top Section (Tall) - Performance Overview */}
+        <div className="bg-white flex-grow h-2/3 rounded-lg shadow-md p-4">
+          <PerformanceOverview />
+        </div>
+        {/* Bottom Section (Short) - Attendance Chart */}
+        <div className="bg-white flex-grow h-1/3 rounded-lg shadow-md p-4">
+          {/* <div className="flex flex-row items-center justify-between h-full">
+            <div className="hidden w-1/2 md:block lg:block">
+              <AttendanceChart
+                percentage={attendancePercentage}
+                attendanceData={attendanceData}
+              />
             </div>
+            <div className="block md:hidden lg:hidden w-1/2">
+              <AttendanceOverview
+                percentage={attendancePercentage}
+                attendanceData={attendanceData}
+              />
+            </div>
+            <div className="w-full">
+              <ResponsiveAttendanceOverview attendanceData={attendanceData} />
+            </div>
+            <div className="w-1/2 flex flex-col items-start justify-center space-y-2">
+              <h2 className="text-2xl font-bold text-primary_color">
+                Attendance Overview
+              </h2>
+              <p className="text-4xl font-bold text-light_primary">
+                {attendancePercentage}%
+              </p>
+              <p className="text-para">Total Days: {totalDays}</p>
+              <p className="text-para">Days Attended: {attendedDays}</p>
+              <p className="text-para">
+                Days Missed: {totalDays - attendedDays}
+              </p>
+              <div className="mt-2">
+                <span
+                  className={`px-2 py-1 rounded ${
+                    attendancePercentage >= 75
+                      ? "bg-form_base text-white"
+                      : "bg-light_primary text-white"
+                  }`}
+                >
+                  {attendancePercentage >= 75
+                    ? "Good Standing"
+                    : "Needs Improvement"}
+                </span>
+              </div>
+            </div>
+          </div> */}
+          <div className="h-full">
+            <ResponsiveAttendanceOverview attendanceData={attendanceData} />
           </div>
         </div>
       </div>
 
-      {/* Upcoming Holidays */}
-      <div className="bg-white rounded-lg shadow-md p-4 h-auto md:h-64">
-        <UpcomingHolidays />
-      </div>
-
-      {/* Today's Tasks */}
-      <div className="bg-white rounded-lg shadow-md p-4 h-auto md:h-96">
-        <TaskList />
+      {/* Right Column */}
+      <div className="flex flex-col gap-4 w-full md:w-1/2">
+        {/* Top Section (Short) */}
+        <div className="bg-white flex-grow h-1/3 rounded-lg shadow-md p-4">
+          <UpcomingHolidays />
+        </div>
+        {/* Bottom Section (Tall) - Today's Tasks */}
+        <div className="bg-white flex-grow h-2/3 rounded-lg shadow-md p-4">
+          <TaskList />
+        </div>
       </div>
     </div>
   );

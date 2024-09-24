@@ -57,7 +57,6 @@ const ApplyForLeave = () => {
     setOpenModal(false);
   };
 
-  // Check if the user is an admin
   const token = localStorage.getItem("access_token");
   const decodedToken = jwtDecode(token);
   const [isAdmin, setIsAdmin] = useState(false);
@@ -74,7 +73,6 @@ const ApplyForLeave = () => {
     const filtered = filteredData.filter((item) => {
       let dateOverlaps = true;
 
-      // Check if both fromDate and toDate are selected, otherwise skip date filtering
       if (fromDate && toDate) {
         const formattedFromDate = dayjs(fromDate).startOf("day");
         const formattedToDate = dayjs(toDate).endOf("day");
@@ -89,7 +87,6 @@ const ApplyForLeave = () => {
             itemToDate.isBefore(formattedToDate));
       }
 
-      // Filter based on status, and include date filtering if both dates are selected
       const statusMatches =
         selectedStatus === "Select" || item.status === selectedStatus;
 
@@ -104,7 +101,6 @@ const ApplyForLeave = () => {
       try {
         let response;
 
-        // Fetch data based on user role
         if (isAdmin) {
           response = await fetchAdminleave(access_token);
           console.log(response);
@@ -112,11 +108,10 @@ const ApplyForLeave = () => {
           response = await fetchleave(access_token);
         }
 
-        // Handle errors
         if (response.error) {
           console.log("Error response:", response.error);
 
-          const errors = response.error.data?.errors || {}; // Safely access errors
+          const errors = response.error.data?.errors || {};
           if (errors.non_field_errors) {
             enqueueSnackbar(errors.non_field_errors[0], {
               variant: "error",
@@ -128,18 +123,15 @@ const ApplyForLeave = () => {
               autoHideDuration: 3000,
             });
           } else {
-            // Handle other errors or unknown error structure
             setServerError(errors);
           }
         }
 
-        // Handle successful response
         if (response.data) {
           setRow(response.data);
           setFilteredData(response.data);
         }
       } catch (error) {
-        // Handle network or unexpected errors
         console.error("Leave fetch error:", error);
         enqueueSnackbar("An error occurred while fetching data.", {
           variant: "error",
@@ -216,13 +208,11 @@ const ApplyForLeave = () => {
 
   const handleSelect = async (id, newStatus) => {
     try {
-      // Update status in local state optimistically
       setStatuses((prevStatuses) => ({
         ...prevStatuses,
         [id]: newStatus,
       }));
 
-      // Call the RTK mutation
       const response = await updateLeaveStatus({
         status: newStatus,
         leave_id: id,
@@ -230,14 +220,10 @@ const ApplyForLeave = () => {
       });
 
       if (response.error) {
-        // Backend returned an error
         throw new Error(response.error.message || "Failed to update status");
       }
 
-      // Handle successful response
       enqueueSnackbar("Status updated successfully", { variant: "success" });
-
-      // Update the row data in the state
       setRow(
         row.map((item) =>
           item.id === id ? { ...item, status: newStatus } : item
@@ -246,10 +232,9 @@ const ApplyForLeave = () => {
     } catch (error) {
       console.error("Update status error:", error);
 
-      // Rollback optimistic update if needed (optional)
       setStatuses((prevStatuses) => ({
         ...prevStatuses,
-        [id]: oldStatus, // Use your previous state here if you keep a copy
+        [id]: oldStatus,
       }));
 
       enqueueSnackbar(error.message || "Failed to update status", {
@@ -342,7 +327,7 @@ const ApplyForLeave = () => {
         )}
       </div>
       {row && (
-        <div className="mt-5 max-w-[320px] md:max-w-screen-md lg:max-w-screen-xl overflow-x-hidden">
+        <div className="mt-5 max-w-[360px] md:max-w-screen-md lg:max-w-screen-xl overflow-x-hidden">
           <TableContainer
             component={Paper}
             className="overflow-x-auto mt-4 custom-scrollbar"

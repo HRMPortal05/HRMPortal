@@ -1,12 +1,16 @@
+import datetime
 from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from account.renderers import UserRenderer
 from rest_framework.permissions import IsAuthenticated
-from attendance.serializers import AttendanceSerializer
-from account.views import get_tokens_for_user
+from .serializers import AttendanceGetSerializer, AttendanceSerializer
+# from account.views import get_tokens_for_user
 from attendance.models import Attendance
+# from django.utils.timezone import make_aware
+from django.db.models.functions import TruncDate
+from collections import OrderedDict
 
 # Create your views here.
 
@@ -34,3 +38,19 @@ class AttendanceSerializerView(APIView):
                 Response({'errors': serializer.errors})
 
         return Response({'msg':'Attendance updated Successfully'}, status=status.HTTP_200_OK)
+    
+    def get(self, request):
+        user = request.user
+        
+        attendances = Attendance.objects.filter(user=user).annotate(date_only=TruncDate('created_date')).order_by('date_only')
+        
+        unique_attendances = OrderedDict()
+        for attendance in attendances:
+            if attendance.date_only not in unique_attendances:
+                unique_attendances[attendance.date_only] = attendance
+                
+        distinct_attendances = list(unique_attendances.values())
+        
+        serializer = AttendanceGetSerializer(distinct_attendances, many=True)
+        
+        return Response(serializer.data, status=status.HTTP_200_OK)
