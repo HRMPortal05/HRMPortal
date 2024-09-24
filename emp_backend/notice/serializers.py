@@ -2,9 +2,6 @@ from rest_framework import serializers
 from .models import Notice, EmployeeDetails
 
 class NoticeSerializer(serializers.ModelSerializer):
-    # employee = serializers.CharField(write_only=True)
-    # end_date = serializers.DateField()
-    # notice_priority = serializers.ChoiceField(choices=[('HIGH', 'High'), ('MEDIUM', 'Medium'), ('LOW', 'Low')], default='Medium')
 
     class Meta:
         model = Notice

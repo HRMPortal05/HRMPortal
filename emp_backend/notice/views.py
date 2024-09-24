@@ -13,9 +13,6 @@ class NoticeListCreateView(APIView):
     permission_classes = [IsAuthenticated]
 
     def get(self, request):
-        """
-        List all notices, with an option to filter by active notices.
-        """
         is_active = request.query_params.get('is_active')
         if is_active == 'true':
             today = timezone.now().date()
@@ -27,14 +24,11 @@ class NoticeListCreateView(APIView):
         return Response(serializer.data)
 
     def post(self, request):
-        """
-        Create a new notice.
-        """
         serializer = NoticeSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({}, serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class NoticeDetailView(APIView):

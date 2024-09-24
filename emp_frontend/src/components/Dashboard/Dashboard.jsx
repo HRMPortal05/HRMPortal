@@ -17,7 +17,7 @@ const ResponsiveAttendanceOverview = ({ attendanceData }) => {
   const chartData = [{ value: present_days }, { value: missedDays }];
 
   return (
-    <div className="p-4 w-full max-w-4xl mx-auto">
+    <div className="p-4 w-full max-w-4xl mx-auto h-auto">
       <div className="flex flex-col md:flex-row items-center justify-between">
         <div className="relative w-full md:w-1/2 mb-4 md:mb-0 flex items-center justify-center">
           <ResponsiveContainer width="100%" height={200}>
@@ -377,7 +377,7 @@ const Dashboard = () => {
           <PerformanceOverview />
         </div>
         {/* Bottom Section (Short) - Attendance Chart */}
-        <div className="bg-white flex-grow h-1/3 rounded-lg shadow-md p-4">
+        <div className="bg-white flex-grow rounded-lg shadow-md p-4">
           {/* <div className="flex flex-row items-center justify-between h-full">
             <div className="hidden w-1/2 md:block lg:block">
               <AttendanceChart
