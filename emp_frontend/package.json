@@ -16,7 +16,7 @@
     "@mui/joy": "^5.0.0-beta.48",
     "@mui/material": "^5.16.4",
     "@mui/styled-engine-sc": "^6.0.0-alpha.18",
-    "@mui/x-date-pickers": "^5.0.0",
+    "@mui/x-date-pickers": "^7.11.1",
     "@react-pdf/renderer": "^3.4.4",
     "@reduxjs/toolkit": "^2.2.6",
     "axios": "^1.7.2",

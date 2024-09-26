@@ -23,7 +23,7 @@ import Holiday from "./components/Holiday/Hoilday.jsx";
 import Library from "./components/Library/Library.jsx";
 import VerifyEmail from "./components/Auth/VerifyEmail.jsx";
 import EmployeeDetails from "./components/EmployeeDetail/EmployeeDetails.jsx";
-import { Attendance } from "./services/Attendance.jsx";
+import Attendance from "./components/Attendance/Attendance.jsx";
 
 const router = createBrowserRouter([
   {

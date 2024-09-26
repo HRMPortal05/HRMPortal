@@ -177,7 +177,7 @@ const SalarySlipView = () => {
   return (
     <div className="md:ml-5 my-10 roboto-regular roboto-regular max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl overflow-hidden">
       <div className="flex flex-col items-center w-full mb-3">
-        <div className="flex flex-col sm:flex-row justify-between items-center sm:text-base w-full space-y-4 sm:space-y-0 sm:space-x-4">
+        <div className="flex flex-col sm:flex-row justify-between items-center sm:text-base w-full space-y-4 mt-1.5 sm:space-y-0 sm:space-x-4">
           <StyledDateForSalarySlipView
             label={"From Month"}
             value={fromDate}

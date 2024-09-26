@@ -5,7 +5,6 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
-  TextField,
   Table,
   TableBody,
   TableCell,
@@ -16,12 +15,30 @@ import {
   IconButton,
   Collapse,
 } from "@mui/material";
-import { DatePicker } from "@mui/x-date-pickers/DatePicker";
-// import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import StyledDateForEmployee from "../../materialUI/StyledDateForEmployee";
+
+const CustomInput = ({ label, name, value, onChange, type = "text" }) => (
+  <div className="mb-4">
+    <label
+      className="block text-gray-700 text-sm font-bold mb-2"
+      htmlFor={name}
+    >
+      {label}
+    </label>
+    <input
+      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      id={name}
+      type={type}
+      name={name}
+      value={value}
+      onChange={onChange}
+    />
+  </div>
+);
 
 const Row = ({ row, openEditForm }) => {
   const [open, setOpen] = useState(false);
@@ -44,7 +61,12 @@ const Row = ({ row, openEditForm }) => {
         <TableCell>{row.department}</TableCell>
         <TableCell>{row.working_designation}</TableCell>
         <TableCell>
-          <IconButton onClick={() => openEditForm(row)}>Edit</IconButton>
+          <IconButton
+            sx={{ fontSize: 18, color: "red" }}
+            onClick={() => openEditForm(row)}
+          >
+            Edit
+          </IconButton>
         </TableCell>
       </TableRow>
       <TableRow>
@@ -56,97 +78,61 @@ const Row = ({ row, openEditForm }) => {
                   <TableCell
                     component="th"
                     scope="row"
-                    sx={{
-                      borderBottom: "none",
-                      minWidth: "150px",
-                      fontWeight: "600",
-                    }}
+                    sx={{ fontWeight: "600" }}
                   >
                     Personal Email:
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {row.personal_mailid || "None"}
-                  </TableCell>
+                  <TableCell>{row.personal_mailid || "None"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell
                     component="th"
                     scope="row"
-                    sx={{
-                      borderBottom: "none",
-                      minWidth: "150px",
-                      fontWeight: "600",
-                    }}
+                    sx={{ fontWeight: "600" }}
                   >
                     Salary:
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {row.salary || "None"}
-                  </TableCell>
+                  <TableCell>{row.salary || "None"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell
                     component="th"
                     scope="row"
-                    sx={{
-                      borderBottom: "none",
-                      minWidth: "150px",
-                      fontWeight: "600",
-                    }}
+                    sx={{ fontWeight: "600" }}
                   >
                     Phone Number:
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {row.phone_number || "None"}
-                  </TableCell>
+                  <TableCell>{row.phone_number || "None"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell
                     component="th"
                     scope="row"
-                    sx={{
-                      borderBottom: "none",
-                      minWidth: "150px",
-                      fontWeight: "600",
-                    }}
+                    sx={{ fontWeight: "600" }}
                   >
                     Date of Birth:
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {row.date_of_birth || "None"}
-                  </TableCell>
+                  <TableCell>{row.date_of_birth || "None"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell
                     component="th"
                     scope="row"
-                    sx={{
-                      borderBottom: "none",
-                      minWidth: "150px",
-                      fontWeight: "600",
-                    }}
+                    sx={{ fontWeight: "600" }}
                   >
                     Date of Joining:
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {row.date_of_joining || "None"}
-                  </TableCell>
+                  <TableCell>{row.date_of_joining || "None"}</TableCell>
                 </TableRow>
                 <TableRow>
                   <TableCell
                     component="th"
                     scope="row"
-                    sx={{
-                      borderBottom: "none",
-                      minWidth: "150px",
-                      fontWeight: "600",
-                    }}
+                    sx={{ fontWeight: "600" }}
                   >
                     Address:
                   </TableCell>
-                  <TableCell sx={{ borderBottom: "none" }}>
-                    {row.address || "None"}
-                  </TableCell>
+                  <TableCell>{row.address || "None"}</TableCell>
                 </TableRow>
               </TableBody>
             </Table>
@@ -160,6 +146,7 @@ const Row = ({ row, openEditForm }) => {
 const EmployeeDetails = () => {
   const [employees, setEmployees] = useState([]);
   const [isEditOpen, setIsEditOpen] = useState(false);
+  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState(null);
   const [employeeData, setEmployeeData] = useState({
     first_name: "",
@@ -174,6 +161,12 @@ const EmployeeDetails = () => {
     date_of_birth: null,
     date_of_joining: null,
     address: "",
+  });
+  const [registerData, setRegisterData] = useState({
+    email: "",
+    username: "",
+    password: "",
+    password2: "",
   });
 
   useEffect(() => {
@@ -204,20 +197,29 @@ const EmployeeDetails = () => {
     setEmployeeData({ ...employeeData, [e.target.name]: e.target.value });
   };
 
+  const handleRegisterInputChange = (e) => {
+    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  };
+
   const handleDateChange = (name, date) => {
+    console.log(name, date);
     setEmployeeData({ ...employeeData, [name]: date });
   };
 
   const handleEmployeeSubmit = (e) => {
     e.preventDefault();
     if (currentEmployee) {
-      // Update existing employee
       console.log("Updated employee data:", employeeData);
     } else {
-      // Add new employee
       console.log("New employee data:", employeeData);
     }
     setIsEditOpen(false);
+  };
+
+  const handleRegisterSubmit = (e) => {
+    e.preventDefault();
+    console.log("Register data:", registerData);
+    setIsRegisterOpen(false);
   };
 
   const openEditForm = (employee) => {
@@ -228,12 +230,12 @@ const EmployeeDetails = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="p-6 font-roboto min-h-screen">
-        <h1 className="text-3xl font-bold mb-6 text-primary_color">
+      <div className="p-6 font-sans min-h-screen bg-gray-100">
+        <h1 className="text-3xl font-bold mb-6 text-blue-800">
           Employee Details
         </h1>
 
-        <div className="mb-4 flex justify-end">
+        <div className="mb-4 flex justify-end space-x-4">
           <Button
             onClick={() => {
               setCurrentEmployee(null);
@@ -254,23 +256,46 @@ const EmployeeDetails = () => {
               setIsEditOpen(true);
             }}
             variant="contained"
-            color="primary"
+            className="bg-blue-800 hover:bg-blue-900"
           >
             Add New Employee
           </Button>
+          <Button
+            onClick={() => setIsRegisterOpen(true)}
+            variant="contained"
+            className="bg-green-600 hover:bg-green-700"
+          >
+            Register
+          </Button>
         </div>
 
-        <TableContainer component={Paper}>
+        <TableContainer
+          sx={{ boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)" }}
+          className="mt-7 bg-white rounded-lg"
+          component={Paper}
+        >
           <Table>
             <TableHead>
-              <TableRow>
+              <TableRow sx={{ background: "#1e40af", color: "white" }}>
                 <TableCell />
-                <TableCell>Employee ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Work Email</TableCell>
-                <TableCell>Department</TableCell>
-                <TableCell>Designation</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Employee ID
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Name
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Work Email
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Department
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Designation
+                </TableCell>
+                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -286,110 +311,168 @@ const EmployeeDetails = () => {
         </TableContainer>
 
         {/* Employee Details Dialog */}
-        <Dialog open={isEditOpen} onClose={() => setIsEditOpen(false)}>
-          <DialogTitle>
+        <Dialog
+          open={isEditOpen}
+          onClose={() => setIsEditOpen(false)}
+          maxWidth="md"
+          fullWidth
+        >
+          <DialogTitle className="bg-blue-800 text-white">
             {currentEmployee ? "Edit Employee Details" : "Add New Employee"}
           </DialogTitle>
-          <DialogContent>
+          <DialogContent className="mt-4">
             <form onSubmit={handleEmployeeSubmit} className="space-y-4">
-              <TextField
-                label="First Name"
-                name="first_name"
-                value={employeeData.first_name || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Last Name"
-                name="last_name"
-                value={employeeData.last_name || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Personal Email"
-                name="personal_mailid"
-                type="email"
-                value={employeeData.personal_mailid || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Work Email"
-                name="working_emailid"
-                type="email"
-                value={employeeData.working_emailid || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Employee ID"
-                name="emp_id"
-                value={employeeData.emp_id || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Department"
-                name="department"
-                value={employeeData.department || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Designation"
-                name="working_designation"
-                value={employeeData.working_designation || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Salary"
-                name="salary"
-                type="number"
-                value={employeeData.salary || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <TextField
-                label="Phone Number"
-                name="phone_number"
-                value={employeeData.phone_number || ""}
-                onChange={handleEmployeeInputChange}
-                fullWidth
-              />
-              <DatePicker
-                label="Date of Birth"
-                value={employeeData.date_of_birth}
-                onChange={(date) => handleDateChange("date_of_birth", date)}
-                renderInput={(params) => <TextField {...params} fullWidth />}
-              />
-              <DatePicker
-                label="Date of Joining"
-                value={employeeData.date_of_joining}
-                onChange={(date) => handleDateChange("date_of_joining", date)}
-                renderInput={(params) => <TextField {...params} fullWidth />}
-              />
-              <TextField
+              <div className="grid grid-cols-2 gap-4">
+                <CustomInput
+                  label="First Name"
+                  name="first_name"
+                  value={employeeData.first_name || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Last Name"
+                  name="last_name"
+                  value={employeeData.last_name || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Personal Email"
+                  name="personal_mailid"
+                  type="email"
+                  value={employeeData.personal_mailid || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Work Email"
+                  name="working_emailid"
+                  type="email"
+                  value={employeeData.working_emailid || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Employee ID"
+                  name="emp_id"
+                  value={employeeData.emp_id || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Phone Number"
+                  name="phone_number"
+                  value={employeeData.phone_number || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Department"
+                  name="department"
+                  value={employeeData.department || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Designation"
+                  name="working_designation"
+                  value={employeeData.working_designation || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <CustomInput
+                  label="Salary"
+                  name="salary"
+                  value={employeeData.salary || ""}
+                  onChange={handleEmployeeInputChange}
+                />
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Date of Birth
+                  </label>
+                  <StyledDateForEmployee
+                    onChange={(date) => handleDateChange("date_of_birth", date)}
+                    format="YYYY-MM-DD"
+                  />
+                </div>
+                <div>
+                  <label className="block text-gray-700 text-sm font-bold mb-2">
+                    Date of Joining
+                  </label>
+                  <StyledDateForEmployee
+                    value={employeeData.date_of_joining}
+                    onChange={(date) =>
+                      handleDateChange("date_of_joining", date)
+                    }
+                    format="YYYY-MM-DD"
+                  />
+                </div>
+              </div>
+              <CustomInput
                 label="Address"
                 name="address"
-                multiline
-                rows={3}
                 value={employeeData.address || ""}
                 onChange={handleEmployeeInputChange}
-                fullWidth
               />
             </form>
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => setIsEditOpen(false)}>Cancel</Button>
             <Button
-              type="submit"
-              onClick={handleEmployeeSubmit}
-              variant="contained"
-              color="primary"
+              onClick={() => setIsEditOpen(false)}
+              className="text-gray-600"
             >
-              {currentEmployee ? "Save Changes" : "Add Employee"}
+              Cancel
+            </Button>
+            <Button
+              onClick={handleEmployeeSubmit}
+              className="bg-blue-800 text-white hover:bg-blue-900"
+            >
+              {currentEmployee ? "Update" : "Add"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        {/* User Registration Dialog */}
+        <Dialog open={isRegisterOpen} onClose={() => setIsRegisterOpen(false)}>
+          <DialogTitle className="bg-blue-800 text-white">
+            User Registration
+          </DialogTitle>
+          <DialogContent className="mt-4">
+            <form onSubmit={handleRegisterSubmit} className="space-y-4">
+              <CustomInput
+                label="Email"
+                name="email"
+                type="email"
+                value={registerData.email}
+                onChange={handleRegisterInputChange}
+              />
+              <CustomInput
+                label="Username"
+                name="username"
+                value={registerData.username}
+                onChange={handleRegisterInputChange}
+              />
+              <CustomInput
+                label="Password"
+                name="password"
+                type="password"
+                value={registerData.password}
+                onChange={handleRegisterInputChange}
+              />
+              <CustomInput
+                label="Confirm Password"
+                name="password2"
+                type="password"
+                value={registerData.password2}
+                onChange={handleRegisterInputChange}
+              />
+            </form>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => setIsRegisterOpen(false)}
+              className="text-gray-600"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleRegisterSubmit}
+              className="bg-blue-800 text-white hover:bg-blue-900"
+            >
+              Register
             </Button>
           </DialogActions>
         </Dialog>
