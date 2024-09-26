@@ -24,7 +24,43 @@ export const Employee = createApi({
         },
       }),
     }),
+    addEmployee: builder.mutation({
+      query: ({ employeeData, access_token }) => ({
+        url: "addEmployee/",
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: employeeData,
+      }),
+    }),
+    fetchAllEmployees: builder.mutation({
+      query: (access_token) => ({
+        url: "fetchAllEmployees/",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+        },
+      }),
+    }),
+    updateEmployee: builder.mutation({
+      query: ({ emp_id, employeeData, access_token }) => ({
+        url: `updateEmployee/${emp_id}/`,
+        method: "PUT",
+        headers: {
+          Authorization: `Bearer ${access_token}`,
+          "Content-Type": "application/json",
+        },
+        body: employeeData,
+      }),
+    }),
   }),
 });
 
-export const { useFetchEmployeeMutation } = Employee;
+export const {
+  useFetchEmployeeMutation,
+  useAddEmployeeMutation,
+  useFetchAllEmployeesMutation,
+  useUpdateEmployeeMutation,
+} = Employee;

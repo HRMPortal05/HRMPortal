@@ -43,16 +43,18 @@ const Row = (props) => {
         <TableCell>{row.from_date}</TableCell>
         <TableCell>{row.to_date}</TableCell>
         {is_admin ? (
-          <select
-            className="border border-primary_color text-[#01008A] rounded-md px-4 h-[35px] w-[150px] mt-4 sm:mb-0"
-            onChange={handleChildSelect}
-            value={props.selectedStatus || "Select"} // Use the passed prop or fallback to "Select"
-          >
-            <option value="Select">Select</option>
-            <option value="APPROVED">APPROVED</option>
-            <option value="PENDING">PENDING</option>
-            <option value="REJECTED">REJECTED</option>
-          </select>
+          <TableCell>
+            <select
+              className="border border-primary_color text-[#01008A] rounded-md px-4 h-[35px] w-[150px] sm:mb-0"
+              onChange={handleChildSelect}
+              value={props.selectedStatus || "Select"}
+            >
+              <option value="Select">Select</option>
+              <option value="APPROVED">APPROVED</option>
+              <option value="PENDING">PENDING</option>
+              <option value="REJECTED">REJECTED</option>
+            </select>
+          </TableCell>
         ) : (
           <TableCell>
             <span

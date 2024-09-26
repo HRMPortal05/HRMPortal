@@ -5,19 +5,26 @@ import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import { TextField } from "@mui/material";
 
-const StyledDateForSalarySlip = ({
+const StyledDateForEmployee = ({
   label,
   className,
+  value,
   error,
   helperText,
-  format = "YYYY-MM-DD", // Default format
-  minDate = dayjs(), // Default minimum date
-  width = "100%", // Default width
-  height = "40px", // Default height
-  borderColor = "#aaa", // Default border color
-  focusBorderColor = "#2563eb", // Border color on focus (blue-500)
+  format = "YYYY-MM-DD",
+  minDate = dayjs(),
+  width = "100%",
+  height = "40px",
+  borderColor = "#aaa",
+  focusBorderColor = "#2563eb",
+  onChange,
   ...props
 }) => {
+  const dateValue = value ? dayjs(value) : null;
+  const handleDateChange = (newValue) => {
+    onChange(newValue ? newValue.format(format) : null);
+  };
+
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className={className}>
@@ -27,9 +34,11 @@ const StyledDateForSalarySlip = ({
         <DatePicker
           {...props}
           format={format}
-          minDate={minDate}
+          value={dateValue}
+          onChange={handleDateChange}
           slotProps={{
             textField: {
+              fullWidth: true,
               variant: "outlined",
               error: error,
               helperText: helperText,
@@ -71,4 +80,4 @@ const StyledDateForSalarySlip = ({
   );
 };
 
-export default StyledDateForSalarySlip;
+export default StyledDateForEmployee;

@@ -2,54 +2,46 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
+from account.models import User
 from .models import EmployeeDetails
-from .serializers import EmployeeDetailsSerializer
+from .serializers import EmployeeDetailSerializer, EmployeeDetailsSerializer
 from django.shortcuts import get_object_or_404
 
 class EmployeeDetailsListView(APIView):
     permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        employees = EmployeeDetails.objects.all()
+        serializer = EmployeeDetailSerializer(employees, many=True)
+        return Response(serializer.data)
 
-    def get(self, request, format=None):
-        # Get employee details for the current logged-in user
-        employee_details = EmployeeDetails.objects.filter(user=request.user)
-        serializer = EmployeeDetailsSerializer(employee_details, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def post(self, request):
+        serializer = EmployeeDetailSerializer(data=request.data)
 
-    def post(self, request, format=None):
-        # Create new employee details for the current logged-in user
-        serializer = EmployeeDetailsSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save(user=request.user)
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            working_emailid = serializer.validated_data['working_emailid']
+            try:
+                user = User.objects.get(email=working_emailid)
+            except User.DoesNotExist:
+                return Response({"error": "No user is registered with this email."}, status=status.HTTP_400_BAD_REQUEST)
+            
+            serializer.save(user=user)
+            return Response({"message": "Employee added successfully"}, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def put(self, request, emp_id):
+        try:
+            employee = EmployeeDetails.objects.get(emp_id=emp_id)
+            print(employee)
+        except EmployeeDetails.DoesNotExist:
+            return Response({"error": "Employee details not found."}, status=status.HTTP_404_NOT_FOUND)
 
-class EmployeeDetailsDetailView(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get_object(self, emp_id, user):
-        # Retrieve an employee record by emp_id and ensure it belongs to the current user
-        return get_object_or_404(EmployeeDetails, emp_id=emp_id, user=user)
-
-    def get(self, request, emp_id, format=None):
-        # Get details of a specific employee by emp_id for the current user
-        employee_details = self.get_object(emp_id, request.user)
-        serializer = EmployeeDetailsSerializer(employee_details)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, emp_id, format=None):
-        # Update details of a specific employee by emp_id for the current user
-        employee_details = self.get_object(emp_id, request.user)
-        serializer = EmployeeDetailsSerializer(employee_details, data=request.data, partial=True)
+        serializer = EmployeeDetailSerializer(employee, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-    def delete(self, request, emp_id, format=None):
-        # Delete employee details for the current user
-        employee_details = self.get_object(emp_id, request.user)
-        employee_details.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class FetchEmployeeByIdView(APIView):
     permission_classes = [IsAuthenticated]

@@ -7,6 +7,7 @@ import "./App.css";
 import { useNavigate, Outlet } from "react-router-dom";
 import { removeToken } from "./services/LocalStorageServices";
 import { jwtDecode } from "jwt-decode";
+import { SnackbarProvider } from "notistack";
 
 function App() {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,7 +52,9 @@ function App() {
     <div className="flex h-screen">
       {/* Sidebar */}
       <div className={`fixed z-40 md:relative lg:relative md:z-auto w-64 ml-5`}>
-        <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+        <SnackbarProvider maxSnack={3}>
+          <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
+        </SnackbarProvider>
         {isOpen ? <RxCross1 /> : <VscThreeBars />}
       </div>
 

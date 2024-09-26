@@ -15,7 +15,7 @@ import { useGenerateSalarySlipMutation } from "../../services/SalarySlip";
 import { useFetchEmployeeMutation } from "../../services/Employee";
 import { enqueueSnackbar } from "notistack";
 import { jwtDecode } from "jwt-decode";
-import { useNavigate, useNavigationType } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const SalarySlip = () => {
   const access_token = localStorage.getItem("access_token");
@@ -30,7 +30,6 @@ const SalarySlip = () => {
 
   useEffect(() => {
     if (decodedToken.is_admin) {
-      console.log(decodedToken);
       setIsAdmin(true);
     } else if (!decodedToken.is_admin) {
       setIsAdmin(false);
@@ -170,8 +169,7 @@ const SalarySlip = () => {
       const response = await generateSalarySlip({
         data,
         access_token,
-      }).unwrap();
-      console.log("Salary slip generated:", response);
+      });
       setIsSlipGenerated(true);
     } catch (error) {
       console.error("Failed to generate salary slip:", error);

@@ -12,14 +12,19 @@ import {
   TableHead,
   TableRow,
   Paper,
-  IconButton,
-  Collapse,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
-import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import StyledDateForEmployee from "../../materialUI/StyledDateForEmployee";
+import {
+  useAddEmployeeMutation,
+  useFetchAllEmployeesMutation,
+  useUpdateEmployeeMutation,
+} from "../../services/Employee";
+import { enqueueSnackbar } from "notistack";
+import dayjs from "dayjs";
+import { useRegisterUserMutation } from "../../services/UserAuthApi";
+import Row from "./Row";
 
 const CustomInput = ({ label, name, value, onChange, type = "text" }) => (
   <div className="mb-4">
@@ -40,114 +45,13 @@ const CustomInput = ({ label, name, value, onChange, type = "text" }) => (
   </div>
 );
 
-const Row = ({ row, openEditForm }) => {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <>
-      <TableRow>
-        <TableCell>
-          <IconButton
-            aria-label="expand row"
-            size="small"
-            onClick={() => setOpen(!open)}
-          >
-            {open ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-          </IconButton>
-        </TableCell>
-        <TableCell>{row.emp_id}</TableCell>
-        <TableCell>{`${row.first_name} ${row.last_name}`}</TableCell>
-        <TableCell>{row.working_emailid}</TableCell>
-        <TableCell>{row.department}</TableCell>
-        <TableCell>{row.working_designation}</TableCell>
-        <TableCell>
-          <IconButton
-            sx={{ fontSize: 18, color: "red" }}
-            onClick={() => openEditForm(row)}
-          >
-            Edit
-          </IconButton>
-        </TableCell>
-      </TableRow>
-      <TableRow>
-        <TableCell style={{ paddingBottom: 0, paddingTop: 0 }} colSpan={7}>
-          <Collapse in={open} timeout="auto" unmountOnExit>
-            <Table size="small" aria-label="details">
-              <TableBody>
-                <TableRow>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontWeight: "600" }}
-                  >
-                    Personal Email:
-                  </TableCell>
-                  <TableCell>{row.personal_mailid || "None"}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontWeight: "600" }}
-                  >
-                    Salary:
-                  </TableCell>
-                  <TableCell>{row.salary || "None"}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontWeight: "600" }}
-                  >
-                    Phone Number:
-                  </TableCell>
-                  <TableCell>{row.phone_number || "None"}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontWeight: "600" }}
-                  >
-                    Date of Birth:
-                  </TableCell>
-                  <TableCell>{row.date_of_birth || "None"}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontWeight: "600" }}
-                  >
-                    Date of Joining:
-                  </TableCell>
-                  <TableCell>{row.date_of_joining || "None"}</TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell
-                    component="th"
-                    scope="row"
-                    sx={{ fontWeight: "600" }}
-                  >
-                    Address:
-                  </TableCell>
-                  <TableCell>{row.address || "None"}</TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
-          </Collapse>
-        </TableCell>
-      </TableRow>
-    </>
-  );
-};
-
 const EmployeeDetails = () => {
   const [employees, setEmployees] = useState([]);
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [isRegisterOpen, setIsRegisterOpen] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState(null);
+  const [formError, setFormError] = useState(null);
+  const [reload, setReload] = useState(0);
   const [employeeData, setEmployeeData] = useState({
     first_name: "",
     last_name: "",
@@ -169,29 +73,26 @@ const EmployeeDetails = () => {
     password2: "",
   });
 
+  const handleReload = () => {
+    const randomValue = Math.random();
+    setReload(randomValue);
+  };
+
+  const [fetchAllEmployees] = useFetchAllEmployeesMutation();
+  const access_token = localStorage.getItem("access_token");
+
+  const handleFetchEmployees = async () => {
+    try {
+      const response = await fetchAllEmployees(access_token).unwrap();
+      setEmployees(response);
+    } catch (error) {
+      console.error("Failed to fetch employees:", error);
+    }
+  };
+
   useEffect(() => {
-    // Fetch employees data here
-    setEmployees([
-      {
-        id: 1,
-        first_name: "John",
-        last_name: "Doe",
-        emp_id: "EMP001",
-        working_emailid: "john.doe@example.com",
-        department: "IT",
-        working_designation: "Developer",
-      },
-      {
-        id: 2,
-        first_name: "Jane",
-        last_name: "Smith",
-        emp_id: "EMP002",
-        working_emailid: "jane.smith@example.com",
-        department: "HR",
-        working_designation: "Manager",
-      },
-    ]);
-  }, []);
+    handleFetchEmployees();
+  }, [reload]);
 
   const handleEmployeeInputChange = (e) => {
     setEmployeeData({ ...employeeData, [e.target.name]: e.target.value });
@@ -202,24 +103,91 @@ const EmployeeDetails = () => {
   };
 
   const handleDateChange = (name, date) => {
-    console.log(name, date);
-    setEmployeeData({ ...employeeData, [name]: date });
+    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : null;
+
+    setEmployeeData((prevDetails) => ({
+      ...prevDetails,
+      [name]: formattedDate,
+    }));
   };
 
-  const handleEmployeeSubmit = (e) => {
+  const [addEmployee] = useAddEmployeeMutation();
+  const [updateEmployee] = useUpdateEmployeeMutation();
+
+  const handleEmployeeSubmit = async (e) => {
     e.preventDefault();
-    if (currentEmployee) {
-      console.log("Updated employee data:", employeeData);
-    } else {
-      console.log("New employee data:", employeeData);
+
+    try {
+      if (currentEmployee) {
+        try {
+          const result = await updateEmployee({
+            emp_id: employeeData.emp_id,
+            employeeData,
+            access_token,
+          }).unwrap();
+          enqueueSnackbar("Employee updated successfully", {
+            variant: "success",
+            autoHideDuration: 3000,
+          });
+          handleReload();
+        } catch (error) {
+          console.error("Failed to update employee:", error);
+          enqueueSnackbar("Failed to update employee", {
+            variant: "error",
+            autoHideDuration: 3000,
+          });
+        }
+      } else {
+        const response = await addEmployee({
+          employeeData,
+          access_token: access_token,
+        }).unwrap();
+        enqueueSnackbar("New employee added successfully", {
+          variant: "success",
+          autoHideDuration: 3000,
+        });
+        handleReload;
+      }
+
+      setIsEditOpen(false);
+    } catch (error) {
+      console.error("Failed to add employee:", error);
+      enqueueSnackbar("Failed to add employee", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+      setFormError(
+        error?.data?.message || "An error occurred while adding the employee."
+      );
     }
-    setIsEditOpen(false);
   };
 
-  const handleRegisterSubmit = (e) => {
+  const [registerUser, { isLoading }] = useRegisterUserMutation();
+
+  const handleRegisterSubmit = async (e) => {
     e.preventDefault();
-    console.log("Register data:", registerData);
-    setIsRegisterOpen(false);
+
+    try {
+      const response = await registerUser(registerData).unwrap();
+
+      enqueueSnackbar(response.msg || "User registered successfully!", {
+        variant: "success",
+        autoHideDuration: 3000,
+      });
+
+      setIsRegisterOpen(true);
+
+      setTimeout(() => {
+        setIsRegisterOpen(false);
+      }, 1000);
+    } catch (error) {
+      console.error("Failed to register user:", error);
+
+      enqueueSnackbar("Failed to register user", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+    }
   };
 
   const openEditForm = (employee) => {
@@ -301,7 +269,7 @@ const EmployeeDetails = () => {
             <TableBody>
               {employees.map((employee) => (
                 <Row
-                  key={employee.id}
+                  key={employee.working_emailid}
                   row={employee}
                   openEditForm={openEditForm}
                 />
@@ -384,6 +352,7 @@ const EmployeeDetails = () => {
                     Date of Birth
                   </label>
                   <StyledDateForEmployee
+                    value={employeeData.date_of_birth}
                     onChange={(date) => handleDateChange("date_of_birth", date)}
                     format="YYYY-MM-DD"
                   />
@@ -470,9 +439,10 @@ const EmployeeDetails = () => {
             </Button>
             <Button
               onClick={handleRegisterSubmit}
+              disabled={isLoading}
               className="bg-blue-800 text-white hover:bg-blue-900"
             >
-              Register
+              {isLoading ? "Registering..." : "Register"}
             </Button>
           </DialogActions>
         </Dialog>

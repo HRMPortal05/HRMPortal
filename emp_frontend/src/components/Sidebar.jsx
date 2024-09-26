@@ -12,6 +12,7 @@ import { MdOutlineCoPresent, MdOutlineFreeCancellation } from "react-icons/md";
 import { SlCalender } from "react-icons/sl";
 import { RiLogoutBoxLine } from "react-icons/ri";
 import { jwtDecode } from "jwt-decode";
+import { enqueueSnackbar } from "notistack";
 
 const Sidebar = ({ isOpen }) => {
   const [userLogout] = useUserLogoutMutation();
@@ -47,7 +48,6 @@ const Sidebar = ({ isOpen }) => {
           response.error.data &&
           response.error.data.exception === "Token is blacklisted"
         ) {
-          console.warn("Token is already blacklisted.");
           removeToken("access_token");
           removeToken("refresh_token");
           localStorage.removeItem("username");
@@ -58,7 +58,10 @@ const Sidebar = ({ isOpen }) => {
         }
       } else {
         if (response.data) {
-          console.log("Logout successful:", response.data.message);
+          enqueueSnackbar("Logout successful", {
+            variant: "success",
+            autoHideDuration: 3000,
+          });
           removeToken("access_token");
           removeToken("refresh_token");
           localStorage.removeItem("username");

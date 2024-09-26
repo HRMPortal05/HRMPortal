@@ -28,7 +28,11 @@ import Attendance from "./components/Attendance/Attendance.jsx";
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: (
+      <SnackbarProvider maxSnack={3}>
+        <App />
+      </SnackbarProvider>
+    ),
     children: [
       {
         path: "",

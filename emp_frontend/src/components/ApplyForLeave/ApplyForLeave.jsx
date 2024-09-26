@@ -103,7 +103,6 @@ const ApplyForLeave = () => {
 
         if (isAdmin) {
           response = await fetchAdminleave(access_token);
-          console.log(response);
         } else {
           response = await fetchleave(access_token);
         }
