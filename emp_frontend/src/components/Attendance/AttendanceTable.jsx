@@ -88,7 +88,10 @@ const AttendanceTable = () => {
   const currentAttendance = attendanceData[dateKey] || [];
 
   return (
-    <div className="bg-white p-8 rounded-md shadow-md w-full mx-auto max-w-7xl">
+    <div
+      className="bg-white p-8 rounded-md shadow-md w-full mx-auto max-w-7xl"
+      style={{ fontFamily: "'Roboto', sans-serif" }}
+    >
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-4xl font-bold text-primary_color">Attendance</h2>
         <div className="flex items-center space-x-4">
@@ -118,15 +121,15 @@ const AttendanceTable = () => {
       </div>
       <div className="overflow-x-auto bg-white shadow-md rounded-lg">
         <table className="min-w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-primary_color">
             <tr>
-              <th className="py-3 px-6 text-left text-xs font-medium text-para uppercase tracking-wider">
+              <th className="py-3 px-6 text-left text-xs font-medium text-white uppercase tracking-wider">
                 Employee ID
               </th>
-              <th className="py-3 px-6 text-left text-xs font-medium text-para uppercase tracking-wider">
+              <th className="py-3 px-6 text-left text-xs font-medium text-white uppercase tracking-wider">
                 Name
               </th>
-              <th className="py-3 px-6 text-left text-xs font-medium text-para uppercase tracking-wider">
+              <th className="py-3 px-6 text-left text-xs font-medium text-white uppercase tracking-wider">
                 Status
               </th>
             </tr>
