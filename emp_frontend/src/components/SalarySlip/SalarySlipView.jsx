@@ -13,6 +13,8 @@ import Row from "./Row";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import StyledDateForSalarySlipView from "../../materialUI/StyledDateForSalarySlipView";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate } from "react-router-dom";
 
 const ROWS_PER_PAGE = 7;
 
@@ -22,6 +24,8 @@ const SalarySlipView = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const slipRef = useRef(null);
+
+  const navigate = useNavigate();
 
   const [fetchSalarySlips] = useFetchSalarySlipsMutation();
   const [rows, setRows] = useState([]);
@@ -34,7 +38,6 @@ const SalarySlipView = () => {
   const handleFromDateChange = (newValue) => {
     setFromDate(newValue);
 
-    // Set the 'to' date to the end of the selected month if it's not set or is before the 'from' date
     if (!toDate || newValue.isAfter(toDate)) {
       setToDate(newValue.endOf("month"));
     }
@@ -43,11 +46,23 @@ const SalarySlipView = () => {
   const handleToDateChange = (newValue) => {
     setToDate(newValue);
 
-    // If 'from' date is not set or is after the selected 'to' date, set it to the start of the selected month
     if (!fromDate || newValue.isBefore(fromDate)) {
       setFromDate(newValue.startOf("month"));
     }
   };
+
+  // const token = localStorage.getItem("access_token");
+  // const decodedToken = jwtDecode(token);
+  // const [isAdmin, setIsAdmin] = useState(false);
+
+  // useEffect(() => {
+  //   if (decodedToken.is_admin && !isAdmin) {
+  //     setIsAdmin(true);
+  //     navigate("/salarySlip");
+  //   } else if (!decodedToken.is_admin && isAdmin) {
+  //     setIsAdmin(false);
+  //   }
+  // }, [decodedToken.is_admin, isAdmin, navigate]);
 
   const handleSearch = () => {
     const filtered = filteredData.filter((item) => {
@@ -155,12 +170,12 @@ const SalarySlipView = () => {
   };
 
   const rowsToDisplay = rows.slice(
-    currentPage * rowsPerPage, // Use rowsPerPage instead of ROWS_PER_PAGE
+    currentPage * rowsPerPage,
     (currentPage + 1) * rowsPerPage
   );
 
   return (
-    <div className="md:ml-5 my-10 roboto-regular max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl overflow-hidden">
+    <div className="md:ml-5 my-10 roboto-regular roboto-regular max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl overflow-hidden">
       <div className="flex flex-col items-center w-full mb-3">
         <div className="flex flex-col sm:flex-row justify-between items-center sm:text-base w-full space-y-4 sm:space-y-0 sm:space-x-4">
           <StyledDateForSalarySlipView

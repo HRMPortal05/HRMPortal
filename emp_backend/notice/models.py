@@ -21,7 +21,7 @@ class Notice(models.Model):
     notice_priority = models.CharField(
         max_length=6,
         choices=PRIORITY_CHOICES,
-        default='medium', 
+        default='Medium', 
     )
 
     class Meta:

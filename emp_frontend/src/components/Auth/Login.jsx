@@ -13,7 +13,7 @@ const Login = () => {
   useEffect(() => {
     const token = localStorage.getItem("access_token");
     if (token) {
-      navigate("/dashboard");
+      navigate("/");
     }
   }, []);
 
@@ -46,7 +46,7 @@ const Login = () => {
 
       if (response.data) {
         storeToken(response.data.token);
-        navigate("/dashboard");
+        navigate("/");
       }
     } catch (error) {
       console.error("Login error:", error);

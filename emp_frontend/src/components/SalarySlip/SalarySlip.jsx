@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import moment from "moment";
 import {
   Card,
@@ -14,12 +14,29 @@ import dayjs from "dayjs";
 import { useGenerateSalarySlipMutation } from "../../services/SalarySlip";
 import { useFetchEmployeeMutation } from "../../services/Employee";
 import { enqueueSnackbar } from "notistack";
+import { jwtDecode } from "jwt-decode";
+import { useNavigate, useNavigationType } from "react-router-dom";
 
 const SalarySlip = () => {
   const access_token = localStorage.getItem("access_token");
-  const refresh_token = localStorage.getItem("refresh_token");
+
+  const navigate = useNavigate();
 
   const preparedBy = localStorage.getItem("email");
+
+  const token = localStorage.getItem("access_token");
+  const decodedToken = jwtDecode(token);
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (decodedToken.is_admin) {
+      console.log(decodedToken);
+      setIsAdmin(true);
+    } else if (!decodedToken.is_admin) {
+      setIsAdmin(false);
+      navigate("/salarySlipView");
+    }
+  }, [decodedToken.is_admin, isAdmin, navigate]);
 
   const [employeeDetails, setEmployeeDetails] = useState({
     name: "",
@@ -188,29 +205,6 @@ const SalarySlip = () => {
           access_token,
         }).unwrap();
 
-        // If there's an error in the response, handle it
-        // if (response.error) {
-        //   console.log("Error response:", response.error);
-
-        //   const errors = response.error.data?.errors || {}; // Safely access errors
-        //   if (errors.non_field_errors) {
-        //     enqueueSnackbar(errors.non_field_errors[0], {
-        //       variant: "error",
-        //       autoHideDuration: 3000,
-        //     });
-        //   } else if (errors.detail) {
-        //     enqueueSnackbar(errors.detail, {
-        //       variant: "error",
-        //       autoHideDuration: 3000,
-        //     });
-        //   } else {
-        //     // Handle other errors or unknown error structure
-        //     setServerError(errors);
-        //   }
-        //   return; // Stop execution if error occurs
-        // }
-
-        // Set employee details from response if no error
         setEmployeeDetails({
           ...employeeDetails,
           name: response.name,
@@ -220,42 +214,29 @@ const SalarySlip = () => {
           basicSalary: response.salary,
         });
 
-        // setServerError("");
-
-        setHasFetchedData(true); // Set the flag to true after a successful request
+        setHasFetchedData(true);
       } catch (error) {
-        // If a network or other unexpected error occurs, handle it here
         console.log("Failed to fetch employee data:", error);
 
-        // if (error.data?.errors) {
-        //   const errors = error.data.errors;
-
-        // Display non-field errors using snackbar
         if (error.data.detail) {
           enqueueSnackbar(error.data.detail, {
             variant: "error",
             autoHideDuration: 3000,
           });
         } else if (errors.detail) {
-          // Display detail errors
           enqueueSnackbar(errors.detail, {
             variant: "error",
             autoHideDuration: 3000,
           });
         } else {
-          // Fallback for unknown error structure
           setServerError(errors);
         }
-        // } else {
-        //   // If error data is undefined or structure is unknown, set generic error
-        //   setServerError("An unexpected error occurred. Please try again.");
-        // }
       }
     }
   };
 
   return (
-    <div className="flex justify-center items-center mt-[-30px] min-h-screen bg-white p-8">
+    <div className="flex roboto-regular justify-center items-center mt-[-30px] min-h-screen bg-white p-8">
       {!isSlipGenerated ? (
         <Card
           sx={{ boxShadow: "0px 4px 10px rgba(128, 128, 128, 0.3)" }}
@@ -358,8 +339,6 @@ const SalarySlip = () => {
                         : null
                     }
                     onChange={handleDateChange}
-                    // error={serverError && !!serverError.dateOfJoining}
-                    // helperText={serverError && serverError.dateOfJoining}
                     className="w-full sm:w-auto sm:mb-0"
                   />
                 </Grid>

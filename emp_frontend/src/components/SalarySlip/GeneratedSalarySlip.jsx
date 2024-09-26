@@ -108,17 +108,6 @@ const GeneratedSalarySlip = ({
   };
 
   const handleDownloadClick = async () => {
-    // const salarySlip = {
-    //   salary_slip_number: "123456",
-    //   month: "September",
-    //   year: "2024",
-    //   basic_salary: "50000",
-    //   net_pay: "45000",
-    //   prepared_by: "John Doe",
-    //   approved_by: "Jane Smith",
-    //   deductions: "5000",
-    // };
-
     try {
       const blob = await pdf(
         <SalarySlipDocument salarySlip={employeeDetails} />
@@ -134,7 +123,7 @@ const GeneratedSalarySlip = ({
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-white p-4">
+    <div className="flex roboto-regular justify-center items-center h-screen bg-white p-4">
       <Card className="w-full max-w-2xl bg-white rounded-lg overflow-hidden">
         <CardContent>
           <h2 className="text-2xl font-semibold mb-6 text-primary_color text-center">

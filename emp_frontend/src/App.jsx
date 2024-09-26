@@ -34,6 +34,7 @@ function App() {
       if (token) {
         if (isTokenExpired(token)) {
           removeToken("access_token", "refresh_token");
+          localStorage.removeItem("username", "email");
           navigate("/login");
         }
       } else {

@@ -6,6 +6,7 @@ import { SalarySlip } from "..//services/SalarySlip";
 import { Employee } from "../services/Employee";
 import { Dashboard } from "../services/Dashboard";
 import { Attendance } from "../services/Attendance";
+import { Notice } from "../services/Notice";
 
 export const store = configureStore({
   reducer: {
@@ -15,6 +16,7 @@ export const store = configureStore({
     [Employee.reducerPath]: Employee.reducer,
     [Dashboard.reducerPath]: Dashboard.reducer,
     [Attendance.reducerPath]: Attendance.reducer,
+    [Notice.reducerPath]: Notice.reducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(
@@ -23,7 +25,8 @@ export const store = configureStore({
       SalarySlip.middleware,
       Employee.middleware,
       Dashboard.middleware,
-      Attendance.middleware
+      Attendance.middleware,
+      Notice.middleware
     ),
 });
 

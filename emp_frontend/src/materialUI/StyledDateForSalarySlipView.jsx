@@ -1,13 +1,13 @@
 import React from "react";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
-import dayjs from "dayjs"; // Import dayjs to get today's date
+import dayjs from "dayjs";
 
 export default function StyledDateForSalarySlipView({
   label,
   value,
   onChange,
-  views, // Accept views prop here
+  views,
   format,
 }) {
   return (
@@ -17,7 +17,7 @@ export default function StyledDateForSalarySlipView({
         value={value}
         onChange={onChange}
         maxDate={dayjs()}
-        views={views} // Apply views prop here
+        views={views}
         slotProps={{
           textField: {
             variant: "outlined",
@@ -52,5 +52,3 @@ export default function StyledDateForSalarySlipView({
     </LocalizationProvider>
   );
 }
-
-// export default StyledDateForSalarySlipView;

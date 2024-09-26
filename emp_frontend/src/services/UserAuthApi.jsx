@@ -85,6 +85,17 @@ export const UserAuthApi = createApi({
         },
       }),
     }),
+    verifyEmail: builder.mutation({
+      query: ({ uid, token }) => {
+        return {
+          url: `verify-email/${uid}/${token}/`,
+          method: "GET",
+          headers: {
+            "Content-type": "application/json",
+          },
+        };
+      },
+    }),
   }),
 });
 
@@ -96,4 +107,5 @@ export const {
   useChangepasswordMutation,
   useFetchprofileMutation,
   useUserLogoutMutation,
+  useVerifyEmailMutation,
 } = UserAuthApi;

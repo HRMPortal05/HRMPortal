@@ -52,8 +52,6 @@ const Sidebar = ({ isOpen }) => {
           removeToken("refresh_token");
           localStorage.removeItem("username");
           localStorage.removeItem("email");
-          localStorage.removeItem("mapbox.eventData.uuid:");
-          localStorage.removeItem("language");
           navigate("/login");
         } else {
           console.error("Logout error:", response.error);
@@ -63,6 +61,8 @@ const Sidebar = ({ isOpen }) => {
           console.log("Logout successful:", response.data.message);
           removeToken("access_token");
           removeToken("refresh_token");
+          localStorage.removeItem("username");
+          localStorage.removeItem("email");
           navigate("/login");
         } else {
           console.error("Unexpected response format:", response.data);
@@ -75,6 +75,8 @@ const Sidebar = ({ isOpen }) => {
 
   const isActiveLink = (path) => location.pathname.includes(path);
 
+  const isDashboardActive = location.pathname === "/";
+
   return (
     <div
       className={`fixed top-0 left-0 w-72 h-full bg-white overflow-auto shadow-md p-5 z-[999] transform ${
@@ -82,13 +84,9 @@ const Sidebar = ({ isOpen }) => {
       } transition-transform duration-300 md:translate-x-0`}
     >
       <ul className="list-none p-0 mt-24">
-        <li
-          className={`${
-            isActiveLink("dashboard") ? "bg-[#E8E8FF]" : ""
-          } rounded-md`}
-        >
+        <li className={`${isDashboardActive ? "bg-[#E8E8FF]" : ""} rounded-md`}>
           <Link
-            to="/dashboard"
+            to="/"
             className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
           >
             <RxDashboard className="mr-3 text-xl text-[#01008A]" /> Dashboard
@@ -121,15 +119,14 @@ const Sidebar = ({ isOpen }) => {
         </li>
         <li
           className={`${
-            isActiveLink("/accessAsset") ? "bg-[#E8E8FF]" : ""
+            isActiveLink("/library") ? "bg-[#E8E8FF]" : ""
           } rounded-md`}
         >
           <Link
-            to="/accessAsset"
+            to="/library"
             className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
           >
-            <LuFolderMinus className="mr-3 text-xl text-[#01008A]" />{" "}
-            Access/Asset
+            <LuFolderMinus className="mr-3 text-xl text-[#01008A]" /> Library
           </Link>
         </li>
         <li

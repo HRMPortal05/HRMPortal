@@ -19,6 +19,10 @@ import GoToLogin from "./components/Auth/GoToLogin.jsx";
 import Dashboard from "./components/Dashboard/Dashboard.jsx";
 import Calendar from "./components/Calender/Calender.jsx";
 import NoticeList from "./components/Notice/NoticeList.jsx";
+import Holiday from "./components/Holiday/Hoilday.jsx";
+import Library from "./components/Library/Library.jsx";
+import VerifyEmail from "./components/Auth/VerifyEmail.jsx";
+import EmployeeDetails from "./components/EmployeeDetail/EmployeeDetails.jsx";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +30,7 @@ const router = createBrowserRouter([
     element: <App />,
     children: [
       {
-        path: "dashboard",
+        path: "",
         element: <DashboardHeader />,
         children: [
           {
@@ -44,6 +48,22 @@ const router = createBrowserRouter([
         element: (
           <SnackbarProvider maxSnack={3}>
             <ApplyForLeave />
+          </SnackbarProvider>
+        ),
+      },
+      {
+        path: "library",
+        element: (
+          <SnackbarProvider maxSnack={3}>
+            <Library />
+          </SnackbarProvider>
+        ),
+      },
+      {
+        path: "holiday",
+        element: (
+          <SnackbarProvider maxSnack={3}>
+            <Holiday />
           </SnackbarProvider>
         ),
       },
@@ -72,6 +92,14 @@ const router = createBrowserRouter([
         ),
       },
       {
+        path: "employeeDetail",
+        element: (
+          <SnackbarProvider maxSnack={3}>
+            <EmployeeDetails />
+          </SnackbarProvider>
+        ),
+      },
+      {
         path: "calendar",
         element: (
           <SnackbarProvider maxSnack={3}>
@@ -86,6 +114,14 @@ const router = createBrowserRouter([
     element: (
       <SnackbarProvider maxSnack={3}>
         <Login />
+      </SnackbarProvider>
+    ),
+  },
+  {
+    path: "/verifyEmail/:uid/:token",
+    element: (
+      <SnackbarProvider maxSnack={3}>
+        <VerifyEmail />
       </SnackbarProvider>
     ),
   },

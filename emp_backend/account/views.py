@@ -1,4 +1,3 @@
-from django.utils import timezone
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
@@ -7,9 +6,18 @@ from django.contrib.auth import authenticate
 from account.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.permissions import IsAuthenticated
-from attendance.models import Attendance
-
+from django.utils.http import urlsafe_base64_encode
+from django.contrib.auth.tokens import default_token_generator
+from django.utils.encoding import smart_bytes
+from django.contrib.auth import logout
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import User
+from django.template.loader import render_to_string
+from django.utils.html import strip_tags
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.http import urlsafe_base64_decode
+from django.utils.translation import gettext as _
 
 # Generate Token Manually
 def get_tokens_for_user(user):
@@ -24,13 +32,57 @@ def get_tokens_for_user(user):
     }
 
 class UserRegistrationView(APIView):
-  renderer_classes = [UserRenderer]
-  def post(self, request, format=None):
-    serializer = UserRegistrationSerializer(data=request.data)
-    serializer.is_valid(raise_exception=True)
-    user = serializer.save()
-    token = get_tokens_for_user(user)
-    return Response({'token':token, 'msg':'Registration Successful'}, status=status.HTTP_201_CREATED)
+    renderer_classes = [UserRenderer]
+
+    def post(self, request, format=None):
+        serializer = UserRegistrationSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        user = serializer.save()
+        
+        uid = urlsafe_base64_encode(smart_bytes(user.id))
+        token = default_token_generator.make_token(user)
+        
+        verification_link = f'http://127.0.0.1:5173/verifyEmail/{uid}/{token}'
+        
+        context = {
+            'verification_link': verification_link,
+            'user': user,
+        }
+        
+        html_message = render_to_string('VerifyEmail.html', context)
+        plain_message = strip_tags(html_message)
+        
+        subject = 'Verify Your Email'
+        from_email = settings.EMAIL_HOST_USER
+        to_email = user.email
+
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+        )
+        
+        return Response({'msg': 'Registration successful. Please check your email for verification.'}, status=status.HTTP_201_CREATED)
+    
+class VerifyEmailView(APIView):
+    def get(self, request, uidb64, token, format=None):
+        try:
+            user_id = urlsafe_base64_decode(uidb64).decode()
+            user = User.objects.get(id=user_id)
+
+            if default_token_generator.check_token(user, token):
+                if not user.is_active:
+                    user.is_active = True
+                    user.save()
+                    return Response({'msg': 'Email verified successfully'}, status=status.HTTP_200_OK)
+                else:
+                    return Response({'msg': 'Email already verified'}, status=status.HTTP_400_BAD_REQUEST)
+            else:
+                return Response({'msg': 'Invalid token'}, status=status.HTTP_400_BAD_REQUEST)
+        except (User.DoesNotExist, ValueError, TypeError):
+            return Response({'msg': 'Invalid link or user does not exist'}, status=status.HTTP_400_BAD_REQUEST)
 
 class UserLoginView(APIView):
     renderer_classes = [UserRenderer]
@@ -91,25 +143,6 @@ class UserPasswordResetView(APIView):
     serializer = UserPasswordResetSerializer(data=request.data, context={'uid':uid, 'token':token})
     serializer.is_valid(raise_exception=True)
     return Response({'msg':'Password Reset Successfully'}, status=status.HTTP_200_OK)
-
-# class LogoutView(APIView):
-#     def post(self, request, format=None):
-#         try:
-#             # Extract the token from the request
-#             refresh_token = request.data.get('refresh')
-#             if not refresh_token:
-#                 return Response({'detail': 'Refresh token is required.'}, status=status.HTTP_400_BAD_REQUEST)
-
-#             # Decode and blacklist the refresh token
-#             token = RefreshToken(refresh_token)
-#             token.blacklist()  # Requires `django-rest-framework-simplejwt` with blacklist support
-            
-#             return Response({'detail': 'Logout successful.'}, status=status.HTTP_205_RESET_CONTENT)
-#         except Exception as e:
-#             return Response({'detail': str(e)}, status=status.HTTP_400_BAD_REQUEST)
-          
-from django.contrib.auth import logout
-from rest_framework_simplejwt.tokens import RefreshToken
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated,)

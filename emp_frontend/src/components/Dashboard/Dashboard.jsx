@@ -369,7 +369,7 @@ const Dashboard = () => {
   const attendedDays = attendanceData ? attendanceData.present_days : 0;
 
   return (
-    <div className="flex flex-col md:flex-row gap-4 min-h-screen w-full p-4 my-4 border-2 rounded-lg border-elight_primary">
+    <div className="flex roboto-regular flex-col md:flex-row gap-4 min-h-screen w-full p-4 my-4 border-2 rounded-lg border-elight_primary">
       {/* Left Column */}
       <div className="flex flex-col gap-4 w-full md:w-1/2">
         {/* Top Section (Tall) - Performance Overview */}

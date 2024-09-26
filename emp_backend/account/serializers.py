@@ -3,29 +3,41 @@ from account.models import User
 from django.utils.encoding import smart_str, force_bytes, DjangoUnicodeDecodeError
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.tokens import PasswordResetTokenGenerator
-from account.utils import Util
 from django.contrib.auth.hashers import check_password
+from django.core.validators import validate_email
+from django.core.exceptions import ValidationError
+from django.template.loader import render_to_string
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.html import strip_tags
 
 class UserRegistrationSerializer(serializers.ModelSerializer):
-  # We are writing this becoz we need confirm password field in our Registratin Request
-  password2 = serializers.CharField(style={'input_type':'password'}, write_only=True)
-  class Meta:
-    model = User
-    fields=['email', 'username', 'password', 'password2']
-    extra_kwargs={
-      'password':{'write_only':True}
-    }
+    password2 = serializers.CharField(style={'input_type': 'password'}, write_only=True)
+    
+    class Meta:
+        model = User
+        fields = ['email', 'username', 'password', 'password2']
+        extra_kwargs = {
+            'password': {'write_only': True}
+        }
 
-  # Validating Password and Confirm Password while Registration
-  def validate(self, attrs):
-    password = attrs.get('password')
-    password2 = attrs.get('password2')
-    if password != password2:
-      raise serializers.ValidationError("Password and Confirm Password doesn't match")
-    return attrs
+    def validate_email(self, value):
+        try:
+            validate_email(value)
+        except ValidationError:
+            raise serializers.ValidationError("Enter a valid email address")
+        return value
 
-  def create(self, validate_data):
-    return User.objects.create_user(**validate_data)
+    def validate(self, attrs):
+        password = attrs.get('password')
+        password2 = attrs.get('password2')
+        if password != password2:
+            raise serializers.ValidationError("Passwords don't match")
+        return attrs
+
+    def create(self, validated_data):
+        validated_data.pop('password2', None)
+        return User.objects.create_user(**validated_data)
 
 class UserLoginSerializer(serializers.ModelSerializer):
   email = serializers.EmailField(max_length=255)
@@ -68,21 +80,36 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
   def validate(self, attrs):
     email = attrs.get('email')
     if User.objects.filter(email=email).exists():
-      user = User.objects.get(email = email)
-      uid = urlsafe_base64_encode(force_bytes(user.id))
-      token = PasswordResetTokenGenerator().make_token(user)
-      link = 'http://localhost:5173/resetPassword/'+uid+'/'+token
-      # Send EMail
-      body = 'Click Following Link to Reset Your Password '+link
-      data = {
-        'subject':'Reset Your Password',
-        'body':body,
-        'to_email':user.email
-      }
-      Util.send_email(data)
-      return attrs
+        user = User.objects.get(email=email)
+        uid = urlsafe_base64_encode(force_bytes(user.id))
+        token = PasswordResetTokenGenerator().make_token(user)
+        reset_link = f'http://127.0.0.1:5173/resetPassword/{uid}/{token}'
+        
+        # Render email template
+        context = {
+            'reset_link': reset_link,
+            'user': user,
+        }
+        html_message = render_to_string('ResetPassword.html', context)
+        plain_message = strip_tags(html_message)
+        
+        subject = 'Reset Your Password'
+        from_email = settings.DEFAULT_FROM_EMAIL
+        to_email = user.email
+
+        # Send email using Django's send_mail function
+        send_mail(
+            subject,
+            plain_message,
+            from_email,
+            [to_email],
+            html_message=html_message,
+            fail_silently=False,
+        )
+        
+        return attrs
     else:
-      raise serializers.ValidationError('You are not a Registered User')
+        raise serializers.ValidationError("You are not a registered user")
 
 class UserPasswordResetSerializer(serializers.Serializer):
   password = serializers.CharField(max_length=255, style={'input_type':'password'}, write_only=True)

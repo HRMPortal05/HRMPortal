@@ -40,7 +40,7 @@ const FOFPage = () => {
 
       {/* Button positioned at the bottom-center */}
       <Link
-        to="/dashboard"
+        to="/"
         className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
       >
         <button className="px-10 py-3 font-metrophobic bg-form_base mb-20 text-white text-lg rounded-lg hover:bg-teal-700">
