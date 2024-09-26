@@ -23,6 +23,7 @@ import Holiday from "./components/Holiday/Hoilday.jsx";
 import Library from "./components/Library/Library.jsx";
 import VerifyEmail from "./components/Auth/VerifyEmail.jsx";
 import EmployeeDetails from "./components/EmployeeDetail/EmployeeDetails.jsx";
+import { Attendance } from "./services/Attendance.jsx";
 
 const router = createBrowserRouter([
   {
@@ -104,6 +105,14 @@ const router = createBrowserRouter([
         element: (
           <SnackbarProvider maxSnack={3}>
             <Calendar />
+          </SnackbarProvider>
+        ),
+      },
+      {
+        path: "attendance",
+        element: (
+          <SnackbarProvider maxSnack={3}>
+            <Attendance />
           </SnackbarProvider>
         ),
       },
