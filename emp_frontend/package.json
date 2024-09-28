@@ -25,6 +25,7 @@
     "date-holidays": "^3.23.12",
     "dayjs": "^1.11.12",
     "emp_frontend": "file:",
+    "firebase": "^10.13.2",
     "html2canvas": "^1.4.1",
     "jspdf": "^2.5.1",
     "jwt-decode": "^4.0.0",
