@@ -15,6 +15,7 @@ import jsPDF from "jspdf";
 import StyledDateForSalarySlipView from "../../materialUI/StyledDateForSalarySlipView";
 import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { FaFileAlt } from "react-icons/fa";
 
 const ROWS_PER_PAGE = 7;
 
@@ -176,6 +177,10 @@ const SalarySlipView = () => {
 
   return (
     <div className="md:ml-5 my-10 roboto-regular roboto-regular max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl overflow-hidden">
+      <h2 className="text-3xl sm:text-4xl font-bold text-primary_color flex items-center mb-5">
+        <FaFileAlt className="mr-2 text-form_base" size={28} />
+        Salary Slips
+      </h2>
       <div className="flex flex-col items-center w-full mb-3">
         <div className="flex flex-col sm:flex-row justify-between items-center sm:text-base w-full space-y-4 mt-1.5 sm:space-y-0 sm:space-x-4">
           <StyledDateForSalarySlipView

@@ -22,6 +22,7 @@ import { SnackbarProvider, useSnackbar } from "notistack";
 import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
 import Row from "./Row";
+import { FaRegCalendarAlt } from "react-icons/fa";
 
 const ROWS_PER_PAGE = 7;
 
@@ -244,7 +245,11 @@ const ApplyForLeave = () => {
   return (
     <div className="md:ml-5 my-10 roboto-regular max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl overflow-hidden">
       <div className="flex flex-col items-center w-full mb-3">
-        <div className="flex justify-center md:justify-end lg:justify-end w-full mb-6">
+        <div className="flex justify-center md:justify-end lg:justify-between w-full mb-6">
+          <h2 className="text-3xl sm:text-4xl font-bold text-primary_color flex items-center">
+            <FaRegCalendarAlt className="mr-2 text-form_base" size={28} />
+            Apply For Leave
+          </h2>
           <button
             onClick={handleOpenModal}
             className="bg-primary_color text-white h-[35px] px-4 sm:px-7 rounded-md sm:text-base"
