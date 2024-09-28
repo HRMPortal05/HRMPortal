@@ -40,3 +40,5 @@ class NoticeListCreateView(APIView):
             notice.delete()
             return Response({'message': 'Notice deleted successfully.'}, status=status.HTTP_200_OK)
         return Response({'error': 'Notice not found.'}, status=status.HTTP_400_BAD_REQUEST)
+    
+    # 
