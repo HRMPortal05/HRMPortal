@@ -1,10 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
   Table,
   TableBody,
   TableCell,
@@ -23,18 +19,15 @@ import {
   useFetchAllEmployeesMutation,
   useUpdateEmployeeMutation,
 } from "../../services/Employee";
+import { useRegisterUserMutation } from "../../services/UserAuthApi";
 import { enqueueSnackbar } from "notistack";
 import dayjs from "dayjs";
-import { useRegisterUserMutation } from "../../services/UserAuthApi";
 import Row from "./Row";
 import { FaUserTie } from "react-icons/fa";
 
 const CustomInput = ({ label, name, value, onChange, type = "text" }) => (
   <div className="mb-4">
-    <label
-      className="block text-gray-700 text-sm font-bold mb-2"
-      htmlFor={name}
-    >
+    <label className="block text-gray-700 text-md mb-1" htmlFor={name}>
       {label}
     </label>
     <input
@@ -48,25 +41,157 @@ const CustomInput = ({ label, name, value, onChange, type = "text" }) => (
   </div>
 );
 
-const EmployeeDetails = () => {
-  const [employees, setEmployees] = useState([]);
-  const [isEditOpen, setIsEditOpen] = useState(false);
-  const [isRegisterOpen, setIsRegisterOpen] = useState(false);
-  const [currentEmployee, setCurrentEmployee] = useState(null);
-  const [employeeData, setEmployeeData] = useState({
-    first_name: "",
-    last_name: "",
-    personal_mailid: "",
-    working_designation: "",
-    department: "",
-    salary: "",
-    phone_number: "",
-    working_emailid: "",
-    emp_id: "",
-    date_of_birth: null,
-    date_of_joining: null,
-    address: "",
-  });
+const CustomForm = ({ title, children, onClose, onSubmit, submitText }) => (
+  <div className="fixed roboto-regular inset-0 bg-black bg-opacity-50 flex justify-center items-center z-[1000]">
+    <div className="bg-white rounded-lg p-8 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <h2 className="text-2xl font-bold mb-6 text-primary_color text-center">
+        {title}
+      </h2>
+      <form onSubmit={onSubmit}>
+        {children}
+        <div className="flex justify-end mt-6 space-x-4">
+          <Button onClick={onClose} color="primary" variant="outlined">
+            Cancel
+          </Button>
+          <Button type="submit" color="primary" variant="contained">
+            {submitText}
+          </Button>
+        </div>
+      </form>
+    </div>
+  </div>
+);
+
+const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
+  const [employeeData, setEmployeeData] = useState(
+    employee || {
+      first_name: "",
+      last_name: "",
+      personal_mailid: "",
+      working_designation: "",
+      department: "",
+      salary: "",
+      phone_number: "",
+      working_emailid: "",
+      emp_id: "",
+      date_of_birth: null,
+      date_of_joining: null,
+      address: "",
+    }
+  );
+
+  const handleInputChange = (e) => {
+    setEmployeeData({ ...employeeData, [e.target.name]: e.target.value });
+  };
+
+  const handleDateChange = (name, date) => {
+    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : null;
+    setEmployeeData((prevDetails) => ({
+      ...prevDetails,
+      [name]: formattedDate,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(employeeData);
+  };
+
+  if (!open) return null;
+
+  return (
+    <CustomForm
+      title={employee ? "Edit Employee" : "Add New Employee"}
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      submitText={employee ? "Update Employee" : "Add Employee"}
+    >
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <CustomInput
+          label="First Name"
+          name="first_name"
+          value={employeeData.first_name}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Last Name"
+          name="last_name"
+          value={employeeData.last_name}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Personal Email ID"
+          name="personal_mailid"
+          value={employeeData.personal_mailid}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Work Email ID"
+          name="working_emailid"
+          value={employeeData.working_emailid}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Work Designation"
+          name="working_designation"
+          value={employeeData.working_designation}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Department"
+          name="department"
+          value={employeeData.department}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Salary"
+          name="salary"
+          type="number"
+          value={employeeData.salary}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Phone Number"
+          name="phone_number"
+          value={employeeData.phone_number}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Employee ID"
+          name="emp_id"
+          value={employeeData.emp_id}
+          onChange={handleInputChange}
+        />
+        <CustomInput
+          label="Address"
+          name="address"
+          value={employeeData.address}
+          onChange={handleInputChange}
+        />
+        <div>
+          <label className="block roboto-regular text-gray-700 text-md mb-2">
+            Date of Birth
+          </label>
+          <StyledDateForEmployee
+            value={employeeData.date_of_birth}
+            onChange={(date) => handleDateChange("date_of_birth", date)}
+          />
+        </div>
+        <div>
+          <label className="block roboto-regular text-gray-700 text-md mb-2">
+            Date of Joining
+          </label>
+          <StyledDateForEmployee
+            value={employeeData.date_of_joining}
+            onChange={(date) => handleDateChange("date_of_joining", date)}
+          />
+        </div>
+      </div>
+    </CustomForm>
+  );
+};
+
+const RegisterFormModal = ({ open, onClose, onSubmit }) => {
   const [registerData, setRegisterData] = useState({
     email: "",
     username: "",
@@ -74,7 +199,65 @@ const EmployeeDetails = () => {
     password2: "",
   });
 
+  const handleInputChange = (e) => {
+    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    onSubmit(registerData);
+  };
+
+  if (!open) return null;
+
+  return (
+    <CustomForm
+      title="Register New User"
+      onClose={onClose}
+      onSubmit={handleSubmit}
+      submitText="Register"
+    >
+      <CustomInput
+        label="Email"
+        name="email"
+        type="email"
+        value={registerData.email}
+        onChange={handleInputChange}
+      />
+      <CustomInput
+        label="Username"
+        name="username"
+        value={registerData.username}
+        onChange={handleInputChange}
+      />
+      <CustomInput
+        label="Password"
+        name="password"
+        type="password"
+        value={registerData.password}
+        onChange={handleInputChange}
+      />
+      <CustomInput
+        label="Confirm Password"
+        name="password2"
+        type="password"
+        value={registerData.password2}
+        onChange={handleInputChange}
+      />
+    </CustomForm>
+  );
+};
+
+const EmployeeDetails = () => {
+  const [employees, setEmployees] = useState([]);
+  const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
+  const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
+  const [currentEmployee, setCurrentEmployee] = useState(null);
+
   const [fetchAllEmployees] = useFetchAllEmployeesMutation();
+  const [addEmployee] = useAddEmployeeMutation();
+  const [updateEmployee] = useUpdateEmployeeMutation();
+  const [registerUser] = useRegisterUserMutation();
   const access_token = localStorage.getItem("access_token");
 
   const handleFetchEmployees = async () => {
@@ -90,28 +273,7 @@ const EmployeeDetails = () => {
     handleFetchEmployees();
   }, []);
 
-  const handleEmployeeInputChange = (e) => {
-    setEmployeeData({ ...employeeData, [e.target.name]: e.target.value });
-  };
-
-  const handleRegisterInputChange = (e) => {
-    setRegisterData({ ...registerData, [e.target.name]: e.target.value });
-  };
-
-  const handleDateChange = (name, date) => {
-    const formattedDate = date ? dayjs(date).format("YYYY-MM-DD") : null;
-    setEmployeeData((prevDetails) => ({
-      ...prevDetails,
-      [name]: formattedDate,
-    }));
-  };
-
-  const [addEmployee] = useAddEmployeeMutation();
-  const [updateEmployee] = useUpdateEmployeeMutation();
-
-  const handleEmployeeSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleEmployeeSubmit = async (employeeData) => {
     try {
       if (currentEmployee) {
         await updateEmployee({
@@ -133,7 +295,7 @@ const EmployeeDetails = () => {
           autoHideDuration: 3000,
         });
       }
-      setIsEditOpen(false);
+      setIsEmployeeModalOpen(false);
       handleFetchEmployees();
     } catch (error) {
       enqueueSnackbar("Failed to save employee details", {
@@ -143,18 +305,14 @@ const EmployeeDetails = () => {
     }
   };
 
-  const [registerUser, { isLoading }] = useRegisterUserMutation();
-
-  const handleRegisterSubmit = async (e) => {
-    e.preventDefault();
-
+  const handleRegisterSubmit = async (registerData) => {
     try {
       const response = await registerUser(registerData).unwrap();
       enqueueSnackbar(response.msg || "User registered successfully!", {
         variant: "success",
         autoHideDuration: 3000,
       });
-      setIsRegisterOpen(false);
+      setIsRegisterModalOpen(false);
     } catch (error) {
       enqueueSnackbar("Failed to register user", {
         variant: "error",
@@ -165,8 +323,7 @@ const EmployeeDetails = () => {
 
   const openEditForm = (employee) => {
     setCurrentEmployee(employee);
-    setEmployeeData(employee);
-    setIsEditOpen(true);
+    setIsEmployeeModalOpen(true);
   };
 
   const theme = useTheme();
@@ -174,7 +331,7 @@ const EmployeeDetails = () => {
 
   return (
     <LocalizationProvider dateAdapter={AdapterDateFns}>
-      <div className="min-h-screen mt-8 md:pl-5 lg:pl-5">
+      <div className="min-h-fit mt-8 md:pl-5 lg:pl-5 roboto-regular">
         <h2 className="text-3xl sm:text-4xl font-bold text-primary_color flex items-center mb-6">
           <FaUserTie className="mr-2 text-form_base" size={28} />
           Employee Details
@@ -184,35 +341,19 @@ const EmployeeDetails = () => {
           <Button
             onClick={() => {
               setCurrentEmployee(null);
-              setEmployeeData({
-                first_name: "",
-                last_name: "",
-                personal_mailid: "",
-                working_designation: "",
-                department: "",
-                salary: "",
-                phone_number: "",
-                working_emailid: "",
-                emp_id: "",
-                date_of_birth: null,
-                date_of_joining: null,
-                address: "",
-              });
-              setIsEditOpen(true);
+              setIsEmployeeModalOpen(true);
             }}
             variant="contained"
-            className="bg-light_primary hover:bg-blue-900 w-full sm:w-auto"
             sx={{ background: "#00A189" }}
           >
             Add New Employee
           </Button>
           <Button
-            onClick={() => setIsRegisterOpen(true)}
+            onClick={() => setIsRegisterModalOpen(true)}
             variant="contained"
-            className="w-full sm:w-auto"
             sx={{ background: "#00A189" }}
           >
-            Register
+            Register New User
           </Button>
         </div>
 
@@ -227,28 +368,64 @@ const EmployeeDetails = () => {
                 <TableCell />
                 {!isMobile && (
                   <>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                      }}
+                    >
                       Employee ID
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                      }}
+                    >
                       Name
                     </TableCell>
                   </>
                 )}
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  sx={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "1.1rem",
+                  }}
+                >
                   Work Email
                 </TableCell>
                 {!isMobile && (
                   <>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                      }}
+                    >
                       Department
                     </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                    <TableCell
+                      sx={{
+                        color: "white",
+                        fontWeight: "bold",
+                        fontSize: "1.1rem",
+                      }}
+                    >
                       Designation
                     </TableCell>
                   </>
                 )}
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                <TableCell
+                  sx={{
+                    color: "white",
+                    fontWeight: "bold",
+                    fontSize: "1.1rem",
+                  }}
+                >
                   Actions
                 </TableCell>
               </TableRow>
@@ -266,179 +443,18 @@ const EmployeeDetails = () => {
           </Table>
         </TableContainer>
 
-        {/* Employee Details Dialog */}
-        <Dialog
-          open={isEditOpen}
-          onClose={() => setIsEditOpen(false)}
-          maxWidth="md"
-          fullWidth
-          fullScreen={isMobile} // Only fullscreen for mobile
-        >
-          <DialogTitle className="bg-blue-800 text-white">
-            {currentEmployee ? "Edit Employee Details" : "Add New Employee"}
-          </DialogTitle>
-          <DialogContent>
-            <form onSubmit={handleEmployeeSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <CustomInput
-                  label="First Name"
-                  name="first_name"
-                  value={employeeData.first_name}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Last Name"
-                  name="last_name"
-                  value={employeeData.last_name}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Personal Email ID"
-                  name="personal_mailid"
-                  value={employeeData.personal_mailid}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Work Designation"
-                  name="working_designation"
-                  value={employeeData.working_designation}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Department"
-                  name="department"
-                  value={employeeData.department}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Salary"
-                  name="salary"
-                  type="number"
-                  value={employeeData.salary}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Phone Number"
-                  name="phone_number"
-                  value={employeeData.phone_number}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Work Email ID"
-                  name="working_emailid"
-                  value={employeeData.working_emailid}
-                  onChange={handleEmployeeInputChange}
-                />
-                <CustomInput
-                  label="Employee ID"
-                  name="emp_id"
-                  value={employeeData.emp_id}
-                  onChange={handleEmployeeInputChange}
-                />
-                <div className="mb-4">
-                  <StyledDateForEmployee
-                    label="Date of Birth"
-                    name="date_of_birth"
-                    value={employeeData.date_of_birth}
-                    onChange={(date) => handleDateChange("date_of_birth", date)}
-                  />
-                </div>
-                <div className="mb-4">
-                  <StyledDateForEmployee
-                    label="Date of Joining"
-                    name="date_of_joining"
-                    value={employeeData.date_of_joining}
-                    onChange={(date) =>
-                      handleDateChange("date_of_joining", date)
-                    }
-                  />
-                </div>
-              </div>
+        <EmployeeFormModal
+          open={isEmployeeModalOpen}
+          onClose={() => setIsEmployeeModalOpen(false)}
+          employee={currentEmployee}
+          onSubmit={handleEmployeeSubmit}
+        />
 
-              <div className="mb-4">
-                <label
-                  className="block text-gray-700 text-sm font-bold mb-2"
-                  htmlFor="address"
-                >
-                  Address
-                </label>
-                <textarea
-                  id="address"
-                  name="address"
-                  rows="3"
-                  value={employeeData.address}
-                  onChange={handleEmployeeInputChange}
-                  className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-                />
-              </div>
-            </form>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsEditOpen(false)}>Cancel</Button>
-            <Button
-              onClick={handleEmployeeSubmit}
-              variant="contained"
-              className="bg-blue-800 hover:bg-blue-900"
-            >
-              {currentEmployee ? "Save Changes" : "Add Employee"}
-            </Button>
-          </DialogActions>
-        </Dialog>
-
-        {/* User Registration Dialog */}
-        <Dialog
-          open={isRegisterOpen}
-          onClose={() => setIsRegisterOpen(false)}
-          maxWidth="md"
-          fullWidth
-          fullScreen={isMobile}
-        >
-          <DialogTitle className="bg-green-600 text-white">
-            Register New User
-          </DialogTitle>
-          <DialogContent>
-            <form onSubmit={handleRegisterSubmit}>
-              <div className="space-y-4">
-                <CustomInput
-                  label="Email"
-                  name="email"
-                  value={registerData.email}
-                  onChange={handleRegisterInputChange}
-                />
-                <CustomInput
-                  label="Username"
-                  name="username"
-                  value={registerData.username}
-                  onChange={handleRegisterInputChange}
-                />
-                <CustomInput
-                  label="Password"
-                  name="password"
-                  type="password"
-                  value={registerData.password}
-                  onChange={handleRegisterInputChange}
-                />
-                <CustomInput
-                  label="Confirm Password"
-                  name="password2"
-                  type="password"
-                  value={registerData.password2}
-                  onChange={handleRegisterInputChange}
-                />
-              </div>
-            </form>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsRegisterOpen(false)}>Cancel</Button>
-            <Button
-              onClick={handleRegisterSubmit}
-              variant="contained"
-              className="bg-green-600 hover:bg-green-700"
-            >
-              Register
-            </Button>
-          </DialogActions>
-        </Dialog>
+        <RegisterFormModal
+          open={isRegisterModalOpen}
+          onClose={() => setIsRegisterModalOpen(false)}
+          onSubmit={handleRegisterSubmit}
+        />
       </div>
     </LocalizationProvider>
   );
