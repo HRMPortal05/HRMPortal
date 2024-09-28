@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { removeToken } from "../services/LocalStorageServices";
 import { useUserLogoutMutation } from "../services/UserAuthApi";
@@ -17,19 +17,24 @@ import { enqueueSnackbar } from "notistack";
 const Sidebar = ({ isOpen }) => {
   const [userLogout] = useUserLogoutMutation();
   const navigate = useNavigate();
-  const location = useLocation(); // Get current URL
+  const location = useLocation();
 
   const accessToken = localStorage.getItem("access_token");
   const refreshToken = localStorage.getItem("refresh_token");
 
-  const decodedToken = jwtDecode(accessToken);
   const [isAdmin, setIsAdmin] = useState(false);
 
-  if (decodedToken.is_admin && !isAdmin) {
-    setIsAdmin(true);
-  } else if (!decodedToken.is_admin && isAdmin) {
-    setIsAdmin(false);
-  }
+  useEffect(() => {
+    if (accessToken) {
+      try {
+        const decodedToken = jwtDecode(accessToken);
+        setIsAdmin(decodedToken.is_admin);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+        // Handle token decoding error (e.g., invalid token)
+      }
+    }
+  }, [accessToken]);
 
   const handleLogout = async () => {
     if (!refreshToken) {
@@ -57,19 +62,15 @@ const Sidebar = ({ isOpen }) => {
           console.error("Logout error:", response.error);
         }
       } else {
-        if (response.data) {
-          enqueueSnackbar("Logout successful", {
-            variant: "success",
-            autoHideDuration: 3000,
-          });
-          removeToken("access_token");
-          removeToken("refresh_token");
-          localStorage.removeItem("username");
-          localStorage.removeItem("email");
-          navigate("/login");
-        } else {
-          console.error("Unexpected response format:", response.data);
-        }
+        enqueueSnackbar("Logout successful", {
+          variant: "success",
+          autoHideDuration: 3000,
+        });
+        removeToken("access_token");
+        removeToken("refresh_token");
+        localStorage.removeItem("username");
+        localStorage.removeItem("email");
+        navigate("/login");
       }
     } catch (error) {
       console.error("Logout request failed:", error);
@@ -77,7 +78,6 @@ const Sidebar = ({ isOpen }) => {
   };
 
   const isActiveLink = (path) => location.pathname.includes(path);
-
   const isDashboardActive = location.pathname === "/";
 
   return (

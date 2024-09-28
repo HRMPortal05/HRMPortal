@@ -21,7 +21,7 @@ class AttendanceCountAPIView(APIView):
         current_date = now()
 
         attendance_records = Attendance.objects.filter(
-            user=user,
+            employee__user=user,
             created_date__year=current_date.year,
             created_date__month=current_date.month
         )

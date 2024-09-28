@@ -326,7 +326,7 @@ const ApplyForLeave = () => {
         )}
       </div>
       {row && (
-        <div className="mt-5 max-w-[360px] md:max-w-screen-md lg:max-w-screen-xl overflow-x-hidden">
+        <div className="mt-5 max-w-[320px] md:max-w-screen-md lg:max-w-screen-xl overflow-x-hidden">
           <TableContainer
             component={Paper}
             className="overflow-x-auto mt-4 custom-scrollbar"

@@ -19,9 +19,6 @@ class EmployeeDetails(models.Model):
     address = models.TextField(blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    # def __str__(self):
-    #     return f"{self.first_name} {self.last_name}"
     
     def __str__(self):
         if hasattr(self, 'use_email') and self.use_email:
