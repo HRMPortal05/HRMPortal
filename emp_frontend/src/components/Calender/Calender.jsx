@@ -3,8 +3,8 @@ import dayjs from "dayjs";
 import { useFetchAttendanceMutation } from "../../services/Attendance";
 
 const Calendar = () => {
-  const currentYear = new Date().getFullYear();
   const currentDate = new Date();
+  const currentYear = currentDate.getFullYear();
   const [daysInMonth, setDaysInMonth] = useState([]);
   const [monthName, setMonthName] = useState("");
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
@@ -31,40 +31,28 @@ const Calendar = () => {
   const generateCalendar = (year, month) => {
     const monthStart = new Date(year, month, 1);
     const monthEnd = new Date(year, month + 1, 0);
-    const days = [];
     const startDay = monthStart.getDay();
     const totalDays = monthEnd.getDate();
-    for (let i = 0; i < startDay; i++) {
-      days.push(null);
-    }
-    for (let day = 1; day <= totalDays; day++) {
-      days.push(new Date(year, month, day));
-    }
+
+    const days = [
+      ...Array(startDay).fill(null),
+      ...Array.from(
+        { length: totalDays },
+        (_, i) => new Date(year, month, i + 1)
+      ),
+    ];
+
     setDaysInMonth(days);
     setMonthName(dayjs(monthStart).format("MMMM YYYY"));
   };
 
-  const handleMonthChange = (e) => {
-    setSelectedMonth(Number(e.target.value));
-  };
+  const handleMonthChange = (e) => setSelectedMonth(Number(e.target.value));
+  const handleYearChange = (e) => setSelectedYear(Number(e.target.value));
 
-  const handleYearChange = (e) => {
-    setSelectedYear(Number(e.target.value));
-  };
-
-  const isToday = (date) => {
-    const today = new Date();
-    return (
-      date &&
-      date.getDate() === today.getDate() &&
-      date.getMonth() === today.getMonth() &&
-      date.getFullYear() === today.getFullYear()
-    );
-  };
+  const isToday = (date) => date && dayjs(date).isSame(dayjs(), "day");
 
   const getAttendanceStatus = (date) => {
     if (!date) return null;
-
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
     const attendance = attendanceData.find((att) =>
       dayjs(att.created_date).isSame(formattedDate, "day")
@@ -73,22 +61,39 @@ const Calendar = () => {
   };
 
   const years = Array.from({ length: 10 }, (_, i) => currentYear - 5 + i);
-  const months = Array.from({ length: 12 }, (_, i) =>
-    dayjs().month(i).format("MMMM")
-  );
+  const months = Array.from({ length: 12 }, (_, i) => ({
+    value: i,
+    label: dayjs().month(i).format("MMMM"),
+  }));
+
+  const weekdays = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+
+  const getDayClass = (date, attendanceStatus) => {
+    const baseClass =
+      "relative aspect-square flex items-center justify-center border rounded-lg text-xs sm:text-base";
+    const isPast = date && date < currentDate;
+
+    if (attendanceStatus === "present")
+      return `${baseClass} bg-green-500 text-white`;
+    if (attendanceStatus === "absent")
+      return `${baseClass} bg-red-500 text-white`;
+    if (isToday(date))
+      return `${baseClass} bg-primary_color text-white shadow-lg border-light_primary`;
+    if (isPast) return `${baseClass} bg-elight_primary text-primary_color`;
+    return `${baseClass} bg-white text-light_primary`;
+  };
 
   return (
     <div className="max-w-full sm:max-w-3xl mx-auto mt-4 sm:mt-10 p-2 sm:p-6 bg-white shadow-lg rounded-lg">
-      {/* Month and Year Selection */}
       <div className="flex flex-col sm:flex-row justify-between items-center mb-4 space-y-2 sm:space-y-0">
         <select
           value={selectedMonth}
           onChange={handleMonthChange}
           className="w-full sm:w-auto p-2 text-base sm:text-lg bg-elight_primary text-primary_color rounded-md focus:outline-none"
         >
-          {months.map((month, index) => (
-            <option key={index} value={index}>
-              {month}
+          {months.map(({ value, label }) => (
+            <option key={value} value={value}>
+              {label}
             </option>
           ))}
         </select>
@@ -107,9 +112,8 @@ const Calendar = () => {
           ))}
         </select>
       </div>
-      {/* Weekdays */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2 text-center font-semibold mb-2">
-        {["S", "M", "T", "W", "T", "F", "S"].map((day) => (
+        {weekdays.map((day) => (
           <div
             key={day}
             className="uppercase text-light_primary text-xs sm:text-sm"
@@ -118,30 +122,14 @@ const Calendar = () => {
           </div>
         ))}
       </div>
-      {/* Days */}
       <div className="grid grid-cols-7 gap-1 sm:gap-2">
         {daysInMonth.map((date, index) => {
           const attendanceStatus = getAttendanceStatus(date);
-          const isPast = date && date < currentDate;
-
           return (
-            <div
-              key={index}
-              className={`relative aspect-square flex items-center justify-center border rounded-lg text-xs sm:text-base ${
-                attendanceStatus === "present"
-                  ? "bg-green-500 text-white"
-                  : attendanceStatus === "absent"
-                  ? "bg-red-500 text-white"
-                  : isToday(date)
-                  ? "bg-primary_color text-white shadow-lg border-light_primary"
-                  : isPast
-                  ? "bg-elight_primary text-primary_color"
-                  : "bg-white text-light_primary"
-              } hover:bg-light_primary hover:text-white transition duration-300`}
-            >
-              {date ? (
+            <div key={index} className={getDayClass(date, attendanceStatus)}>
+              {date && (
                 <div className="text-xl font-semibold">{date.getDate()}</div>
-              ) : null}
+              )}
             </div>
           );
         })}
