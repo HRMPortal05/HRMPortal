@@ -21,8 +21,15 @@ class EmployeeDetailSerializer(serializers.ModelSerializer):
             'emp_id', 'date_of_birth', 'date_of_joining', 'address'
         ]
 
+    def validate_emp_id(self, value):
+        if EmployeeDetails.objects.filter(emp_id=value).exists():
+            employee = self.instance
+            if employee and employee.emp_id == value:
+                return value
+            raise serializers.ValidationError("This emp_id is already taken by another employee.")
+        return value
+
     def validate_working_emailid(self, value):
-        # Check if a user with the given email exists
         if not User.objects.filter(email=value).exists():
             raise serializers.ValidationError("No user is registered with this working email.")
         return value

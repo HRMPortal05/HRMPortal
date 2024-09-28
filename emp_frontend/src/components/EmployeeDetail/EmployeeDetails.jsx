@@ -80,6 +80,25 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
     }
   );
 
+  useEffect(() => {
+    setEmployeeData(
+      employee || {
+        first_name: "",
+        last_name: "",
+        personal_mailid: "",
+        working_designation: "",
+        department: "",
+        salary: "",
+        phone_number: "",
+        working_emailid: "",
+        emp_id: "",
+        date_of_birth: null,
+        date_of_joining: null,
+        address: "",
+      }
+    );
+  }, [employee]);
+
   const handleInputChange = (e) => {
     setEmployeeData({ ...employeeData, [e.target.name]: e.target.value });
   };
@@ -276,9 +295,11 @@ const EmployeeDetails = () => {
   const handleEmployeeSubmit = async (employeeData) => {
     try {
       if (currentEmployee) {
+        // Use the original emp_id for updating
+        const originalEmpId = currentEmployee.emp_id;
         await updateEmployee({
-          emp_id: employeeData.emp_id,
-          employeeData,
+          emp_id: originalEmpId,
+          employeeData: { ...employeeData },
           access_token,
         }).unwrap();
         enqueueSnackbar("Employee updated successfully", {
@@ -296,9 +317,14 @@ const EmployeeDetails = () => {
         });
       }
       setIsEmployeeModalOpen(false);
+      setCurrentEmployee(null);
       handleFetchEmployees();
     } catch (error) {
-      enqueueSnackbar("Failed to save employee details", {
+      const errorMessage =
+        error?.data?.error ||
+        error?.data?.emp_id[0] ||
+        "Failed to save employee details";
+      enqueueSnackbar(errorMessage, {
         variant: "error",
         autoHideDuration: 3000,
       });
@@ -326,6 +352,11 @@ const EmployeeDetails = () => {
     setIsEmployeeModalOpen(true);
   };
 
+  const openAddForm = () => {
+    setCurrentEmployee(null);
+    setIsEmployeeModalOpen(true);
+  };
+
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
 
@@ -339,10 +370,7 @@ const EmployeeDetails = () => {
 
         <div className="mb-4 flex flex-col sm:flex-row justify-end space-y-2 sm:space-y-0 sm:space-x-4">
           <Button
-            onClick={() => {
-              setCurrentEmployee(null);
-              setIsEmployeeModalOpen(true);
-            }}
+            onClick={openAddForm}
             variant="contained"
             sx={{ background: "#00A189" }}
           >
@@ -445,7 +473,10 @@ const EmployeeDetails = () => {
 
         <EmployeeFormModal
           open={isEmployeeModalOpen}
-          onClose={() => setIsEmployeeModalOpen(false)}
+          onClose={() => {
+            setIsEmployeeModalOpen(false);
+            setCurrentEmployee(null);
+          }}
           employee={currentEmployee}
           onSubmit={handleEmployeeSubmit}
         />

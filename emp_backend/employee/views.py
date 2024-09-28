@@ -33,7 +33,6 @@ class EmployeeDetailsListView(APIView):
     def put(self, request, emp_id):
         try:
             employee = EmployeeDetails.objects.get(emp_id=emp_id)
-            print(employee)
         except EmployeeDetails.DoesNotExist:
             return Response({"error": "Employee details not found."}, status=status.HTTP_404_NOT_FOUND)
 
