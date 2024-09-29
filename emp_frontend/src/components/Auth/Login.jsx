@@ -31,18 +31,18 @@ const Login = () => {
     try {
       const response = await loginUser(data);
 
-      // if (response.error) {
-      //   console.log(response.error);
-      //   if (response.error.data.errors.non_field_errors) {
-      //     console.log(response.error.data.errors.non_field_errors);
-      //     enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
-      //       variant: "error",
-      //       autoHideDuration: 3000,
-      //     });
-      //   } else {
-      //     setServerError(response.error.data.errors);
-      //   }
-      // }
+      if (response.error) {
+        console.log(response.error);
+        if (response.error.data.errors.non_field_errors) {
+          console.log(response.error.data.errors.non_field_errors);
+          enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
+            variant: "error",
+            autoHideDuration: 3000,
+          });
+        } else {
+          setServerError(response.error.data.errors);
+        }
+      }
 
       if (response.data) {
         storeToken(response.data.token);
