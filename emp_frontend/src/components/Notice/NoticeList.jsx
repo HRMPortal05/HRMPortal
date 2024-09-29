@@ -19,6 +19,8 @@ const NoticeList = () => {
   const [priorityFilter, setPriorityFilter] = useState("All");
   const [currentPage, setCurrentPage] = useState(1);
   const [showModal, setShowModal] = useState(false);
+  const [showDeleteConfirmation, setShowDeleteConfirmation] = useState(false);
+  const [noticeToDelete, setNoticeToDelete] = useState(null);
   const [newNotice, setNewNotice] = useState({
     employee: localStorage.getItem("username"),
     title: "",
@@ -26,6 +28,9 @@ const NoticeList = () => {
     notice_priority: "LOW",
     end_date: null,
   });
+
+  const [errors, setErrors] = useState({});
+  const [backendErrors, setBackendErrors] = useState({});
   const itemsPerPage = 6;
 
   const handleDateChange = (newValue) => {
@@ -36,6 +41,14 @@ const NoticeList = () => {
       ...prevDetails,
       end_date: formattedDate,
     }));
+    validateField("end_date", formattedDate);
+  };
+
+  const handleTitleKeyDown = (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      validateField("title", e.target.value);
+    }
   };
 
   const [fetchNotice, { isLoading, isError }] = useFetchNoticeMutation();
@@ -60,19 +73,64 @@ const NoticeList = () => {
           setNotices(response.data);
         } else {
           console.error("Unexpected response format");
+          enqueueSnackbar("Error fetching notices", { variant: "error" });
         }
       } catch (error) {
         console.error("Error fetching notices:", error);
+        enqueueSnackbar("Error fetching notices", { variant: "error" });
       }
     };
 
     fetchData();
   }, [fetchNotice, refresh]);
 
+  const validateField = (fieldName, value) => {
+    let newErrors = { ...errors };
+    switch (fieldName) {
+      case "title":
+        if (!value.trim()) {
+          newErrors.title = "Title is required";
+        } else if (value.length > 100) {
+          newErrors.title = "Title must be less than 100 characters";
+        } else {
+          delete newErrors.title;
+        }
+        break;
+      case "content":
+        if (!value.trim()) {
+          newErrors.content = "Content is required";
+        } else if (value.length > 500) {
+          newErrors.content = "Content must be less than 500 characters";
+        } else {
+          delete newErrors.content;
+        }
+        break;
+      case "end_date":
+        if (!value) {
+          newErrors.end_date = "Expiry date is required";
+        } else if (dayjs(value).isBefore(dayjs(), "day")) {
+          newErrors.end_date = "Expiry date cannot be in the past";
+        } else {
+          delete newErrors.end_date;
+        }
+        break;
+      case "notice_priority":
+        if (!["LOW", "MEDIUM", "HIGH"].includes(value)) {
+          newErrors.notice_priority = "Invalid priority";
+        } else {
+          delete newErrors.notice_priority;
+        }
+        break;
+      default:
+        break;
+    }
+    setErrors(newErrors);
+  };
+
   const filteredNotices = notices.filter((notice) => {
     const matchesSearch = notice.title
       .toLowerCase()
-      .includes(searchTerm.toLowerCase());
+      .includes(searchTerm.trim().toLowerCase());
     const matchesPriority =
       priorityFilter === "All" || notice.notice_priority === priorityFilter;
     return matchesSearch && matchesPriority;
@@ -85,30 +143,62 @@ const NoticeList = () => {
     currentPage * itemsPerPage
   );
 
+  const validateForm = () => {
+    validateField("title", newNotice.title);
+    validateField("content", newNotice.content);
+    validateField("end_date", newNotice.end_date);
+    validateField("notice_priority", newNotice.notice_priority);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleCreateNotice = async () => {
-    try {
-      const access_token = localStorage.getItem("access_token");
-      const response = await createNotice({
-        data: newNotice,
-        access_token,
-      }).unwrap();
-      enqueueSnackbar("Notice Created Successfully", {
-        variant: "success",
-        autoHideDuration: 3000,
+    if (validateForm()) {
+      try {
+        const access_token = localStorage.getItem("access_token");
+        const response = await createNotice({
+          data: newNotice,
+          access_token,
+        }).unwrap();
+        enqueueSnackbar("Notice Created Successfully", {
+          variant: "success",
+          autoHideDuration: 3000,
+        });
+        setShowModal(false);
+        setRefresh(response);
+        fetchNotice(access_token);
+      } catch (error) {
+        console.error("Failed to create notice:", error);
+        if (error.status === 400 && error.data && error.data.errors) {
+          setBackendErrors(error.data.errors);
+          enqueueSnackbar(
+            "Failed to create notice. Please check the form for errors.",
+            { variant: "error" }
+          );
+        } else {
+          enqueueSnackbar("Failed to create notice. Please try again.", {
+            variant: "error",
+          });
+        }
+      }
+    } else {
+      enqueueSnackbar("Please fill in all required fields correctly.", {
+        variant: "warning",
       });
-      setShowModal(false);
-      setRefresh(response);
-      fetchNotice(access_token);
-    } catch (error) {
-      console.error("Failed to create notice:", error);
     }
   };
 
   const handleDeleteNotice = async (id) => {
+    setNoticeToDelete(id);
+    setShowDeleteConfirmation(true);
+  };
+
+  const confirmDeleteNotice = async () => {
     try {
       const access_token = localStorage.getItem("access_token");
-      console.log(id);
-      const response = await deleteNotice({ id, access_token }).unwrap();
+      const response = await deleteNotice({
+        id: noticeToDelete,
+        access_token,
+      }).unwrap();
 
       if (response) {
         enqueueSnackbar("Notice Deleted Successfully", {
@@ -119,7 +209,15 @@ const NoticeList = () => {
       }
     } catch (error) {
       console.error("Delete Notice Error : ", error);
+      enqueueSnackbar("Failed to delete notice", { variant: "error" });
+    } finally {
+      setShowDeleteConfirmation(false);
+      setNoticeToDelete(null);
     }
+  };
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(Math.max(1, Math.min(newPage, totalPages)));
   };
 
   return (
@@ -250,12 +348,27 @@ const NoticeList = () => {
                 </label>
                 <input
                   type="text"
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`w-full p-2 border ${
+                    errors.title || backendErrors.title
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={newNotice.title}
-                  onChange={(e) =>
-                    setNewNotice((prev) => ({ ...prev, title: e.target.value }))
-                  }
+                  onChange={(e) => {
+                    setNewNotice((prev) => ({
+                      ...prev,
+                      title: e.target.value,
+                    }));
+                    validateField("title", e.target.value);
+                    setBackendErrors((prev) => ({ ...prev, title: null }));
+                  }}
+                  onKeyDown={handleTitleKeyDown}
                 />
+                {(errors.title || backendErrors.title) && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.title || backendErrors.title?.[0]}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -263,16 +376,27 @@ const NoticeList = () => {
                   Content
                 </label>
                 <textarea
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`w-full p-2 border ${
+                    errors.content || backendErrors.content
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   rows="4"
                   value={newNotice.content}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewNotice((prev) => ({
                       ...prev,
                       content: e.target.value,
-                    }))
-                  }
+                    }));
+                    validateField("content", e.target.value);
+                    setBackendErrors((prev) => ({ ...prev, content: null }));
+                  }}
                 ></textarea>
+                {(errors.content || backendErrors.content) && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.content || backendErrors.content?.[0]}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -282,12 +406,20 @@ const NoticeList = () => {
                 <LocalizationProvider dateAdapter={AdapterDayjs}>
                   <DatePicker
                     value={
-                      newNotice.expiry_date
-                        ? dayjs(newNotice.expiry_date)
-                        : null
+                      newNotice.end_date ? dayjs(newNotice.end_date) : null
                     }
                     format="YYYY-MM-DD"
-                    onChange={handleDateChange}
+                    onChange={(newValue) => {
+                      const formattedDate = newValue
+                        ? dayjs(newValue).format("YYYY-MM-DD")
+                        : null;
+                      setNewNotice((prev) => ({
+                        ...prev,
+                        end_date: formattedDate,
+                      }));
+                      validateField("end_date", formattedDate);
+                      setBackendErrors((prev) => ({ ...prev, end_date: null }));
+                    }}
                     minDate={dayjs()}
                     renderInput={(params) => ({ ...params })}
                     slotProps={{
@@ -303,6 +435,11 @@ const NoticeList = () => {
                     className="w-full mt-2"
                   />
                 </LocalizationProvider>
+                {(errors.end_date || backendErrors.end_date) && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.end_date || backendErrors.end_date?.[0]}
+                  </p>
+                )}
               </div>
 
               <div>
@@ -310,34 +447,81 @@ const NoticeList = () => {
                   Priority
                 </label>
                 <select
-                  className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className={`w-full p-2 border ${
+                    errors.notice_priority || backendErrors.notice_priority
+                      ? "border-red-500"
+                      : "border-gray-300"
+                  } rounded-md focus:outline-none focus:ring-1 focus:ring-blue-500`}
                   value={newNotice.notice_priority}
-                  onChange={(e) =>
+                  onChange={(e) => {
                     setNewNotice((prev) => ({
                       ...prev,
                       notice_priority: e.target.value,
-                    }))
-                  }
+                    }));
+                    validateField("notice_priority", e.target.value);
+                    setBackendErrors((prev) => ({
+                      ...prev,
+                      notice_priority: null,
+                    }));
+                  }}
                 >
                   <option value="LOW">Low</option>
                   <option value="MEDIUM">Medium</option>
                   <option value="HIGH">High</option>
                 </select>
+                {(errors.notice_priority || backendErrors.notice_priority) && (
+                  <p className="text-red-500 text-xs mt-1">
+                    {errors.notice_priority ||
+                      backendErrors.notice_priority?.[0]}
+                  </p>
+                )}
               </div>
             </div>
 
             <div className="flex justify-end space-x-4 mt-6">
               <button
                 className="px-3 py-1 sm:px-4 sm:py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors text-sm sm:text-base"
-                onClick={() => setShowModal(false)}
+                onClick={() => {
+                  setShowModal(false);
+                  setErrors({});
+                  setBackendErrors({});
+                }}
               >
                 Cancel
               </button>
               <button
+                type="submit"
                 className="px-3 py-1 sm:px-4 sm:py-2 bg-blue-700 text-white rounded-md hover:bg-blue-800 transition-colors text-sm sm:text-base"
                 onClick={handleCreateNotice}
+                disabled={isCreating}
               >
-                Create
+                {isCreating ? "Creating..." : "Create"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirmation && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[1000] px-4">
+          <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-xl">
+            <h3 className="text-xl font-bold mb-4 text-primary_color">
+              Confirm Delete
+            </h3>
+            <p className="mb-6">Are you sure you want to delete this notice?</p>
+            <div className="flex justify-end space-x-4">
+              <button
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded-md hover:bg-gray-300 transition-colors"
+                onClick={() => setShowDeleteConfirmation(false)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+                onClick={confirmDeleteNotice}
+                disabled={isDeleting}
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
               </button>
             </div>
           </div>

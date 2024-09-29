@@ -25,19 +25,29 @@ import dayjs from "dayjs";
 import Row from "./Row";
 import { FaUserTie } from "react-icons/fa";
 
-const CustomInput = ({ label, name, value, onChange, type = "text" }) => (
+const CustomInput = ({
+  label,
+  name,
+  value,
+  onChange,
+  type = "text",
+  error,
+}) => (
   <div className="mb-4">
     <label className="block text-gray-700 text-md mb-1" htmlFor={name}>
       {label}
     </label>
     <input
-      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+      className={`shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline ${
+        error ? "border-red-500" : ""
+      }`}
       id={name}
       type={type}
       name={name}
       value={value}
       onChange={onChange}
     />
+    {error && <p className="text-red-500 text-xs">{error}</p>}
   </div>
 );
 
@@ -79,6 +89,7 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
       address: "",
     }
   );
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setEmployeeData(
@@ -97,10 +108,12 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
         address: "",
       }
     );
+    setErrors({});
   }, [employee]);
 
   const handleInputChange = (e) => {
     setEmployeeData({ ...employeeData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
   };
 
   const handleDateChange = (name, date) => {
@@ -109,11 +122,50 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
       ...prevDetails,
       [name]: formattedDate,
     }));
+    setErrors({ ...errors, [name]: "" });
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!employeeData.first_name)
+      newErrors.first_name = "First name is required";
+    if (!employeeData.last_name) newErrors.last_name = "Last name is required";
+    if (
+      !employeeData.personal_mailid ||
+      !/\S+@\S+\.\S+/.test(employeeData.personal_mailid)
+    )
+      newErrors.personal_mailid = "Valid personal email is required";
+    if (
+      !employeeData.working_emailid ||
+      !/\S+@\S+\.\S+/.test(employeeData.working_emailid)
+    )
+      newErrors.working_emailid = "Valid work email is required";
+    if (!employeeData.working_designation)
+      newErrors.working_designation = "Designation is required";
+    if (!employeeData.department)
+      newErrors.department = "Department is required";
+    if (!employeeData.salary || isNaN(employeeData.salary))
+      newErrors.salary = "Valid salary is required";
+    if (
+      !employeeData.phone_number ||
+      !/^\d{10}$/.test(employeeData.phone_number)
+    )
+      newErrors.phone_number = "Valid 10-digit phone number is required";
+    if (!employeeData.emp_id) newErrors.emp_id = "Employee ID is required";
+    if (!employeeData.date_of_birth)
+      newErrors.date_of_birth = "Date of birth is required";
+    if (!employeeData.date_of_joining)
+      newErrors.date_of_joining = "Date of joining is required";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(employeeData);
+    if (validateForm()) {
+      onSubmit(employeeData);
+    }
   };
 
   if (!open) return null;
@@ -131,36 +183,44 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
           name="first_name"
           value={employeeData.first_name}
           onChange={handleInputChange}
+          error={errors.first_name}
         />
         <CustomInput
           label="Last Name"
           name="last_name"
           value={employeeData.last_name}
           onChange={handleInputChange}
+          error={errors.last_name}
         />
         <CustomInput
           label="Personal Email ID"
           name="personal_mailid"
+          type="email"
           value={employeeData.personal_mailid}
           onChange={handleInputChange}
+          error={errors.personal_mailid}
         />
         <CustomInput
           label="Work Email ID"
           name="working_emailid"
+          type="email"
           value={employeeData.working_emailid}
           onChange={handleInputChange}
+          error={errors.working_emailid}
         />
         <CustomInput
           label="Work Designation"
           name="working_designation"
           value={employeeData.working_designation}
           onChange={handleInputChange}
+          error={errors.working_designation}
         />
         <CustomInput
           label="Department"
           name="department"
           value={employeeData.department}
           onChange={handleInputChange}
+          error={errors.department}
         />
         <CustomInput
           label="Salary"
@@ -168,18 +228,23 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
           type="number"
           value={employeeData.salary}
           onChange={handleInputChange}
+          error={errors.salary}
         />
         <CustomInput
           label="Phone Number"
           name="phone_number"
+          type="number"
           value={employeeData.phone_number}
           onChange={handleInputChange}
+          error={errors.phone_number}
         />
         <CustomInput
           label="Employee ID"
           name="emp_id"
+          type="number"
           value={employeeData.emp_id}
           onChange={handleInputChange}
+          error={errors.emp_id}
         />
         <CustomInput
           label="Address"
@@ -195,6 +260,11 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
             value={employeeData.date_of_birth}
             onChange={(date) => handleDateChange("date_of_birth", date)}
           />
+          {errors.date_of_birth && (
+            <p className="text-red-500 text-xs italic">
+              {errors.date_of_birth}
+            </p>
+          )}
         </div>
         <div>
           <label className="block roboto-regular text-gray-700 text-md mb-2">
@@ -204,6 +274,11 @@ const EmployeeFormModal = ({ open, onClose, employee, onSubmit }) => {
             value={employeeData.date_of_joining}
             onChange={(date) => handleDateChange("date_of_joining", date)}
           />
+          {errors.date_of_joining && (
+            <p className="text-red-500 text-xs italic">
+              {errors.date_of_joining}
+            </p>
+          )}
         </div>
       </div>
     </CustomForm>
@@ -217,14 +292,40 @@ const RegisterFormModal = ({ open, onClose, onSubmit }) => {
     password: "",
     password2: "",
   });
+  const [errors, setErrors] = useState({});
 
   const handleInputChange = (e) => {
     setRegisterData({ ...registerData, [e.target.name]: e.target.value });
+    setErrors({ ...errors, [e.target.name]: "" });
+  };
+
+  const validateForm = () => {
+    let newErrors = {};
+    if (!registerData.email || !/\S+@\S+\.\S+/.test(registerData.email))
+      newErrors.email = "Valid email is required";
+    if (!registerData.username) newErrors.username = "Username is required";
+    if (!registerData.password) newErrors.password = "Password is required";
+    else if (registerData.password.length < 8)
+      newErrors.password = "Password must be at least 8 characters long";
+    else if (
+      !/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]/.test(
+        registerData.password
+      )
+    )
+      newErrors.password =
+        "Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character";
+    if (registerData.password !== registerData.password2)
+      newErrors.password2 = "Passwords do not match";
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    onSubmit(registerData);
+    if (validateForm()) {
+      onSubmit(registerData);
+    }
   };
 
   if (!open) return null;
@@ -242,12 +343,14 @@ const RegisterFormModal = ({ open, onClose, onSubmit }) => {
         type="email"
         value={registerData.email}
         onChange={handleInputChange}
+        error={errors.email}
       />
       <CustomInput
         label="Username"
         name="username"
         value={registerData.username}
         onChange={handleInputChange}
+        error={errors.username}
       />
       <CustomInput
         label="Password"
@@ -255,6 +358,7 @@ const RegisterFormModal = ({ open, onClose, onSubmit }) => {
         type="password"
         value={registerData.password}
         onChange={handleInputChange}
+        error={errors.password}
       />
       <CustomInput
         label="Confirm Password"
@@ -262,6 +366,7 @@ const RegisterFormModal = ({ open, onClose, onSubmit }) => {
         type="password"
         value={registerData.password2}
         onChange={handleInputChange}
+        error={errors.password2}
       />
     </CustomForm>
   );

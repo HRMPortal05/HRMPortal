@@ -141,6 +141,10 @@ const ApplyForLeave = () => {
     };
 
     fetchData();
+
+    setFromDate(null);
+    setToDate(null);
+    select.current.value = "Select";
   }, [access_token, isAdmin, reset]);
 
   const handleNextPage = () => {
