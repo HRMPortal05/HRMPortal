@@ -177,11 +177,11 @@ const ApplyForLeave = () => {
 
     const data = {
       email: email,
-      leave_type: leave_type.current.value,
+      leave_type,
       from_date: fromDate ? dayjs(fromDate).format("YYYY-MM-DD") : null,
       to_date: toDate ? dayjs(toDate).format("YYYY-MM-DD") : null,
-      reason: reason.current.value,
-      pending_work_of_employee: pending_work_of_employee.current.value,
+      reason,
+      pending_work_of_employee,
     };
 
     try {

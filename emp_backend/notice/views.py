@@ -33,9 +33,9 @@ class NoticeListCreateView(APIView):
         errors = {"msg": "Failed to Create Notice", "errors": serializer.errors}
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
     
-    def delete(self, request, id):
+    def delete(self, request, uuid_id):
         print(id)
-        notice = Notice.objects.get(id=id)
+        notice = Notice.objects.get(uuid_id=uuid_id)
         if notice is not None:
             notice.delete()
             return Response({'message': 'Notice deleted successfully.'}, status=status.HTTP_200_OK)
