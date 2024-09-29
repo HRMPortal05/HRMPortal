@@ -199,13 +199,13 @@ const Sidebar = ({ isOpen }) => {
       </ul>
       <ul className="list-none p-0 mt-8">
         <li className="mb-8">
-          <Link
-            to="/login"
+          <button
+            // to="/login"
             onClick={handleLogout}
-            className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
+            className="flex items-center w-full text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
           >
             <RiLogoutBoxLine className="mr-3 text-xl text-[#01008A]" /> Logout
-          </Link>
+          </button>
         </li>
       </ul>
     </div>
