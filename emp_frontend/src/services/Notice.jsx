@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const Notice = createApi({
   reducerPath: "Notice",
   baseQuery: fetchBaseQuery({
-    baseUrl: `${process.env.REACT_APP_API_BASE_URL}/notice/`,
+    baseUrl: `https://ems-igdr.onrender.com/notice/`,
   }),
   endpoints: (builder) => ({
     fetchNotice: builder.mutation({
