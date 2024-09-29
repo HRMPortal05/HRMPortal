@@ -23,6 +23,7 @@ const Sidebar = ({ isOpen }) => {
   const refreshToken = localStorage.getItem("refresh_token");
 
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   useEffect(() => {
     if (accessToken) {
@@ -42,6 +43,8 @@ const Sidebar = ({ isOpen }) => {
       return;
     }
 
+    setIsLoggingOut(true);
+
     try {
       const response = await userLogout({
         refresh: refreshToken,
@@ -60,6 +63,10 @@ const Sidebar = ({ isOpen }) => {
           navigate("/login");
         } else {
           console.error("Logout error:", response.error);
+          enqueueSnackbar("Logout failed. Please try again.", {
+            variant: "error",
+            autoHideDuration: 3000,
+          });
         }
       } else {
         enqueueSnackbar("Logout successful", {
@@ -74,6 +81,12 @@ const Sidebar = ({ isOpen }) => {
       }
     } catch (error) {
       console.error("Logout request failed:", error);
+      enqueueSnackbar("Logout failed. Please try again.", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+    } finally {
+      setIsLoggingOut(false);
     }
   };
 
@@ -200,11 +213,19 @@ const Sidebar = ({ isOpen }) => {
       <ul className="list-none p-0 mt-8">
         <li className="mb-8">
           <button
-            // to="/login"
             onClick={handleLogout}
-            className="flex items-center w-full text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
+            disabled={isLoggingOut}
+            className="flex items-center w-full text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <RiLogoutBoxLine className="mr-3 text-xl text-[#01008A]" /> Logout
+            <RiLogoutBoxLine className="mr-3 text-xl text-[#01008A]" />
+            Logout
+            {isLoggingOut && (
+              <div className="ml-2 inline-block h-4 w-4 animate-spin rounded-full border-2 border-solid border-current border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]">
+                <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+                  Loading...
+                </span>
+              </div>
+            )}
           </button>
         </li>
       </ul>
