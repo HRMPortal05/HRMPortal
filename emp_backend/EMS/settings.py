@@ -32,11 +32,12 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com', 'hrm-portal-pfpl40r5t-hrmportal05s-projects.vercel.app']
+ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com', 'hrm-portal-pfpl40r5t-hrmportal05s-projects.vercel.app', 'hrmportal.vercel.app']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://ems-igdr.onrender.com',
-    'https://hrm-portal-pfpl40r5t-hrmportal05s-projects.vercel.app'
+    'https://hrm-portal-pfpl40r5t-hrmportal05s-projects.vercel.app',
+    'https://hrmportal.vercel.app/'
 ]
 
 SESSION_COOKIE_SECURE = False
