@@ -37,7 +37,6 @@ ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com', '*.onrender.com']
 CSRF_TRUSTED_ORIGINS = [
     'https://ems-igdr.onrender.com',
     'https://*.onrender.com',
-    'https://*.vercel.app',
 ]
 
 # Application definition
