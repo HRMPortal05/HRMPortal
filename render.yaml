@@ -2,7 +2,7 @@ databases:
   - name: HRMPortal
     plan: free
     databaseName: emsdb
-    user: HRMPortal
+    user: HRMPortal05
 
 services:
   - type: web
