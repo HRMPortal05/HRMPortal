@@ -32,8 +32,7 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*.vercel.app', '127.0.0.1', '*.onrender.com']
-
+ALLOWED_HOSTS = ['*.vercel.app', '127.0.0.1', 'ems-igdr.onrender.com', '*.onrender.com']
 
 # Application definition
 
