@@ -6,7 +6,7 @@ echo "Building Project..."
 set -o errexit
 
 # Navigate to the backend directory if necessary
-cd emp_backend  # Make sure to adjust this if the script is not inside emp_backend
+# Make sure to adjust this if the script is not inside emp_backend
 
 # Install dependencies
 echo "Installing dependencies..."
