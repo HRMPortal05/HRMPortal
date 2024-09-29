@@ -10,7 +10,7 @@ services:
     name: EMS
     runtime: python
     buildCommand: "cd emp_backend && ./build.sh"
-    startCommand: "python -m gunicorn EMS.asgi:application -k uvicorn.workers.UvicornWorker"
+    startCommand: "cd emp_backend && python -m gunicorn EMS.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
       # - key: DATABASE_URL
       #   fromDatabase:
