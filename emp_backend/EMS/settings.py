@@ -107,9 +107,23 @@ AUTH_USER_MODEL = 'account.User'
 #     }
 # }
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config('DB_ENGINE'),
+#         'NAME': config('DB_NAME'),
+#         'USER': config('DB_USER'),
+#         'PASSWORD': config('DB_PASSWORD'),
+#         'HOST': config('DB_HOST'),
+#         'PORT': config('DB_PORT'),
+#         'OPTIONS': {
+#             'sslmode': config('DB_SSLMODE', default='require'),
+#         }
+#     }
+# }
+
 DATABASES = {
-    'default': {
-        'ENGINE': config('DB_ENGINE'),
+    'default': dj_database_url.config(default=config('DB_URL', default=None)) or {
+        'ENGINE': config('DB_ENGINE', default='django.db.backends.postgresql'),  # Provide a default engine
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
