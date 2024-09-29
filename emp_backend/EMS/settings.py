@@ -37,8 +37,8 @@ ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com', 'hrm-portal-pfpl40r5t-hrm
 CSRF_TRUSTED_ORIGINS = [
     'https://ems-igdr.onrender.com',
     'https://hrm-portal-pfpl40r5t-hrmportal05s-projects.vercel.app',
-    'https://hrmportal.vercel.app/',
-    'http://127.0.0.1:5173/'
+    'https://hrmportal.vercel.app',
+    'http://127.0.0.1:5173'
 ]
 
 SESSION_COOKIE_SECURE = False
@@ -49,6 +49,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://127.0.0.1:5173",
     'https://ems-igdr.onrender.com',
     'https://*.vercel.app',
+    'https://hrmportal.vercel.app'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
