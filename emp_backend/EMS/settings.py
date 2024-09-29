@@ -32,7 +32,13 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['*.vercel.app', '127.0.0.1', 'ems-igdr.onrender.com', '*.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com', '*.onrender.com']
+
+CSRF_TRUSTED_ORIGINS = [
+    'https://ems-igdr.onrender.com',
+    'https://*.onrender.com',
+    'https://*.vercel.app',
+]
 
 # Application definition
 
@@ -202,9 +208,9 @@ REST_FRAMEWORK = {
     )
 }
 
-SESSION_COOKIE_SECURE = False
+SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = False
+SECURE_SSL_REDIRECT = True
 
 # JWT Settings
 SIMPLE_JWT = {
