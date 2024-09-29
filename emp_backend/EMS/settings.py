@@ -233,6 +233,8 @@ PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
+    'https://*.onrender.com',
+    'https://*.vercel.app',
 ]
 
 REST_FRAMEWORK = {
