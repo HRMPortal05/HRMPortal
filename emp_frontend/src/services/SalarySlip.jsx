@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const SalarySlip = createApi({
   reducerPath: "SalarySlip",
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://127.0.0.1:8000/salaryslip/",
+    baseUrl: `${process.env.REACT_APP_API_BASE_URL}/salaryslip/`,
   }),
   endpoints: (builder) => ({
     generateSalarySlip: builder.mutation({
