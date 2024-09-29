@@ -21,6 +21,21 @@ echo "Applying database migrations..."
 python manage.py migrate
 
 echo "Creating superuser..."
-echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('Administrator', 'hrmportal05@gmail.com', 'Hrmportal@005')"
+
+python manage.py shell <<EOF > /dev/null 2>&1
+from django.contrib.auth import get_user_model
+from django.core.exceptions import IntegrityError
+import os
+
+User = get_user_model()
+try:
+    User.objects.create_superuser(
+        os.environ['SUPERUSER_NAME'],
+        os.environ['SUPERUSER_EMAIL'],
+        os.environ['SUPERUSER_PASSWORD']
+    )
+except IntegrityError:
+    pass
+EOF
 
 echo "Build completed successfully."
