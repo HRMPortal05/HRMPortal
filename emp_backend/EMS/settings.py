@@ -32,12 +32,28 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com', '*.onrender.com']
+ALLOWED_HOSTS = ['127.0.0.1', 'ems-igdr.onrender.com']
 
 CSRF_TRUSTED_ORIGINS = [
     'https://ems-igdr.onrender.com',
-    'https://*.onrender.com',
 ]
+
+SESSION_COOKIE_SECURE = False
+CSRF_COOKIE_SECURE = True
+SECURE_SSL_REDIRECT = False
+
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:5173",
+    'https://ems-igdr.onrender.com',
+    'https://*.vercel.app',
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_SECONDS = 31536000  # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
 
 # Application definition
 
@@ -148,7 +164,7 @@ DATABASES = {
 
 
 STATIC_URL= '/static/'
-if DEBUG:
+if not DEBUG:
     STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
     STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
@@ -207,10 +223,6 @@ REST_FRAMEWORK = {
     )
 }
 
-SESSION_COOKIE_SECURE = False
-CSRF_COOKIE_SECURE = True
-SECURE_SSL_REDIRECT = True
-
 # JWT Settings
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(days=1),
@@ -234,15 +246,6 @@ SIMPLE_JWT = {
 }
 
 PASSWORD_RESET_TIMEOUT=900          # 900 Sec = 15 Min
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:5173",
-    "http://127.0.0.1:5173",
-    'https://*.onrender.com',
-    'https://*.vercel.app',
-]
-
-CORS_ALLOW_CREDENTIALS = True
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
