@@ -12,7 +12,7 @@ services:
     buildCommand: "./build.sh"
     startCommand: "python -m gunicorn EMS.asgi:application -k uvicorn.workers.UvicornWorker"
     envVars:
-      - key: DATABASE_URL
+      - key: DB_URL
         fromDatabase:
           name: emsdb
           property: connectionString
