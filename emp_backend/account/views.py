@@ -42,7 +42,7 @@ class UserRegistrationView(APIView):
         uid = urlsafe_base64_encode(smart_bytes(user.id))
         token = default_token_generator.make_token(user)
         
-        verification_link = f'http://127.0.0.1:5173/verifyEmail/{uid}/{token}'
+        verification_link = f'https://hrmportal.vercel.app/verifyEmail/{uid}/{token}'
         
         context = {
             'verification_link': verification_link,

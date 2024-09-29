@@ -83,7 +83,7 @@ class SendPasswordResetEmailSerializer(serializers.Serializer):
         user = User.objects.get(email=email)
         uid = urlsafe_base64_encode(force_bytes(user.id))
         token = PasswordResetTokenGenerator().make_token(user)
-        reset_link = f'http://127.0.0.1:5173/resetPassword/{uid}/{token}'
+        reset_link = f'https://hrmportal.vercel.app/resetPassword/{uid}/{token}'
         
         # Render email template
         context = {
