@@ -21,21 +21,21 @@ echo "Applying database migrations..."
 python manage.py migrate
 
 echo "Creating superuser..."
-
-python manage.py shell <<EOF > /dev/null 2>&1
+python manage.py shell <<EOF > superuser_creation.log 2>&1
 from django.contrib.auth import get_user_model
 from django.core.exceptions import IntegrityError
-import os
 
 User = get_user_model()
+
+# Set superuser credentials
+superuser_name = 'administrator'
+superuser_email = 'hrmportal05@gmail.com'
+superuser_password = 'Hrmportal@005'
+
 try:
-    User.objects.create_superuser(
-        os.environ['SUPERUSER_NAME'],
-        os.environ['SUPERUSER_EMAIL'],
-        os.environ['SUPERUSER_PASSWORD']
-    )
+    User.objects.create_superuser(superuser_name, superuser_email, superuser_password)
 except IntegrityError:
-    pass
+    print("Superuser already exists. Skipping creation.")
 EOF
 
 echo "Build completed successfully."
