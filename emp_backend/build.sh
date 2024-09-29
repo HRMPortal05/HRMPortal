@@ -1,4 +1,5 @@
 #!/bin/bash
+chmod +x emp_backend/build.sh
 
 echo "Building Project..."
 
