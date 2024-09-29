@@ -107,26 +107,26 @@ AUTH_USER_MODEL = 'account.User'
 #     }
 # }
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': config('DB_ENGINE'),
-#         'NAME': config('DB_NAME'),
-#         'USER': config('DB_USER'),
-#         'PASSWORD': config('DB_PASSWORD'),
-#         'HOST': config('DB_HOST'),
-#         'PORT': config('DB_PORT'),
-#         'OPTIONS': {
-#             'sslmode': config('DB_SSLMODE', default='require'),
-#         }
-#     }
-# }
-
 DATABASES = {
-    'default': dj_database_url.config(
-        default=config('DB_URL'),
-        conn_max_age=600,
-    ),
+    'default': {
+        'ENGINE': config('DB_ENGINE'),
+        'NAME': config('DB_NAME'),
+        'USER': config('DB_USER'),
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': config('DB_HOST'),
+        'PORT': config('DB_PORT'),
+        'OPTIONS': {
+            'sslmode': config('DB_SSLMODE', default='require'),
+        }
+    }
 }
+
+# DATABASES = {
+#     'default': dj_database_url.config(
+#         default=config('DB_URL'),
+#         conn_max_age=600,
+#     ),
+# }
 
 
 STATIC_URL= '/static/'
