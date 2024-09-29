@@ -10,8 +10,6 @@ class Notice(models.Model):
         ('LOW', 'Low'),
     ]
     
-    id = models.BigAutoField(primary_key=True)  # Keep the existing id as bigint
-    uuid_id = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
     employee = models.ForeignKey(EmployeeDetails, on_delete=models.CASCADE, related_name='notices', null=True)
     title = models.CharField(max_length=255)
     content = models.TextField()

@@ -266,7 +266,7 @@ const NoticeList = () => {
           {currentNotices.length > 0 ? (
             currentNotices.map((notice) => (
               <div
-                key={notice.uuid_id}
+                key={notice.id}
                 className={`p-4 sm:p-6 rounded-md shadow-lg border-l-4 ${
                   notice.notice_priority === "HIGH"
                     ? "bg-red-50 border-red-500"

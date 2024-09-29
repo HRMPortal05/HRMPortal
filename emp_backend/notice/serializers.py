@@ -6,7 +6,7 @@ class NoticeSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notice
-        fields = ['uuid_id', 'employee', 'title', 'content', 'end_date', 'notice_priority']
+        fields = ['id', 'employee', 'title', 'content', 'end_date', 'notice_priority']
 
     def create(self, validated_data):
         employee_username = validated_data.pop('employee', None)
