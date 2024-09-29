@@ -20,4 +20,7 @@ python manage.py collectstatic --no-input
 echo "Applying database migrations..."
 python manage.py migrate
 
+echo "Creating superuser..."
+echo "from django.contrib.auth import get_user_model; User = get_user_model(); User.objects.create_superuser('Administrator', 'hrmportal05@gmail.com', 'Hrmportal@005')"
+
 echo "Build completed successfully."
