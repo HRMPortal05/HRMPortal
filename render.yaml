@@ -1,8 +1,8 @@
 databases:
-  - name: emsdb
+  - name: HRMPortal
     plan: free
-    databaseName: EMS
-    user: EMS
+    databaseName: emsdb
+    user: HRMPortal
 
 services:
   - type: web

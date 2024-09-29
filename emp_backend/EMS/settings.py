@@ -107,10 +107,11 @@ AUTH_USER_MODEL = 'account.User'
 
 DATABASES = {
     'default': dj_database_url.config(
-        default='postgresql://postgres:postgres@localhost:5432/EMS',
+        default=config('DB_URL'),
         conn_max_age=600
-    )
+    ),
 }
+
 
 STATIC_URL= '/static/'
 if not DEBUG:
