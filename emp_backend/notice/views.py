@@ -34,9 +34,8 @@ class NoticeListCreateView(APIView):
     
     def delete(self, request, id):
         try:
-            # Convert id to UUID
-            notice_id = UUID(id)
-            notice = Notice.objects.get(uuid_id=notice_id)  # Use uuid_id as primary key
+            # Fetch the notice using the integer id
+            notice = Notice.objects.get(id=id)  # Use id directly
             
             # Delete the notice
             notice.delete()
@@ -44,7 +43,5 @@ class NoticeListCreateView(APIView):
         
         except Notice.DoesNotExist:
             return Response({'error': 'Notice not found.'}, status=status.HTTP_404_NOT_FOUND)
-        except ValueError:
-            return Response({'error': 'Invalid UUID format.'}, status=status.HTTP_400_BAD_REQUEST)
-    
-    # 
+        except Exception as e:
+            return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
