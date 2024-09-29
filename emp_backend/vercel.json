@@ -1,8 +1,19 @@
 {
-    "routes": [
-      {
-        "src": "/(.*)",
-        "dest": "EMS/wsgi.py"
+  "builds": [{
+      "src": "EMS/wsgi.py",
+      "use": "@ardnt/vercel-python-wsgi",
+      "config": { "maxLambdaSize": "15mb",
+              "runtime": "python3.11"
       }
-    ]
+  },
+  {
+    "src":"build.sh"
   }
+  ],
+  "routes": [
+      {
+          "src": "/(.*)",
+          "dest": "EMS/wsgi.py"
+      }
+  ]
+}
