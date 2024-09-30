@@ -51,7 +51,7 @@ CORS_ALLOWED_ORIGINS = [
     'https://ems-igdr.onrender.com',
     'https://*.vercel.app',
     'https://hrmportal.vercel.app',
-    'https://em-hrmportal.vercel.app/'
+    'https://em-hrmportal.vercel.app'
 ]
 
 CORS_ALLOW_CREDENTIALS = True
