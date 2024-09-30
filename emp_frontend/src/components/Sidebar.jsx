@@ -158,19 +158,38 @@ const Sidebar = ({ isOpen }) => {
             Slip
           </Link>
         </li>
-        <li
-          className={`${
-            isActiveLink("/attendance") ? "bg-[#E8E8FF]" : ""
-          } rounded-md`}
-        >
-          <Link
-            to="/attendance"
-            className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
-          >
-            <MdOutlineCoPresent className="mr-3 text-xl text-[#01008A]" />{" "}
-            Attendance
-          </Link>
-        </li>
+
+        {/* Admin-only links */}
+        {isAdmin && (
+          <>
+            <li
+              className={`${
+                isActiveLink("/attendance") ? "bg-[#E8E8FF]" : ""
+              } rounded-md`}
+            >
+              <Link
+                to="/attendance"
+                className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
+              >
+                <MdOutlineCoPresent className="mr-3 text-xl text-[#01008A]" />{" "}
+                Attendance
+              </Link>
+            </li>
+            <li
+              className={`${
+                isActiveLink("/employeeDetail") ? "bg-[#E8E8FF]" : ""
+              } rounded-md`}
+            >
+              <Link
+                to="/employeeDetail"
+                className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
+              >
+                <IoPersonOutline className="mr-3 text-xl text-[#01008A]" />{" "}
+                Employee detail
+              </Link>
+            </li>
+          </>
+        )}
         <li
           className={`${
             isActiveLink("/holiday") ? "bg-[#E8E8FF]" : ""
@@ -182,19 +201,6 @@ const Sidebar = ({ isOpen }) => {
           >
             <MdOutlineFreeCancellation className="mr-3 text-xl text-[#01008A]" />{" "}
             Holiday
-          </Link>
-        </li>
-        <li
-          className={`${
-            isActiveLink("/employeeDetail") ? "bg-[#E8E8FF]" : ""
-          } rounded-md`}
-        >
-          <Link
-            to="/employeeDetail"
-            className="flex items-center text-black text-lg mb-4 px-5 py-2 hover:bg-[#E8E8FF] rounded-md"
-          >
-            <IoPersonOutline className="mr-3 text-xl text-[#01008A]" /> Employee
-            detail
           </Link>
         </li>
         <li
