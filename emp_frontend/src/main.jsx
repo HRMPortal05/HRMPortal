@@ -4,10 +4,10 @@ import { RouterProvider, createBrowserRouter } from "react-router-dom";
 import { Provider } from "react-redux";
 import App from "./App.jsx";
 import { store } from "./app/Store.jsx";
+import { SnackbarProvider } from "notistack";
 import Login from "./components/Auth/Login.jsx";
 import ForgotPassword from "./components/Auth/ForgotPassword.jsx";
 import ResetPassword from "./components/Auth/ResetPassword.jsx";
-import { SnackbarProvider } from "notistack";
 import EmailSent from "./components/Auth/EmailSent.jsx";
 import ApplyForLeave from "./components/ApplyForLeave/ApplyForLeave.jsx";
 import ChangePassword from "./components/Auth/ChangePassword.jsx";
@@ -25,154 +25,109 @@ import VerifyEmail from "./components/Auth/VerifyEmail.jsx";
 import EmployeeDetails from "./components/EmployeeDetail/EmployeeDetails.jsx";
 import Attendance from "./components/Attendance/Attendance.jsx";
 
+// import { registerSW } from "virtual:pwa-register";
+
+// Call the register function
+// registerSW({
+//   onNeedRefresh() {
+//     console.log("New content available, reload to update.");
+//   },
+//   onOfflineReady() {
+//     console.log("App is ready to work offline.");
+//   },
+// });
+
+// Define a reusable component to wrap elements with the SnackbarProvider
+const withSnackbar = (Component) => (
+  <SnackbarProvider maxSnack={3}>
+    <Component />
+  </SnackbarProvider>
+);
+
 const router = createBrowserRouter([
   {
     path: "/",
-    element: (
-      <SnackbarProvider maxSnack={3}>
-        <App />
-      </SnackbarProvider>
-    ),
+    element: withSnackbar(App),
     children: [
       {
         path: "",
-        element: <DashboardHeader />,
+        element: withSnackbar(DashboardHeader),
         children: [
           {
             path: "",
-            element: (
-              <SnackbarProvider maxSnack={3}>
-                <Dashboard />
-              </SnackbarProvider>
-            ),
+            element: withSnackbar(Dashboard),
           },
         ],
       },
       {
         path: "applyForLeave",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <ApplyForLeave />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(ApplyForLeave),
       },
       {
         path: "library",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <Library />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(Library),
       },
       {
         path: "holiday",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <Holiday />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(Holiday),
       },
       {
         path: "notice",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <NoticeList />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(NoticeList),
       },
       {
         path: "salarySlip",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <SalarySlip />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(SalarySlip),
       },
       {
         path: "salarySlipView",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <SalarySlipView />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(SalarySlipView),
       },
       {
         path: "employeeDetail",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <EmployeeDetails />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(EmployeeDetails),
       },
       {
         path: "calendar",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <Calendar />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(Calendar),
       },
       {
         path: "attendance",
-        element: (
-          <SnackbarProvider maxSnack={3}>
-            <Attendance />
-          </SnackbarProvider>
-        ),
+        element: withSnackbar(Attendance),
       },
     ],
   },
   {
     path: "/login",
-    element: (
-      <SnackbarProvider maxSnack={3}>
-        <Login />
-      </SnackbarProvider>
-    ),
+    element: withSnackbar(Login),
   },
   {
     path: "/verifyEmail/:uid/:token",
-    element: (
-      <SnackbarProvider maxSnack={3}>
-        <VerifyEmail />
-      </SnackbarProvider>
-    ),
+    element: withSnackbar(VerifyEmail),
   },
   {
     path: "/forgotPassword",
-    element: (
-      <SnackbarProvider maxSnack={3}>
-        <ForgotPassword />
-      </SnackbarProvider>
-    ),
+    element: withSnackbar(ForgotPassword),
   },
   {
     path: "/changePassword",
-    element: (
-      <SnackbarProvider maxSnack={3}>
-        <ChangePassword />
-      </SnackbarProvider>
-    ),
+    element: withSnackbar(ChangePassword),
   },
   {
     path: "/resetPassword/:id/:token",
-    element: (
-      <SnackbarProvider maxSnack={3}>
-        <ResetPassword />
-      </SnackbarProvider>
-    ),
+    element: withSnackbar(ResetPassword),
   },
   {
     path: "/emailSent",
-    element: <EmailSent />,
+    element: withSnackbar(EmailSent),
   },
   {
     path: "/passwordChanged",
-    element: <GoToLogin />,
+    element: withSnackbar(GoToLogin),
   },
   {
     path: "*",
-    element: <FOFPage />,
+    element: withSnackbar(FOFPage),
   },
 ]);
 
