@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const Notice = createApi({
   reducerPath: "Notice",
   baseQuery: fetchBaseQuery({
-    baseUrl: `https://ems-igdr.onrender.com/notice/`,
+    // baseUrl: `https://ems-igdr.onrender.com/notice/`,
+    baseUrl: `https://hrm-portal-backend.vercel.app/notice/`,
   }),
   endpoints: (builder) => ({
     fetchNotice: builder.mutation({

@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const LeaveManagement = createApi({
   reducerPath: "LeaveManagement",
   baseQuery: fetchBaseQuery({
-    baseUrl: `https://ems-igdr.onrender.com/leavemanagement/`,
+    // baseUrl: `https://ems-igdr.onrender.com/leavemanagement/`,
+    baseUrl: `https://hrm-portal-backend.vercel.app/leavemanagement/`,
   }),
   endpoints: (builder) => ({
     createleave: builder.mutation({

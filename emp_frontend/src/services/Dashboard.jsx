@@ -3,7 +3,8 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const Dashboard = createApi({
   reducerPath: "Dashboard",
   baseQuery: fetchBaseQuery({
-    baseUrl: `https://ems-igdr.onrender.com/dashboard/`,
+    // baseUrl: `https://ems-igdr.onrender.com/dashboard/`,
+    baseUrl: `https://hrm-portal-backend.vercel.app/dashboard/`,
   }),
   endpoints: (builder) => ({
     fetchAttendance: builder.mutation({
