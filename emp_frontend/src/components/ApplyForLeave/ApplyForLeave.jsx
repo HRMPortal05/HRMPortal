@@ -256,7 +256,7 @@ const ApplyForLeave = () => {
           </h2>
           <button
             onClick={handleOpenModal}
-            className="bg-primary_color text-white h-[35px] px-4 sm:px-7 rounded-md sm:text-base"
+            className="bg-primary_color text-white h-[50px] md:h-[35px] lg:h-[35px] px-4 sm:px-7 rounded-md sm:text-base"
           >
             Create New
           </button>
