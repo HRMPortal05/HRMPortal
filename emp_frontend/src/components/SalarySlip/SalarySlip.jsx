@@ -41,7 +41,7 @@ const SalarySlip = () => {
     allowances: "",
     deductions: "",
     preparedBy: preparedBy,
-    approvedBy: "hrmportal@gmail.com",
+    approvedBy: "",
   });
 
   const [isSlipGenerated, setIsSlipGenerated] = useState(false);
