@@ -15,7 +15,7 @@ class SalarySlipSerializer(serializers.ModelSerializer):
         fields = [
             'employee', 'emp_id', 'designation', 'month', 'year', 'department', 'date_of_joining',
             'basic_salary', 'allowances', 'deductions', 'net_pay',
-            'prepared_by', 'approved_by'
+            'prepared_by', 'approved_by', 'salary_slip_number'
         ]
 
     def create(self, validated_data):

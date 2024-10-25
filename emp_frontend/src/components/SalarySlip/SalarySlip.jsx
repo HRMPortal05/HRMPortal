@@ -41,10 +41,11 @@ const SalarySlip = () => {
     allowances: "",
     deductions: "",
     preparedBy: preparedBy,
-    approvedBy: "",
+    approvedBy: "hrmportal@gmail.com",
   });
 
   const [isSlipGenerated, setIsSlipGenerated] = useState(false);
+  const [generatedSlip, setGeneratedSlip] = useState({});
   const [serverError, setServerError] = useState(null);
   const currentMonthName = dayjs().format("MMMM");
   const currentYear = dayjs().format("YYYY");
@@ -157,11 +158,20 @@ const SalarySlip = () => {
         data,
         access_token,
       });
-      setIsSlipGenerated(true);
-      console.log(response.data);
+      if (response.data) {
+        setIsSlipGenerated(true);
+      } else {
+        setIsSlipGenerated(false);
+        enqueueSnackbar(response.error.data.errors[0], {
+          variant: "error",
+          autoHideDuration: 3000,
+        });
+      }
+
+      setGeneratedSlip(response.data);
     } catch (error) {
-      console.log(error);
       setServerError(error.data);
+      setIsSlipGenerated(false);
     }
   };
 
@@ -198,7 +208,11 @@ const SalarySlip = () => {
     const newValue = e.target.value;
     const fieldName = e.target.name;
 
-    if (fieldName === "approvedBy") {
+    if (
+      fieldName === "approvedBy" ||
+      fieldName === "allowances" ||
+      fieldName === "deductions"
+    ) {
       setEmployeeDetails({
         ...employeeDetails,
         [fieldName]: newValue,
@@ -509,7 +523,7 @@ const SalarySlip = () => {
         </Card>
       ) : (
         <GeneratedSalarySlip
-          employeeDetails={employeeDetails}
+          generatedSlip={generatedSlip}
           netSalary={netSalary}
           convertNumberToWords={convertNumberToWords}
         />

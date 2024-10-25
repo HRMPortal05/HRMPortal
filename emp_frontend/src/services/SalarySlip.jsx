@@ -3,7 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const SalarySlip = createApi({
   reducerPath: "SalarySlip",
   baseQuery: fetchBaseQuery({
-    // baseUrl: `https://ems-igdr.onrender.com/salaryslip/`,
+    // baseUrl: `http://127.0.0.1:8000/salaryslip/`,
     baseUrl: `https://hrm-portal-backend.vercel.app/salaryslip/`,
   }),
   endpoints: (builder) => ({
