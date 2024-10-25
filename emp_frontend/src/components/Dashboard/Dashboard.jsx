@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
-import { format, isAfter, parse } from "date-fns";
+import { format, isAfter, parse, isBefore } from "date-fns";
 import {
   useFetchAttendanceMutation,
   useCreateTaskMutation,
@@ -8,6 +8,7 @@ import {
   useDeleteTaskMutation,
 } from "../../services/Dashboard";
 import { enqueueSnackbar } from "notistack";
+import axios from "axios";
 
 const ResponsiveAttendanceOverview = ({ attendanceData }) => {
   const { present_days = 5, totalDays = 24 } = attendanceData || {};
@@ -73,60 +74,88 @@ const ResponsiveAttendanceOverview = ({ attendanceData }) => {
 
 const UpcomingHolidays = () => {
   const [upcomingHolidays, setUpcomingHolidays] = useState([]);
+  const API_KEY = "Nj0ZsnL16xt4sSlXuwylCD0jeEimgpwR"; // Replace with your API key
 
-  const allHolidays = [
-    { date: "01-01", name: "New Year's Day" },
-    { date: "07-04", name: "Independence Day" },
-    { date: "11-11", name: "Veterans Day" },
-    { date: "12-25", name: "Christmas Day" },
+  // Fixed-date holidays in India
+  const fixedHolidays = [
+    { month: 1, day: 26, name: "Republic Day" }, // January 26
+    { month: 8, day: 15, name: "Independence Day" }, // August 15
+    { month: 10, day: 2, name: "Gandhi Jayanti" }, // October 2
+    { month: 12, day: 25, name: "Christmas Day" }, // December 25
   ];
 
-  const calculateMemorialDay = (year) => {
-    for (let day = 31; day >= 25; day--) {
-      const date = new Date(year, 4, day);
-      if (date.getDay() === 1) return format(date, "yyyy-MM-dd");
-    }
-  };
+  const fetchDynamicHolidays = async (year) => {
+    try {
+      const response = await axios.get(
+        `https://calendarific.com/api/v2/holidays`,
+        {
+          params: {
+            api_key: API_KEY,
+            country: "IN",
+            year: year,
+          },
+        }
+      );
 
-  const calculateLaborDay = (year) => {
-    for (let day = 1; day <= 7; day++) {
-      const date = new Date(year, 8, day);
-      if (date.getDay() === 1) return format(date, "yyyy-MM-dd");
+      return response.data.response.holidays.map((holiday) => ({
+        date: format(new Date(holiday.date.iso), "yyyy-MM-dd"),
+        name: holiday.name,
+      }));
+    } catch (error) {
+      console.error("Error fetching holidays: ", error);
+      return [];
     }
   };
 
   useEffect(() => {
-    const today = new Date();
-    const currentYear = today.getFullYear();
-    const nextYear = currentYear + 1;
+    const fetchHolidays = async () => {
+      const today = new Date();
+      const currentYear = today.getFullYear();
+      const nextYear = currentYear + 1;
+      const fifteenDaysFromNow = new Date();
+      fifteenDaysFromNow.setDate(today.getDate() + 15);
 
-    const holidaysThisYear = allHolidays.map((holiday) => ({
-      ...holiday,
-      date: `${currentYear}-${holiday.date}`,
-    }));
+      // Get all fixed-date holidays for current & next year
+      const holidaysThisYear = fixedHolidays.map((holiday) => ({
+        ...holiday,
+        date: `${currentYear}-${String(holiday.month).padStart(
+          2,
+          "0"
+        )}-${String(holiday.day).padStart(2, "0")}`,
+      }));
+      const holidaysNextYear = fixedHolidays.map((holiday) => ({
+        ...holiday,
+        date: `${nextYear}-${String(holiday.month).padStart(2, "0")}-${String(
+          holiday.day
+        ).padStart(2, "0")}`,
+      }));
 
-    const holidaysNextYear = allHolidays.map((holiday) => ({
-      ...holiday,
-      date: `${nextYear}-${holiday.date}`,
-    }));
+      // Fetch Hindu dynamic holidays from the API for current and next year
+      const dynamicHolidaysCurrentYear = await fetchDynamicHolidays(
+        currentYear
+      );
+      const dynamicHolidaysNextYear = await fetchDynamicHolidays(nextYear);
 
-    const dynamicHolidays = [
-      { date: calculateMemorialDay(currentYear), name: "Memorial Day" },
-      { date: calculateLaborDay(currentYear), name: "Labor Day" },
-    ];
+      // Combine all holidays, sort, and filter to find only upcoming within 15 days
+      const allUpcomingHolidays = [
+        ...holidaysThisYear,
+        ...holidaysNextYear,
+        ...dynamicHolidaysCurrentYear,
+        ...dynamicHolidaysNextYear,
+      ]
+        .filter((holiday) => {
+          const holidayDate = parse(holiday.date, "yyyy-MM-dd", new Date());
+          return (
+            isAfter(holidayDate, today) &&
+            isBefore(holidayDate, fifteenDaysFromNow)
+          );
+        })
+        .sort((a, b) => new Date(a.date) - new Date(b.date));
 
-    const allUpcomingHolidays = [
-      ...holidaysThisYear,
-      ...holidaysNextYear,
-      ...dynamicHolidays,
-    ]
-      .filter((holiday) =>
-        isAfter(parse(holiday.date, "yyyy-MM-dd", new Date()), today)
-      )
-      .sort((a, b) => new Date(a.date) - new Date(b.date))
-      .slice(0, 5);
+      setUpcomingHolidays(allUpcomingHolidays);
+    };
 
-    setUpcomingHolidays(allUpcomingHolidays);
+    fetchHolidays();
   }, []);
 
   return (
