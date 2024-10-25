@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { ChevronLeft, ChevronRight, Calendar } from "lucide-react";
 import { FaClipboardCheck } from "react-icons/fa";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import {
   Table,
   TableBody,
@@ -22,6 +24,12 @@ import { useSnackbar } from "notistack";
 
 const Attendance = () => {
   const { enqueueSnackbar } = useSnackbar();
+
+  const isWeekend = (date) => {
+    const day = date.getDay();
+    return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+  };
+
   const isToday = (date) => {
     const today = new Date();
     return (
@@ -31,7 +39,19 @@ const Attendance = () => {
     );
   };
 
-  const [currentDate, setCurrentDate] = useState(new Date());
+  const getNextValidDate = (date, increment) => {
+    const newDate = new Date(date);
+    do {
+      newDate.setDate(newDate.getDate() + increment);
+    } while (isWeekend(newDate));
+    return newDate;
+  };
+
+  const [currentDate, setCurrentDate] = useState(() => {
+    const today = new Date();
+    return isWeekend(today) ? getNextValidDate(today, -1) : today;
+  });
+
   const [attendanceData, setAttendanceData] = useState([]);
   const [modifiedAttendance, setModifiedAttendance] = useState([]);
 
@@ -98,9 +118,29 @@ const Attendance = () => {
   };
 
   const handleDateChange = (increment) => {
-    const newDate = new Date(currentDate);
-    newDate.setDate(newDate.getDate() + increment);
-    setCurrentDate(newDate);
+    setCurrentDate(getNextValidDate(currentDate, increment));
+  };
+
+  const handleDateSelect = (date) => {
+    if (!date) return;
+
+    if (isWeekend(date)) {
+      enqueueSnackbar("Weekend dates cannot be selected", {
+        variant: "warning",
+        autoHideDuration: 3000,
+      });
+      return;
+    }
+
+    if (date > new Date()) {
+      enqueueSnackbar("Future dates cannot be selected", {
+        variant: "warning",
+        autoHideDuration: 3000,
+      });
+      return;
+    }
+
+    setCurrentDate(date);
   };
 
   const handleSubmit = async () => {
@@ -145,6 +185,21 @@ const Attendance = () => {
   const isLoading = isSubmittingAttendance || isSubmittingDateAttendance;
   const isCurrentDateToday = isToday(currentDate);
 
+  const filterWeekends = (date) => {
+    return !isWeekend(date) && date <= new Date();
+  };
+
+  const CustomDatePickerInput = React.forwardRef(({ value, onClick }, ref) => (
+    <button
+      className="flex items-center bg-gray-100 rounded-md px-3 py-2 hover:bg-gray-200 transition-colors duration-200"
+      onClick={onClick}
+      ref={ref}
+    >
+      <Calendar className="w-5 h-5 text-primary_color mr-2" />
+      <span className="text-primary_color font-semibold">{value}</span>
+    </button>
+  ));
+
   return (
     <div className="font-roboto max-w-fit md:max-w-full lg:max-w-full mt-5 p-0 md:p-6 lg:p-6 overflow-hidden">
       <h2 className="text-3xl sm:text-4xl font-bold text-primary_color flex items-center mb-7">
@@ -160,19 +215,19 @@ const Attendance = () => {
           >
             <ChevronLeft className="w-5 h-5 text-primary_color" />
           </button>
-          <div className="flex items-center bg-gray-100 rounded-md px-3 py-2">
-            <Calendar className="w-5 h-5 text-primary_color mr-2" />
-            <span className="text-primary_color font-semibold">
-              {currentDate.toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </span>
-          </div>
+
+          <DatePicker
+            selected={currentDate}
+            onChange={handleDateSelect}
+            dateFormat="MMMM d, yyyy"
+            filterDate={filterWeekends}
+            customInput={<CustomDatePickerInput />}
+            maxDate={new Date()}
+          />
+
           <button
             onClick={() => handleDateChange(1)}
-            disabled={isCurrentDateToday} // Disable if current date is today
+            disabled={isCurrentDateToday}
             className={`p-2 rounded-full bg-gray-200 hover:bg-gray-300 transition duration-300 ${
               isCurrentDateToday ? "opacity-50 cursor-not-allowed" : ""
             }`}

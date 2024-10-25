@@ -495,7 +495,7 @@ const EmployeeDetails = () => {
           className="mt-4 sm:mt-7 bg-white rounded-lg overflow-x-hidden"
           component={Paper}
         >
-          <Table>
+          <Table className="max-w-screen">
             <TableHead>
               <TableRow sx={{ background: "#00008af0", color: "white" }}>
                 <TableCell />

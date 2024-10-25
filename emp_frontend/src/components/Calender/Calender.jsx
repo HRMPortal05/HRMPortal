@@ -51,6 +51,12 @@ const Calendar = () => {
 
   const isToday = (date) => date && dayjs(date).isSame(dayjs(), "day");
 
+  const isWeekend = (date) => {
+    if (!date) return false;
+    const day = date.getDay();
+    return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+  };
+
   const getAttendanceStatus = (date) => {
     if (!date) return null;
     const formattedDate = dayjs(date).format("YYYY-MM-DD");
@@ -79,6 +85,7 @@ const Calendar = () => {
       return `${baseClass} bg-red-500 text-white`;
     if (isToday(date))
       return `${baseClass} bg-primary_color text-white shadow-lg border-light_primary`;
+    if (isWeekend(date)) return `${baseClass} bg-primary_color text-white`;
     if (isPast) return `${baseClass} bg-elight_primary text-primary_color`;
     return `${baseClass} bg-white text-light_primary`;
   };

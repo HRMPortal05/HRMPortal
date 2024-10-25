@@ -14,10 +14,32 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 const Row = ({ row, openEditForm, isMobile }) => {
   const [open, setOpen] = useState(false);
 
+  const mobileTableCellStyles = isMobile
+    ? {
+        padding: "8px",
+        whiteSpace: "nowrap",
+        fontSize: "14px",
+        maxWidth: "150px",
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+      }
+    : {};
+
+  const mobileIconButtonStyles = isMobile
+    ? {
+        padding: "4px",
+      }
+    : {};
+
   return (
     <>
-      <TableRow>
-        <TableCell>
+      <TableRow className={isMobile ? "w-screen max-w-[100vw]" : ""}>
+        <TableCell
+          style={{
+            ...mobileTableCellStyles,
+            width: isMobile ? "40px" : "auto",
+          }}
+        >
           <IconButton
             aria-label="expand row"
             size="small"
