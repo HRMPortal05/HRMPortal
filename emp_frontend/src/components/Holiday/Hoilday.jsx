@@ -61,7 +61,7 @@ const Holiday = () => {
               className="border border-light_primary px-4 py-2 rounded-lg text-primary_color focus:outline-none focus:ring-2 focus:ring-light_primary"
             >
               <option value="US">United States</option>
-              <option value="IN">India</option>
+              {/* <option value="IN">India</option> */}
               <option value="DE">Germany</option>
               <option value="FR">France</option>
             </select>
