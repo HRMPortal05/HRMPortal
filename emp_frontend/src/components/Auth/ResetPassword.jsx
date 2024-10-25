@@ -38,12 +38,9 @@ const ResetPassword = () => {
       }
 
       if (response.data) {
-        console.log(response.data);
         navigate("/login");
       }
-    } catch (error) {
-      console.error("Reset password error:", error);
-    }
+    } catch (error) {}
   };
 
   return (

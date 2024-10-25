@@ -102,7 +102,6 @@ const UpcomingHolidays = () => {
         name: holiday.name,
       }));
     } catch (error) {
-      console.error("Error fetching holidays: ", error);
       return [];
     }
   };
@@ -199,11 +198,9 @@ const TaskList = () => {
         if (response?.data?.tasks) {
           setTasks(response.data.tasks);
         } else {
-          console.warn("No tasks found in response");
           setTasks([]);
         }
-      } catch (err) {
-        console.error("Failed to fetch tasks:", err);
+      } catch (error) {
         setTasks([]);
       }
     };
@@ -233,11 +230,8 @@ const TaskList = () => {
           setTasks((prevTasks) => [...prevTasks, response.data.task]);
           newTask.current.value = "";
         } else {
-          console.error("Failed to create task:", response.error);
         }
-      } catch (err) {
-        console.error("Failed to add task:", err);
-      }
+      } catch (error) {}
     }
   };
 
@@ -246,13 +240,11 @@ const TaskList = () => {
     try {
       const response = await deleteTask({ task_id, access_token });
       if (response?.error) {
-        console.error("Failed to delete task:", response.error);
         enqueueSnackbar("Failed to delete task", {
           variant: "error",
           autoHideDuration: 3000,
         });
       } else {
-        console.log("Task deleted successfully");
         enqueueSnackbar("Task deleted successfully", {
           variant: "success",
           autoHideDuration: 3000,
@@ -261,9 +253,7 @@ const TaskList = () => {
           prevTasks.filter((task) => task.id !== task_id)
         );
       }
-    } catch (err) {
-      console.error("Failed to delete task:", err);
-    }
+    } catch (err) {}
   };
 
   return (
@@ -295,7 +285,6 @@ const TaskList = () => {
         ) : (
           tasks.map((task) => {
             if (!task) {
-              console.error("Encountered undefined task");
               return null;
             }
             return (
@@ -387,9 +376,7 @@ const Dashboard = () => {
           totalDays > 0 ? (present_days / totalDays) * 100 : 0;
         setAttendancePercentage(calculatedPercentage.toFixed(2));
         setAttendanceData({ present_days, totalDays });
-      } catch (error) {
-        console.error("Failed to fetch attendance:", error);
-      }
+      } catch (error) {}
     };
 
     fetchData();

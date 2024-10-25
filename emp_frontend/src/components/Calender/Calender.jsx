@@ -23,9 +23,7 @@ const Calendar = () => {
     try {
       const data = await fetchAttendance(access_token).unwrap();
       setAttendanceData(data);
-    } catch (error) {
-      console.error("Error fetching attendance data:", error);
-    }
+    } catch (error) {}
   };
 
   const generateCalendar = (year, month) => {

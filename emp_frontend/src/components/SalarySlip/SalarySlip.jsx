@@ -260,7 +260,6 @@ const SalarySlip = () => {
 
       setHasFetchedData(true);
     } catch (error) {
-      console.log("Failed to fetch employee data:", error);
       if (error.data?.detail) {
         enqueueSnackbar(error.data.detail, {
           variant: "error",

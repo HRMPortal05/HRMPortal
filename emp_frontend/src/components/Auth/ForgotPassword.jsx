@@ -36,9 +36,7 @@ const ForgotPassword = () => {
       if (response.data) {
         navigate("/emailSent");
       }
-    } catch (error) {
-      console.error("Email sent error:", error);
-    }
+    } catch (error) {}
   };
 
   return (

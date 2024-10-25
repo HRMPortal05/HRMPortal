@@ -101,7 +101,6 @@ const ChangePassword = () => {
         }, 1000);
       }
     } catch (error) {
-      console.error("Change password error:", error);
     } finally {
       setLoading(false);
     }

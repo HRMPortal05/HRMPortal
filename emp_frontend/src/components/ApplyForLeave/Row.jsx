@@ -17,9 +17,7 @@ const Row = (props) => {
 
   const handleChildSelect = (event) => {
     const newStatus = event.target.value;
-    console.log(row);
-    console.log("Selected status:", newStatus);
-    handleSelect(row.ID, newStatus); // Pass row ID and new status
+    handleSelect(row.ID, newStatus);
   };
 
   return (

@@ -72,11 +72,9 @@ const NoticeList = () => {
         } else if (response.data && Array.isArray(response.data)) {
           setNotices(response.data);
         } else {
-          console.error("Unexpected response format");
           enqueueSnackbar("Error fetching notices", { variant: "error" });
         }
       } catch (error) {
-        console.error("Error fetching notices:", error);
         enqueueSnackbar("Error fetching notices", { variant: "error" });
       }
     };
@@ -167,7 +165,6 @@ const NoticeList = () => {
         setRefresh(response);
         fetchNotice(access_token);
       } catch (error) {
-        console.error("Failed to create notice:", error);
         if (error.status === 400 && error.data && error.data.errors) {
           setBackendErrors(error.data.errors);
           enqueueSnackbar(
@@ -208,7 +205,6 @@ const NoticeList = () => {
         setRefresh(response);
       }
     } catch (error) {
-      console.error("Delete Notice Error : ", error);
       enqueueSnackbar("Failed to delete notice", { variant: "error" });
     } finally {
       setShowDeleteConfirmation(false);

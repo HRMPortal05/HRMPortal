@@ -25,19 +25,6 @@ import VerifyEmail from "./components/Auth/VerifyEmail.jsx";
 import EmployeeDetails from "./components/EmployeeDetail/EmployeeDetails.jsx";
 import Attendance from "./components/Attendance/Attendance.jsx";
 
-// import { registerSW } from "virtual:pwa-register";
-
-// Call the register function
-// registerSW({
-//   onNeedRefresh() {
-//     console.log("New content available, reload to update.");
-//   },
-//   onOfflineReady() {
-//     console.log("App is ready to work offline.");
-//   },
-// });
-
-// Define a reusable component to wrap elements with the SnackbarProvider
 const withSnackbar = (Component) => (
   <SnackbarProvider maxSnack={3}>
     <Component />

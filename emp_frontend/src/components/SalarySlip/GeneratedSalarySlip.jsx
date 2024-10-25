@@ -59,8 +59,6 @@ const GeneratedSalarySlip = ({
     } catch (error) {}
   };
 
-  console.log(generatedSlip);
-
   return (
     <div className="flex roboto-regular justify-center items-center h-screen bg-white p-4">
       <Card className="w-full max-w-2xl bg-white rounded-lg overflow-hidden">

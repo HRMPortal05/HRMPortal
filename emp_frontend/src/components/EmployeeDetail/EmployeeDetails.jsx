@@ -388,9 +388,7 @@ const EmployeeDetails = () => {
     try {
       const response = await fetchAllEmployees(access_token).unwrap();
       setEmployees(response);
-    } catch (error) {
-      console.error("Failed to fetch employees:", error);
-    }
+    } catch (error) {}
   };
 
   useEffect(() => {

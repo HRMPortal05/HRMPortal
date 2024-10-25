@@ -23,9 +23,7 @@ const Row = (props) => {
       link.href = url;
       link.download = `${row.salary_slip_number}_salary_slip.pdf`;
       link.click();
-    } catch (error) {
-      console.error("Error generating PDF:", error);
-    }
+    } catch (error) {}
   };
 
   return (

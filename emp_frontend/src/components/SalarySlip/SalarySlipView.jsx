@@ -120,7 +120,6 @@ const SalarySlipView = () => {
           setFilteredData(response.data);
         }
       } catch (error) {
-        console.error("Salary slip fetch error:", error);
         enqueueSnackbar("An error occurred while fetching data.", {
           variant: "error",
           autoHideDuration: 3000,

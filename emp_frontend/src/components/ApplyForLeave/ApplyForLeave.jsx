@@ -109,8 +109,6 @@ const ApplyForLeave = () => {
         }
 
         if (response.error) {
-          console.log("Error response:", response.error);
-
           const errors = response.error.data?.errors || {};
           if (errors.non_field_errors) {
             enqueueSnackbar(errors.non_field_errors[0], {
@@ -132,7 +130,6 @@ const ApplyForLeave = () => {
           setFilteredData(response.data);
         }
       } catch (error) {
-        console.error("Leave fetch error:", error);
         enqueueSnackbar("An error occurred while fetching data.", {
           variant: "error",
           autoHideDuration: 3000,
@@ -189,7 +186,6 @@ const ApplyForLeave = () => {
 
       if (response.error) {
         if (response.error.data.errors.non_field_errors) {
-          console.log(response.error.data.errors.non_field_errors);
           enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
             variant: "error",
             autoHideDuration: 3000,
@@ -205,9 +201,7 @@ const ApplyForLeave = () => {
         });
         handleCloseModal();
       }
-    } catch (error) {
-      console.error("Create Leave error:", error);
-    }
+    } catch (error) {}
   };
 
   const handleSelect = async (id, newStatus) => {
@@ -234,8 +228,6 @@ const ApplyForLeave = () => {
         )
       );
     } catch (error) {
-      console.error("Update status error:", error);
-
       setStatuses((prevStatuses) => ({
         ...prevStatuses,
         [id]: oldStatus,

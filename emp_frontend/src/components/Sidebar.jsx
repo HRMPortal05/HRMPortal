@@ -30,16 +30,12 @@ const Sidebar = ({ isOpen }) => {
       try {
         const decodedToken = jwtDecode(accessToken);
         setIsAdmin(decodedToken.is_admin);
-      } catch (error) {
-        console.error("Error decoding token:", error);
-        // Handle token decoding error (e.g., invalid token)
-      }
+      } catch (error) {}
     }
   }, [accessToken]);
 
   const handleLogout = async () => {
     if (!refreshToken) {
-      console.error("No refresh token found.");
       return;
     }
 
@@ -62,7 +58,6 @@ const Sidebar = ({ isOpen }) => {
           localStorage.removeItem("email");
           navigate("/login");
         } else {
-          console.error("Logout error:", response.error);
           enqueueSnackbar("Logout failed. Please try again.", {
             variant: "error",
             autoHideDuration: 3000,
@@ -80,7 +75,6 @@ const Sidebar = ({ isOpen }) => {
         navigate("/login");
       }
     } catch (error) {
-      console.error("Logout request failed:", error);
       enqueueSnackbar("Logout failed. Please try again.", {
         variant: "error",
         autoHideDuration: 3000,

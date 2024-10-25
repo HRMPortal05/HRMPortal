@@ -13,8 +13,6 @@ import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 const Row = ({ empId, name, status, onStatusChange, isEditable }) => {
   const [open, setOpen] = useState(false);
 
-  // console.log(empId, name, status);
-
   return (
     <>
       <TableRow>

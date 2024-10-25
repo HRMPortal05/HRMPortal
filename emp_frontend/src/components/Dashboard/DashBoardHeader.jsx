@@ -17,9 +17,7 @@ const DashboardHeader = () => {
         if (response.data) {
           storeUserProfile(response.data);
         }
-      } catch (error) {
-        console.error("Dashboard Profile fetch error:", error);
-      }
+      } catch (error) {}
     };
 
     fetchData();

@@ -32,9 +32,7 @@ const Login = () => {
       const response = await loginUser(data);
 
       if (response.error) {
-        console.log(response.error);
         if (response.error.data.errors.non_field_errors) {
-          console.log(response.error.data.errors.non_field_errors);
           enqueueSnackbar(response.error.data.errors.non_field_errors[0], {
             variant: "error",
             autoHideDuration: 3000,
@@ -48,9 +46,7 @@ const Login = () => {
         storeToken(response.data.token);
         navigate("/");
       }
-    } catch (error) {
-      console.error("Login error:", error);
-    }
+    } catch (error) {}
   };
 
   return (

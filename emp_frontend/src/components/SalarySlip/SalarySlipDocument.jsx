@@ -34,8 +34,6 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 const SalarySlipDocument = ({ salarySlip }) => {
-  console.log(salarySlip);
-
   return (
     <Document>
       <Page size="A4" style={styles.page}>
