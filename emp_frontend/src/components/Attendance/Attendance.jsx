@@ -75,7 +75,7 @@ const Attendance = () => {
             : record.is_leave
             ? "LEAVE"
             : "ABSENT",
-          name: record.name || record.working_emailid.split("@")[0],
+          name: `${record.first_name} ${record.last_name}`,
           is_recorded: true,
         }))
       );

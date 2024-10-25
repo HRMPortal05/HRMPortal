@@ -49,7 +49,9 @@ class AttendanceGetSerializer(serializers.ModelSerializer):
 class AttendanceDateSerializer(serializers.ModelSerializer):
     working_emailid = serializers.CharField(source='employee.working_emailid', read_only=True)
     name = serializers.CharField(source='employee.name', read_only=True)
+    first_name = serializers.CharField(source='employee.first_name', read_only=True)
+    last_name = serializers.CharField(source='employee.last_name', read_only=True)
 
     class Meta:
         model = Attendance
-        fields = ['id', 'employee', 'working_emailid', 'name', 'is_present', 'is_leave', 'created_date']
+        fields = ['id', 'employee', 'working_emailid', 'name', 'first_name', 'last_name', 'is_present', 'is_leave', 'created_date']

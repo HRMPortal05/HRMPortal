@@ -1,13 +1,6 @@
 import { useEffect, useState } from "react";
 import moment from "moment";
-import {
-  Card,
-  CardContent,
-  TextField,
-  Typography,
-  Button,
-  Grid,
-} from "@mui/material";
+import { Card, CardContent, Typography, Button, Grid } from "@mui/material";
 import GeneratedSalarySlip from "./GeneratedSalarySlip";
 import StyledDateForSalarySlip from "../../materialUI/StyledDateForSalarySlip";
 import dayjs from "dayjs";
@@ -18,6 +11,7 @@ import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 
 const SalarySlip = () => {
+  const isMobile = window.innerWidth <= 768;
   const access_token = localStorage.getItem("access_token");
 
   const navigate = useNavigate();
@@ -54,13 +48,6 @@ const SalarySlip = () => {
   const [serverError, setServerError] = useState(null);
   const currentMonthName = dayjs().format("MMMM");
   const currentYear = dayjs().format("YYYY");
-
-  const handleChange = (e) => {
-    setEmployeeDetails({
-      ...employeeDetails,
-      [e.target.name]: e.target.value,
-    });
-  };
 
   const calculateNetSalary = () => {
     const { basicSalary, allowances, deductions } = employeeDetails;
@@ -171,8 +158,19 @@ const SalarySlip = () => {
         access_token,
       });
       setIsSlipGenerated(true);
+      setEmployeeDetails({
+        name: "",
+        id: "",
+        department: "",
+        designation: "",
+        dateOfJoining: "",
+        basicSalary: "",
+        allowances: "",
+        deductions: "",
+        preparedBy: preparedBy,
+        approvedBy: "",
+      });
     } catch (error) {
-      console.error("Failed to generate salary slip:", error);
       setServerError(error.data);
     }
   };
@@ -185,60 +183,100 @@ const SalarySlip = () => {
     }));
   };
 
+  const getHelperText = () => {
+    if (isMobile) {
+      if (employeeDetails.id.length === 4) {
+        return hasFetchedData ? "" : "Fetching details...";
+      }
+      return `Enter 4-digit ID (${
+        4 - employeeDetails.id.length
+      } digits remaining)`;
+    } else {
+      return "Enter 4-digit ID and press Tab to fetch details";
+    }
+  };
+
   const [hasFetchedData, setHasFetchedData] = useState(false);
 
-  const handleEmployeeIdTab = async (e) => {
-    if (employeeDetails.id.length !== 4) {
+  useEffect(() => {
+    if (isMobile && employeeDetails.id.length === 4 && !hasFetchedData) {
+      handleTabAction();
     }
-    if (e.key === "Tab" && employeeDetails.id.length === 4) {
-      e.preventDefault();
+  }, [employeeDetails.id]);
 
-      if (hasFetchedData) {
-        return;
-      }
+  const handleChange = (e) => {
+    const newValue = e.target.value;
 
-      try {
-        const response = await fetchEmployee({
-          emp_id: employeeDetails.id,
-          access_token,
-        }).unwrap();
+    // Only allow numbers and limit to 4 digits
+    if (!/^\d*$/.test(newValue) || newValue.length > 4) {
+      return;
+    }
 
-        setEmployeeDetails({
-          ...employeeDetails,
-          name: response.name,
-          department: response.department,
-          designation: response.working_designation,
-          dateOfJoining: response.date_of_joining,
-          basicSalary: response.salary,
+    setEmployeeDetails({
+      ...employeeDetails,
+      [e.target.name]: newValue,
+    });
+  };
+
+  const handleTabAction = async () => {
+    if (employeeDetails.id.length !== 4) {
+      enqueueSnackbar("Employee ID must be 4 digits", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+      return;
+    }
+
+    if (hasFetchedData) {
+      return;
+    }
+
+    try {
+      const response = await fetchEmployee({
+        emp_id: employeeDetails.id,
+        access_token,
+      }).unwrap();
+
+      setEmployeeDetails({
+        ...employeeDetails,
+        name: response.name,
+        department: response.department,
+        designation: response.working_designation,
+        dateOfJoining: response.date_of_joining,
+        basicSalary: response.salary,
+      });
+
+      setHasFetchedData(true);
+    } catch (error) {
+      console.log("Failed to fetch employee data:", error);
+      if (error.data?.detail) {
+        enqueueSnackbar(error.data.detail, {
+          variant: "error",
+          autoHideDuration: 3000,
         });
-
-        setHasFetchedData(true);
-      } catch (error) {
-        console.log("Failed to fetch employee data:", error);
-
-        if (error.data.detail) {
-          enqueueSnackbar(error.data.detail, {
-            variant: "error",
-            autoHideDuration: 3000,
-          });
-        } else if (errors.detail) {
-          enqueueSnackbar(errors.detail, {
-            variant: "error",
-            autoHideDuration: 3000,
-          });
-        } else {
-          setServerError(errors);
-        }
+      } else {
+        enqueueSnackbar("Failed to fetch employee data", {
+          variant: "error",
+          autoHideDuration: 3000,
+        });
+        setServerError(error);
       }
     }
   };
 
+  const handleEmployeeIdTab = async (e) => {
+    if (e.key === "Tab" && employeeDetails.id.length === 4) {
+      e.preventDefault();
+      await handleTabAction();
+    }
+  };
+
   return (
-    <div className="flex roboto-regular justify-center items-center mt-[-30px] min-h-screen bg-white p-8">
+    <div className="flex roboto-regular justify-center items-center mt-[-30px] min-h-screen bg-white py-8 px-2">
       {!isSlipGenerated ? (
         <Card
           sx={{ boxShadow: "0px 4px 10px rgba(128, 128, 128, 0.3)" }}
-          className="w-full max-w-2xl p-8 rounded-2xl bg-white"
+          className="w-full max-w-2xl p-0 md:p-4 lg:p-4 rounded-2xl bg-white"
         >
           <CardContent>
             <h2 className="text-2xl font-semibold mb-6 text-primary_color text-center">
@@ -253,24 +291,31 @@ const SalarySlip = () => {
                   >
                     Employee ID
                   </label>
-                  <input
-                    type="text"
-                    id="id"
-                    name="id"
-                    value={employeeDetails.id}
-                    onChange={handleChange}
-                    onKeyDown={handleEmployeeIdTab}
-                    className={`w-full py-2 mt-2 pl-2 border border-[#aaa] rounded-md focus:outline-none focus:ring-1 ${
-                      serverError
-                        ? "border-red-500 focus:ring-red-600"
-                        : "focus:ring-blue-600"
-                    }`}
-                  />
-                  {serverError && (
-                    <p className="text-red-500 text-sm mt-1">
-                      {serverError.id}
-                    </p>
-                  )}
+                  <div className="relative">
+                    <input
+                      type="number"
+                      id="id"
+                      name="id"
+                      value={employeeDetails.id}
+                      onChange={handleChange}
+                      disabled={hasFetchedData}
+                      onKeyDown={!isMobile ? handleEmployeeIdTab : undefined}
+                      maxLength={4}
+                      className={`w-full py-2 mt-2 pl-2 border border-[#aaa] rounded-md focus:outline-none focus:ring-1 ${
+                        serverError
+                          ? "border-red-500 focus:ring-red-600"
+                          : "focus:ring-blue-600"
+                      }`}
+                    />
+                    <span className="text-xs text-gray-500 mt-1 block">
+                      {hasFetchedData ? "" : getHelperText()}
+                    </span>
+                    {serverError && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {serverError.id}
+                      </p>
+                    )}
+                  </div>
                 </Grid>
                 <Grid item xs={12} sm={6}>
                   <label
@@ -337,6 +382,7 @@ const SalarySlip = () => {
                         : null
                     }
                     onChange={handleDateChange}
+                    error={null}
                     className="w-full sm:w-auto sm:mb-0"
                   />
                 </Grid>
@@ -354,6 +400,7 @@ const SalarySlip = () => {
                     value={employeeDetails.basicSalary}
                     onChange={handleChange}
                     className={`w-full py-2 mt-2 pl-2 border border-[#aaa] rounded-md focus:outline-none focus:ring-1 `}
+                    disabled
                   />
                 </Grid>
                 <Grid item xs={12} sm={6}>

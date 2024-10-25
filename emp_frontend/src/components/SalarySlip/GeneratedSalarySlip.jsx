@@ -103,9 +103,7 @@ const GeneratedSalarySlip = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const handleView = () => {
-    setOpen(true);
-  };
+  const handleGenerateNewSlip = () => {};
 
   const handleDownloadClick = async () => {
     try {
@@ -234,9 +232,9 @@ const GeneratedSalarySlip = ({
               variant="contained"
               color="primary"
               className="bg-blue-600 hover:bg-blue-700"
-              onClick={handleView}
+              onClick={handleGenerateNewSlip}
             >
-              View Slip
+              Generate New Slip
             </Button>
             <Button
               variant="contained"
@@ -250,7 +248,7 @@ const GeneratedSalarySlip = ({
         </CardContent>
       </Card>
 
-      <Dialog
+      {/* <Dialog
         open={open}
         onClose={() => setOpen(false)}
         maxWidth="md"
@@ -370,7 +368,7 @@ const GeneratedSalarySlip = ({
             Close
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </div>
   );
 };

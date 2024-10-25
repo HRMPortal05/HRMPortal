@@ -1,16 +1,17 @@
 import { CiSettings, CiBellOn } from "react-icons/ci";
 import { VscThreeBars } from "react-icons/vsc";
 import { RxCross1 } from "react-icons/rx";
+import { Link, useNavigate } from "react-router-dom";
 
 const Header = ({ isOpen, setIsOpen }) => {
   const username = localStorage.getItem("username");
   return (
     <header className="bg-primary_color text-white fixed top-0 left-0 w-full flex items-center justify-between p-5 z-[1000] md:z-[1000]">
-      <div className="flex flex-col items-center cursor-pointer">
+      <Link to={"/"} className="flex flex-col items-center cursor-pointer">
         <span className="font-michroma font-extrabold">Employee</span>
         <span className="font-michroma font-normal text-xs">Governance</span>
-      </div>
-      <nav className="hidden md:flex gap-10">
+      </Link>
+      {/* <nav className="hidden md:flex gap-10">
         <a href="#dashboard" className="text-white text-lg font-metrophobic">
           Dashboard
         </a>
@@ -23,13 +24,10 @@ const Header = ({ isOpen, setIsOpen }) => {
         >
           Apply for leave
         </a>
-        {/* <a href="#access-asset" className="text-white text-lg font-metrophobic">
-          Access/Asset
-        </a> */}
         <a href="#salary-slip" className="text-white text-lg font-metrophobic">
           Salary Slip
         </a>
-      </nav>
+      </nav> */}
       <div className="flex items-center gap-4">
         {/* <div className="relative">
           <CiBellOn className="text-2xl cursor-pointer" />
