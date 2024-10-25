@@ -158,19 +158,9 @@ const SalarySlip = () => {
         access_token,
       });
       setIsSlipGenerated(true);
-      setEmployeeDetails({
-        name: "",
-        id: "",
-        department: "",
-        designation: "",
-        dateOfJoining: "",
-        basicSalary: "",
-        allowances: "",
-        deductions: "",
-        preparedBy: preparedBy,
-        approvedBy: "",
-      });
+      console.log(response.data);
     } catch (error) {
+      console.log(error);
       setServerError(error.data);
     }
   };
@@ -206,15 +196,23 @@ const SalarySlip = () => {
 
   const handleChange = (e) => {
     const newValue = e.target.value;
+    const fieldName = e.target.name;
 
-    // Only allow numbers and limit to 4 digits
+    if (fieldName === "approvedBy") {
+      setEmployeeDetails({
+        ...employeeDetails,
+        [fieldName]: newValue,
+      });
+      return;
+    }
+
     if (!/^\d*$/.test(newValue) || newValue.length > 4) {
       return;
     }
 
     setEmployeeDetails({
       ...employeeDetails,
-      [e.target.name]: newValue,
+      [fieldName]: newValue,
     });
   };
 

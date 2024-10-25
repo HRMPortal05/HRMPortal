@@ -1,18 +1,10 @@
 import React, { useRef, useState } from "react";
 import PropTypes from "prop-types";
-import {
-  Card,
-  CardContent,
-  Typography,
-  Button,
-  Grid,
-  Dialog,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
+import { Card, CardContent, Typography, Button, Grid } from "@mui/material";
 import { StyleSheet, pdf } from "@react-pdf/renderer";
 import dayjs from "dayjs";
 import SalarySlipDocument from "./SalarySlipDocument";
+import { useNavigate } from "react-router-dom";
 
 // Create styles for PDF
 const styles = StyleSheet.create({
@@ -103,7 +95,11 @@ const GeneratedSalarySlip = ({
 }) => {
   const [open, setOpen] = useState(false);
 
-  const handleGenerateNewSlip = () => {};
+  const navigate = useNavigate();
+
+  const handleGenerateNewSlip = () => {
+    navigate("/");
+  };
 
   const handleDownloadClick = async () => {
     try {
@@ -113,7 +109,8 @@ const GeneratedSalarySlip = ({
       const url = URL.createObjectURL(blob);
       const link = document.createElement("a");
       link.href = url;
-      link.download = `salary_slip_${salarySlip.salary_slip_number}.pdf`;
+      // link.download = `salary_slip_${salarySlip.salary_slip_number}.pdf`;
+      link.download = `salary_slip_${employeeDetails.month}.pdf`;
       link.click();
     } catch (error) {
       console.error("Error generating PDF:", error);

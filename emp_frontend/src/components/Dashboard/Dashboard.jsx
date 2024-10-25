@@ -74,7 +74,7 @@ const ResponsiveAttendanceOverview = ({ attendanceData }) => {
 
 const UpcomingHolidays = () => {
   const [upcomingHolidays, setUpcomingHolidays] = useState([]);
-  const API_KEY = "Nj0ZsnL16xt4sSlXuwylCD0jeEimgpwR"; // Replace with your API key
+  const API_KEY = "Nj0ZsnL16xt4sSlXuwylCD0jeEimgpwR";
 
   // Fixed-date holidays in India
   const fixedHolidays = [
@@ -166,7 +166,7 @@ const UpcomingHolidays = () => {
       <ul className="overflow-auto flex-grow space-y-4 h-72">
         {upcomingHolidays.map(({ date, name }) => (
           <li
-            key={date}
+            key={name}
             className="bg-elight_primary p-4 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
           >
             <span className="font-semibold text-primary_color text-lg">

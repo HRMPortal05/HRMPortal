@@ -33,51 +33,54 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-const SalarySlipDocument = ({ salarySlip }) => (
-  <Document>
-    <Page size="A4" style={styles.page}>
-      <View style={styles.header}>
-        <Text>Salary Slip</Text>
-      </View>
-      <View style={styles.section}>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Slip Number:</Text>
-          <Text style={styles.cell}>{salarySlip.salary_slip_number}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Month:</Text>
-          <Text style={styles.cell}>{salarySlip.month}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Year:</Text>
-          <Text style={styles.cell}>{salarySlip.year}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Basic Salary:</Text>
-          <Text style={styles.cell}>{salarySlip.basic_salary}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Net Pay:</Text>
-          <Text style={styles.cell}>{salarySlip.net_pay}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Prepared By:</Text>
-          <Text style={styles.cell}>{salarySlip.prepared_by || "None"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Approved By:</Text>
-          <Text style={styles.cell}>{salarySlip.approved_by || "None"}</Text>
-        </View>
-        <View style={styles.row}>
-          <Text style={styles.cell}>Deductions:</Text>
-          <Text style={styles.cell}>{salarySlip.deductions || "None"}</Text>
-        </View>
-      </View>
-      <View style={styles.footer}>
-        <Text>Company XYZ</Text>
-      </View>
-    </Page>
-  </Document>
-);
+const SalarySlipDocument = ({ salarySlip }) => {
+  console.log(salarySlip);
 
+  return (
+    <Document>
+      <Page size="A4" style={styles.page}>
+        <View style={styles.header}>
+          <Text>Salary Slip</Text>
+        </View>
+        <View style={styles.section}>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Slip Number:</Text>
+            <Text style={styles.cell}>{salarySlip.salary_slip_number}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Month:</Text>
+            <Text style={styles.cell}>{salarySlip.month}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Year:</Text>
+            <Text style={styles.cell}>{salarySlip.year}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Basic Salary:</Text>
+            <Text style={styles.cell}>{salarySlip.basic_salary}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Net Pay:</Text>
+            <Text style={styles.cell}>{salarySlip.net_pay}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Prepared By:</Text>
+            <Text style={styles.cell}>{salarySlip.prepared_by || "None"}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Approved By:</Text>
+            <Text style={styles.cell}>{salarySlip.approved_by || "None"}</Text>
+          </View>
+          <View style={styles.row}>
+            <Text style={styles.cell}>Deductions:</Text>
+            <Text style={styles.cell}>{salarySlip.deductions || "None"}</Text>
+          </View>
+        </View>
+        <View style={styles.footer}>
+          <Text>Company XYZ</Text>
+        </View>
+      </Page>
+    </Document>
+  );
+};
 export default SalarySlipDocument;
