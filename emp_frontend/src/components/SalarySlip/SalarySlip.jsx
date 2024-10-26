@@ -48,7 +48,34 @@ const SalarySlip = () => {
   const [generatedSlip, setGeneratedSlip] = useState({});
   const [serverError, setServerError] = useState(null);
   const currentMonthName = dayjs().format("MMMM");
-  const currentYear = dayjs().format("YYYY");
+
+  const currentYear = new Date().getFullYear();
+  const years = [currentYear - 1, currentYear];
+  const months = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
+
+  const [selectedMonth, setSelectedMonth] = useState(moment().format("MMMM"));
+  const [selectedYear, setSelectedYear] = useState(currentYear);
+
+  const handleMonthChange = (value) => {
+    setSelectedMonth(value);
+  };
+
+  const handleYearChange = (value) => {
+    setSelectedYear(parseInt(value));
+  };
 
   const calculateNetSalary = () => {
     const { basicSalary, allowances, deductions } = employeeDetails;
@@ -139,8 +166,8 @@ const SalarySlip = () => {
 
     const data = {
       employee: employeeDetails.name,
-      month: currentMonthName,
-      year: currentYear,
+      month: selectedMonth, // Updated to use selected month
+      year: selectedYear, // Updated to use selected year
       emp_id: employeeDetails.id,
       designation: employeeDetails.designation,
       department: employeeDetails.department,
@@ -283,15 +310,45 @@ const SalarySlip = () => {
   };
 
   return (
-    <div className="flex roboto-regular justify-center items-center mt-[-30px] min-h-screen bg-white py-8 px-2">
+    <div className="flex roboto-regular justify-center items-center mt-[-30px] min-h-screen bg-white py-8">
       {!isSlipGenerated ? (
         <Card
           sx={{ boxShadow: "0px 4px 10px rgba(128, 128, 128, 0.3)" }}
           className="w-full max-w-2xl p-0 md:p-4 lg:p-4 rounded-2xl bg-white"
         >
           <CardContent>
+            <div className="mb-6">
+              <h2 className="text-2xl font-semibold mb-4 text-primary_color text-center">
+                Salary Slip
+              </h2>
+              <div className="flex gap-4 justify-center">
+                <select
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  className="w-40 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {months.map((month) => (
+                    <option key={month} value={month}>
+                      {month}
+                    </option>
+                  ))}
+                </select>
+                <select
+                  value={selectedYear}
+                  onChange={(e) => setSelectedYear(Number(e.target.value))}
+                  className="w-32 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                >
+                  {years.map((year) => (
+                    <option key={year} value={year}>
+                      {year}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+
             <h2 className="text-2xl font-semibold mb-6 text-primary_color text-center">
-              Salary Slip For The Month of {currentMonthName}
+              Salary Slip For The Month of {selectedMonth} {selectedYear}
             </h2>
             <div>
               <Grid container spacing={3}>

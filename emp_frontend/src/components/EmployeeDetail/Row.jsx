@@ -25,12 +25,6 @@ const Row = ({ row, openEditForm, isMobile }) => {
       }
     : {};
 
-  const mobileIconButtonStyles = isMobile
-    ? {
-        padding: "4px",
-      }
-    : {};
-
   return (
     <>
       <TableRow className={isMobile ? "w-screen max-w-[100vw]" : ""}>

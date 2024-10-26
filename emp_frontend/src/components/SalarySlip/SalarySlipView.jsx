@@ -13,9 +13,38 @@ import Row from "./Row";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 import StyledDateForSalarySlipView from "../../materialUI/StyledDateForSalarySlipView";
-import { jwtDecode } from "jwt-decode";
 import { useNavigate } from "react-router-dom";
 import { FaFileAlt } from "react-icons/fa";
+
+const LoadingSkeleton = () => (
+  <TableBody>
+    {[...Array(7)].map((_, index) => (
+      <TableRow key={index} className="animate-pulse">
+        <TableCell>
+          <div className="w-6 h-6 bg-gray-200 rounded"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-20"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-16"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-24"></div>
+        </TableCell>
+        <TableCell>
+          <div className="h-8 bg-gray-200 rounded w-20"></div>
+        </TableCell>
+      </TableRow>
+    ))}
+  </TableBody>
+);
 
 const ROWS_PER_PAGE = 7;
 
@@ -24,6 +53,7 @@ const SalarySlipView = () => {
   const [rowsPerPage, setRowsPerPage] = useState(7);
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
+  const [loading, setLoading] = useState(true);
   const slipRef = useRef(null);
 
   const navigate = useNavigate();
@@ -52,20 +82,8 @@ const SalarySlipView = () => {
     }
   };
 
-  // const token = localStorage.getItem("access_token");
-  // const decodedToken = jwtDecode(token);
-  // const [isAdmin, setIsAdmin] = useState(false);
-
-  // useEffect(() => {
-  //   if (decodedToken.is_admin && !isAdmin) {
-  //     setIsAdmin(true);
-  //     navigate("/salarySlip");
-  //   } else if (!decodedToken.is_admin && isAdmin) {
-  //     setIsAdmin(false);
-  //   }
-  // }, [decodedToken.is_admin, isAdmin, navigate]);
-
   const handleSearch = () => {
+    setLoading(true);
     const filtered = filteredData.filter((item) => {
       if (fromDate && toDate) {
         const itemDate = dayjs(`${item.month} ${item.year}`, "MMMM YYYY");
@@ -76,6 +94,7 @@ const SalarySlipView = () => {
       return true;
     });
     setRows(filtered);
+    setLoading(false);
   };
 
   const email = localStorage.getItem("email");
@@ -97,6 +116,7 @@ const SalarySlipView = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setLoading(true);
       try {
         const response = await fetchSalarySlips({ email: email, access_token });
         if (response.error) {
@@ -124,6 +144,8 @@ const SalarySlipView = () => {
           variant: "error",
           autoHideDuration: 3000,
         });
+      } finally {
+        setLoading(false);
       }
     };
     fetchData();
@@ -238,49 +260,63 @@ const SalarySlipView = () => {
         </div>
       </div>
       <div ref={slipRef}>
-        <div>
-          <div className="mt-5 max-w-[358px] md:max-w-screen-md lg:max-w-screen-xl overflow-x-hidden">
-            <TableContainer
-              component={Paper}
-              className="overflow-x-auto mt-4 custom-scrollbar"
-            >
-              <Table className="min-w-full">
-                <TableHead className="bg-primary_color">
-                  <TableRow>
-                    <TableCell style={{ width: "50px" }}></TableCell>
-                    <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                      Slip Number
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                      Month
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                      Year
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                      Basic Salary
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                      Net Salary
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {rowsToDisplay.map((rowData) => (
-                    <Row
-                      key={rowData.salary_slip_number}
-                      data-id={rowData.salary_slip_number}
-                      row={rowData}
-                      handleDownload={() => handleDownload(rowData)}
-                    />
-                  ))}
+        <div className="mt-5 max-w-[358px] md:max-w-screen-md lg:max-w-screen-xl overflow-x-hidden">
+          <TableContainer
+            component={Paper}
+            className="overflow-x-auto mt-4 custom-scrollbar"
+          >
+            <Table className="min-w-full">
+              <TableHead className="bg-primary_color">
+                <TableRow>
+                  <TableCell style={{ width: "50px" }}></TableCell>
+                  <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
+                    Slip Number
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
+                    Month
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
+                    Year
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
+                    Basic Salary
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
+                    Net Salary
+                  </TableCell>
+                  <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              {loading ? (
+                <LoadingSkeleton />
+              ) : (
+                <TableBody className="h-full">
+                  {rowsToDisplay && rowsToDisplay.length > 0 ? (
+                    rowsToDisplay.map((rowData) => (
+                      <Row
+                        key={rowData.salary_slip_number}
+                        data-id={rowData.salary_slip_number}
+                        row={rowData}
+                        handleDownload={() => handleDownload(rowData)}
+                      />
+                    ))
+                  ) : (
+                    <TableRow>
+                      <TableCell colSpan={7}>
+                        <div className="flex justify-center items-center h-96">
+                          <p className="text-gray-500 text-lg">
+                            No data found!
+                          </p>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )}
                 </TableBody>
-              </Table>
-            </TableContainer>
-          </div>
+              )}
+            </Table>
+          </TableContainer>
         </div>
       </div>
     </div>

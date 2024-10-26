@@ -22,8 +22,27 @@ import {
 } from "../../services/Attendance";
 import { useSnackbar } from "notistack";
 
+const SkeletonRow = () => (
+  <TableRow>
+    <TableCell>
+      <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse" />
+    </TableCell>
+    <TableCell>
+      <div className="h-4 bg-gray-200 rounded w-48 animate-pulse" />
+    </TableCell>
+    <TableCell>
+      <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
+    </TableCell>
+    <TableCell>
+      <div className="h-8 bg-gray-200 rounded w-24 animate-pulse" />
+    </TableCell>
+  </TableRow>
+);
+
 const Attendance = () => {
   const { enqueueSnackbar } = useSnackbar();
+
+  const [isLoadingData, setIsLoadingData] = useState(true);
 
   const isWeekend = (date) => {
     const day = date.getDay();
@@ -76,10 +95,11 @@ const Attendance = () => {
     );
 
   useEffect(() => {
+    setIsLoadingData(true);
     if (isToday(currentDate)) {
-      refetchTodayAttendance();
+      refetchTodayAttendance().finally(() => setIsLoadingData(false));
     } else {
-      refetchDateAttendance();
+      refetchDateAttendance().finally(() => setIsLoadingData(false));
     }
   }, [currentDate]);
 
@@ -200,6 +220,27 @@ const Attendance = () => {
     </button>
   ));
 
+  const [isCheckAll, setIsCheckAll] = useState(false);
+
+  const handleCheckAll = (isChecked) => {
+    setIsCheckAll(isChecked);
+    setAttendanceData((prevAttendanceData) =>
+      prevAttendanceData.map((record) => ({
+        ...record,
+        status: isChecked ? "PRESENT" : "ABSENT",
+      }))
+    );
+    enqueueSnackbar(
+      isChecked
+        ? "All employees marked as Present"
+        : "All employees marked as Absent",
+      {
+        variant: "info",
+        autoHideDuration: 3000,
+      }
+    );
+  };
+
   return (
     <div className="font-roboto max-w-fit md:max-w-full lg:max-w-full mt-5 p-0 md:p-6 lg:p-6 overflow-hidden">
       <h2 className="text-3xl sm:text-4xl font-bold text-primary_color flex items-center mb-7">
@@ -235,6 +276,18 @@ const Attendance = () => {
             <ChevronRight className="w-5 h-5 text-primary_color" />
           </button>
         </div>
+
+        <div className="flex items-center mt-4 md:mr-20 lg:mr-20 sm:mt-0">
+          <input
+            type="checkbox"
+            checked={isCheckAll}
+            onChange={(e) => handleCheckAll(e.target.checked)}
+            className="h-5 w-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+          />
+          <label className="ml-2 font-medium text-gray-700">
+            {isCheckAll ? "Uncheck to mark all as Absent" : "Check All Present"}
+          </label>
+        </div>
       </div>
 
       <div className="overflow-x-auto max-w-[333px] md:max-w-screen-md lg:max-w-screen-xl">
@@ -253,16 +306,20 @@ const Attendance = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {attendanceData.map((employee) => (
-                <Row
-                  key={employee.employee}
-                  empId={employee.employee}
-                  name={employee.name}
-                  status={employee.status}
-                  onStatusChange={handleStatusChange}
-                  isEditable={true}
-                />
-              ))}
+              {isLoadingData
+                ? Array.from({ length: 7 }).map((_, index) => (
+                    <SkeletonRow key={index} />
+                  ))
+                : attendanceData.map((employee) => (
+                    <Row
+                      key={employee.employee}
+                      empId={employee.employee}
+                      name={employee.name}
+                      status={employee.status}
+                      onStatusChange={handleStatusChange}
+                      isEditable={true}
+                    />
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>
@@ -271,9 +328,9 @@ const Attendance = () => {
       <div className="flex justify-end mt-4">
         <button
           onClick={handleSubmit}
-          disabled={isLoading}
+          disabled={isLoading || isLoadingData}
           className={`bg-form_base hover:bg-primary_color text-white font-bold py-2 px-6 mr-0 md:mr-10 lg:mr-10 rounded-md transition duration-300 shadow-md ${
-            isLoading ? "opacity-50 cursor-not-allowed" : ""
+            isLoading || isLoadingData ? "opacity-50 cursor-not-allowed" : ""
           } flex items-center`}
         >
           {isLoading && (

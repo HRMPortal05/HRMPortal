@@ -25,6 +25,42 @@ import dayjs from "dayjs";
 import Row from "./Row";
 import { FaUserTie } from "react-icons/fa";
 
+const SkeletonRow = ({ isMobile }) => (
+  <TableRow>
+    <TableCell>
+      <div className="h-8 w-8 bg-gray-200 rounded-full animate-pulse" />
+    </TableCell>
+    {!isMobile && (
+      <>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-24 animate-pulse" />
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-40 animate-pulse" />
+        </TableCell>
+      </>
+    )}
+    <TableCell>
+      <div className="h-4 bg-gray-200 rounded w-48 animate-pulse" />
+    </TableCell>
+    {!isMobile && (
+      <>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-32 animate-pulse" />
+        </TableCell>
+        <TableCell>
+          <div className="h-4 bg-gray-200 rounded w-36 animate-pulse" />
+        </TableCell>
+      </>
+    )}
+    <TableCell>
+      <div className="flex space-x-2">
+        <div className="h-8 w-20 bg-gray-200 rounded animate-pulse" />
+      </div>
+    </TableCell>
+  </TableRow>
+);
+
 const CustomInput = ({
   label,
   name,
@@ -377,6 +413,7 @@ const EmployeeDetails = () => {
   const [isEmployeeModalOpen, setIsEmployeeModalOpen] = useState(false);
   const [isRegisterModalOpen, setIsRegisterModalOpen] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [fetchAllEmployees] = useFetchAllEmployeesMutation();
   const [addEmployee] = useAddEmployeeMutation();
@@ -385,10 +422,18 @@ const EmployeeDetails = () => {
   const access_token = localStorage.getItem("access_token");
 
   const handleFetchEmployees = async () => {
+    setIsLoading(true);
     try {
       const response = await fetchAllEmployees(access_token).unwrap();
       setEmployees(response);
-    } catch (error) {}
+    } catch (error) {
+      enqueueSnackbar("Failed to fetch employees", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -562,14 +607,18 @@ const EmployeeDetails = () => {
               </TableRow>
             </TableHead>
             <TableBody>
-              {employees.map((employee) => (
-                <Row
-                  key={employee.working_emailid}
-                  row={employee}
-                  openEditForm={openEditForm}
-                  isMobile={isMobile}
-                />
-              ))}
+              {isLoading
+                ? Array.from({ length: 5 }).map((_, index) => (
+                    <SkeletonRow key={index} isMobile={isMobile} />
+                  ))
+                : employees.map((employee) => (
+                    <Row
+                      key={employee.working_emailid}
+                      row={employee}
+                      openEditForm={openEditForm}
+                      isMobile={isMobile}
+                    />
+                  ))}
             </TableBody>
           </Table>
         </TableContainer>

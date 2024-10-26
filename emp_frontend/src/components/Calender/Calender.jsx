@@ -10,6 +10,7 @@ const Calendar = () => {
   const [selectedMonth, setSelectedMonth] = useState(currentDate.getMonth());
   const [selectedYear, setSelectedYear] = useState(currentYear);
   const [attendanceData, setAttendanceData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [fetchAttendance] = useFetchAttendanceMutation();
 
   const access_token = localStorage.getItem("access_token");
@@ -20,10 +21,15 @@ const Calendar = () => {
   }, [selectedYear, selectedMonth]);
 
   const fetchAttendanceData = async () => {
+    setIsLoading(true);
     try {
       const data = await fetchAttendance(access_token).unwrap();
       setAttendanceData(data);
-    } catch (error) {}
+    } catch (error) {
+      // Handle error if needed
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const generateCalendar = (year, month) => {
@@ -44,15 +50,20 @@ const Calendar = () => {
     setMonthName(dayjs(monthStart).format("MMMM YYYY"));
   };
 
-  const handleMonthChange = (e) => setSelectedMonth(Number(e.target.value));
-  const handleYearChange = (e) => setSelectedYear(Number(e.target.value));
+  const handleMonthChange = (e) => {
+    setSelectedMonth(Number(e.target.value));
+  };
+
+  const handleYearChange = (e) => {
+    setSelectedYear(Number(e.target.value));
+  };
 
   const isToday = (date) => date && dayjs(date).isSame(dayjs(), "day");
 
   const isWeekend = (date) => {
     if (!date) return false;
     const day = date.getDay();
-    return day === 0 || day === 6; // 0 is Sunday, 6 is Saturday
+    return day === 0 || day === 6;
   };
 
   const getAttendanceStatus = (date) => {
@@ -87,6 +98,11 @@ const Calendar = () => {
     if (isPast) return `${baseClass} bg-elight_primary text-primary_color`;
     return `${baseClass} bg-white text-light_primary`;
   };
+
+  // Skeleton loading component for date cells
+  const DateSkeleton = () => (
+    <div className="w-full h-full bg-gray-200 animate-pulse mx-auto" />
+  );
 
   return (
     <div className="max-w-full sm:max-w-3xl mx-auto mt-4 sm:mt-10 p-2 sm:p-6 bg-white shadow-lg rounded-lg">
@@ -133,7 +149,15 @@ const Calendar = () => {
           return (
             <div key={index} className={getDayClass(date, attendanceStatus)}>
               {date && (
-                <div className="text-xl font-semibold">{date.getDate()}</div>
+                <div className="w-full h-full flex items-center justify-center">
+                  {isLoading ? (
+                    <DateSkeleton />
+                  ) : (
+                    <div className="text-xl font-semibold">
+                      {date.getDate()}
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           );

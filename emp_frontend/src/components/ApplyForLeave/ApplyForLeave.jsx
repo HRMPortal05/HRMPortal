@@ -23,6 +23,30 @@ import dayjs from "dayjs";
 import { jwtDecode } from "jwt-decode";
 import Row from "./Row";
 import { FaRegCalendarAlt } from "react-icons/fa";
+import { Skeleton } from "@mui/material";
+
+const LoadingTableRow = () => (
+  <TableRow>
+    <TableCell style={{ width: "50px" }}>
+      <Skeleton variant="circular" width={20} height={20} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" width={150} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" width={100} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" width={100} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" width={100} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="rectangular" width={120} height={36} />
+    </TableCell>
+  </TableRow>
+);
 
 const ROWS_PER_PAGE = 7;
 
@@ -32,6 +56,11 @@ const ApplyForLeave = () => {
   const [fromDate, setFromDate] = useState(null);
   const [toDate, setToDate] = useState(null);
   const select = useRef(null);
+
+  // Loading states
+  const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isStatusUpdating, setIsStatusUpdating] = useState({});
 
   const [createleave] = useCreateleaveMutation();
   const [fetchleave] = useFetchleaveMutation();
@@ -99,6 +128,7 @@ const ApplyForLeave = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      setIsLoading(true);
       try {
         let response;
 
@@ -134,6 +164,8 @@ const ApplyForLeave = () => {
           variant: "error",
           autoHideDuration: 3000,
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -171,6 +203,7 @@ const ApplyForLeave = () => {
     pending_work_of_employee,
   }) => {
     event.preventDefault();
+    setIsSubmitting(true);
 
     const data = {
       email: email,
@@ -200,12 +233,22 @@ const ApplyForLeave = () => {
           autoHideDuration: 3000,
         });
         handleCloseModal();
+        // Refresh the data
+        setReset(!reset);
       }
-    } catch (error) {}
+    } catch (error) {
+      enqueueSnackbar("An error occurred while submitting the leave request.", {
+        variant: "error",
+        autoHideDuration: 3000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleSelect = async (id, newStatus) => {
     try {
+      setIsStatusUpdating((prev) => ({ ...prev, [id]: true }));
       setStatuses((prevStatuses) => ({
         ...prevStatuses,
         [id]: newStatus,
@@ -230,14 +273,17 @@ const ApplyForLeave = () => {
     } catch (error) {
       setStatuses((prevStatuses) => ({
         ...prevStatuses,
-        [id]: oldStatus,
+        [id]: row.find((item) => item.id === id)?.status,
       }));
 
       enqueueSnackbar(error.message || "Failed to update status", {
         variant: "error",
       });
+    } finally {
+      setIsStatusUpdating((prev) => ({ ...prev, [id]: false }));
     }
   };
+
   return (
     <div className="md:ml-5 my-10 roboto-regular max-w-screen-sm md:max-w-screen-md lg:max-w-screen-xl overflow-hidden">
       <div className="flex flex-col items-center w-full mb-3">
@@ -248,6 +294,7 @@ const ApplyForLeave = () => {
           </h2>
           <button
             onClick={handleOpenModal}
+            disabled={isLoading}
             className="bg-primary_color text-white h-[50px] md:h-[35px] lg:h-[35px] px-4 sm:px-7 rounded-md sm:text-base"
           >
             Create New
@@ -262,6 +309,7 @@ const ApplyForLeave = () => {
               onChange={(newValue) => {
                 setFromDate(newValue);
               }}
+              disabled={isLoading}
             />
 
             <StyledDatePicker
@@ -271,10 +319,12 @@ const ApplyForLeave = () => {
               onChange={(newValue) => {
                 setToDate(newValue);
               }}
+              disabled={isLoading}
             />
             <select
               className="border border-primary_color text-[#01008A] rounded-md px-4 h-[35px] w-[180px] mb-4 sm:mb-0"
               ref={select}
+              disabled={isLoading}
             >
               <option>Select</option>
               <option>APPROVED</option>
@@ -284,12 +334,14 @@ const ApplyForLeave = () => {
             <button
               className="bg-primary_color text-white h-[35px] px-6 sm:px-10 rounded-md w-[180px] mb-4 sm:mb-0"
               onClick={handleSearch}
+              disabled={isLoading}
             >
               Search
             </button>
             <button
               className="border border-primary_color bg-[#F0F0FF] text-primary_color h-[35px] w-[180px] rounded-md mb-4 sm:mb-0"
               onClick={() => setReset(!reset)}
+              disabled={isLoading}
             >
               Reset
             </button>
@@ -297,7 +349,7 @@ const ApplyForLeave = () => {
               {/* Previous Button */}
               <button
                 onClick={handlePreviousPage}
-                disabled={currentPage === 0}
+                disabled={currentPage === 0 || isLoading}
                 className={`border border-primary_color text-primary_color h-[35px] w-[43px] rounded-md mr-1 ${
                   currentPage === 0 ? "opacity-50 cursor-not-allowed" : ""
                 }`}
@@ -313,7 +365,9 @@ const ApplyForLeave = () => {
               {/* Next Button */}
               <button
                 onClick={handleNextPage}
-                disabled={(currentPage + 1) * ROWS_PER_PAGE >= row.length}
+                disabled={
+                  (currentPage + 1) * ROWS_PER_PAGE >= row.length || isLoading
+                }
                 className={`border border-primary_color text-primary_color h-[35px] w-[43px] rounded-md ${
                   (currentPage + 1) * ROWS_PER_PAGE >= row.length
                     ? "opacity-50 cursor-not-allowed"
@@ -337,7 +391,7 @@ const ApplyForLeave = () => {
                 <TableRow>
                   <TableCell style={{ width: "50px" }}></TableCell>
                   <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
-                    Type
+                    Employee
                   </TableCell>
                   <TableCell sx={{ color: "white", fontSize: "1.1rem" }}>
                     Leave Type
@@ -360,15 +414,31 @@ const ApplyForLeave = () => {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {rowsToDisplay.map((rowData) => (
-                  <Row
-                    key={rowData.ID}
-                    row={rowData}
-                    is_admin={isAdmin}
-                    handleSelect={handleSelect}
-                    selectedStatus={statuses[rowData.ID] || rowData.status}
-                  />
-                ))}
+                {isLoading ? (
+                  // Show loading skeleton rows while data is being fetched
+                  Array.from(new Array(ROWS_PER_PAGE)).map((_, index) => (
+                    <LoadingTableRow key={index} />
+                  ))
+                ) : rowsToDisplay.length > 0 ? (
+                  rowsToDisplay.map((rowData) => (
+                    <Row
+                      key={rowData.ID}
+                      row={rowData}
+                      is_admin={isAdmin}
+                      handleSelect={handleSelect}
+                      selectedStatus={statuses[rowData.ID] || rowData.status}
+                      isStatusUpdating={isStatusUpdating[rowData.ID]}
+                    />
+                  ))
+                ) : (
+                  <TableRow>
+                    <TableCell colSpan={7}>
+                      <div className="flex justify-center items-center h-96">
+                        <p className="text-gray-500 text-lg">No data found!</p>
+                      </div>
+                    </TableCell>
+                  </TableRow>
+                )}
               </TableBody>
             </Table>
           </TableContainer>

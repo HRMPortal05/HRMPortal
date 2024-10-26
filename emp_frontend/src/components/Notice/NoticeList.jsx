@@ -11,6 +11,24 @@ import {
 } from "../../services/Notice";
 import { jwtDecode } from "jwt-decode";
 import { enqueueSnackbar } from "notistack";
+import TableCell from "@mui/material/TableCell";
+import TableRow from "@mui/material/TableRow";
+import { Bell } from "lucide-react";
+
+const NoticeSkeleton = () => (
+  <div className="p-3 sm:p-4 rounded-md shadow-lg border-l-4 border-gray-200 bg-gray-50 animate-pulse">
+    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-1 sm:mb-0">
+      <div className="h-6 bg-gray-200 rounded w-3/4 mb-1"></div>
+      <div className="h-6 bg-gray-200 rounded w-16"></div>
+    </div>
+    <div className="space-y-1 mt-3">
+      <div className="h-3 bg-gray-200 rounded w-full"></div>
+      <div className="h-3 bg-gray-200 rounded w-5/6"></div>
+      <div className="h-3 bg-gray-200 rounded w-4/6"></div>
+    </div>
+    <div className="h-3 bg-gray-200 rounded w-20 mt-3"></div>
+  </div>
+);
 
 const NoticeList = () => {
   const [notices, setNotices] = useState([]);
@@ -253,60 +271,78 @@ const NoticeList = () => {
         </div>
       </div>
 
-      {isLoading ? (
-        <p className="text-center text-para">Loading notices...</p>
-      ) : isError ? (
-        <p className="text-center text-red-500">Error fetching notices.</p>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          {currentNotices.length > 0 ? (
-            currentNotices.map((notice) => (
-              <div
-                key={notice.id}
-                className={`p-4 sm:p-6 rounded-md shadow-lg border-l-4 ${
-                  notice.notice_priority === "HIGH"
-                    ? "bg-red-50 border-red-500"
-                    : notice.notice_priority === "MEDIUM"
-                    ? "bg-yellow-50 border-yellow-500"
-                    : "bg-green-50 border-green-500"
-                }`}
-              >
-                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-0">
-                  <h3 className="font-bold text-xl sm:text-2xl text-primary_color mb-2 sm:mb-0">
-                    {notice.title}
-                  </h3>
-                  {isAdmin && (
-                    <button
-                      className="bg-red-600 text-white py-1 px-2 sm:py-2 sm:px-4 rounded-md hover:bg-light_primary transition-colors text-sm sm:text-base"
-                      onClick={() => handleDeleteNotice(notice.id)}
+      <div className="p-6 w-full">
+        {isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+            {[...Array(6)].map((_, index) => (
+              <NoticeSkeleton key={index} />
+            ))}
+          </div>
+        ) : isError ? (
+          <div className="flex items-center justify-center min-h-[400px]">
+            <p className="text-center text-red-500">Error fetching notices.</p>
+          </div>
+        ) : (
+          <div>
+            {currentNotices.length > 0 ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                {currentNotices.map((notice) => (
+                  <div
+                    key={notice.id}
+                    className={`p-4 sm:p-6 rounded-md shadow-lg border-l-4 ${
+                      notice.notice_priority === "HIGH"
+                        ? "bg-red-50 border-red-500"
+                        : notice.notice_priority === "MEDIUM"
+                        ? "bg-yellow-50 border-yellow-500"
+                        : "bg-green-50 border-green-500"
+                    }`}
+                  >
+                    <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 sm:mb-0">
+                      <h3 className="font-bold text-xl sm:text-2xl text-primary_color mb-2 sm:mb-0">
+                        {notice.title}
+                      </h3>
+                      {isAdmin && (
+                        <button
+                          className="bg-red-600 text-white py-1 px-2 sm:py-2 sm:px-4 rounded-md hover:bg-light_primary transition-colors text-sm sm:text-base"
+                          onClick={() => handleDeleteNotice(notice.id)}
+                        >
+                          Delete
+                        </button>
+                      )}
+                    </div>
+                    <p className="text-sm sm:text-base text-para mt-2 sm:mt-4">
+                      {notice.content}
+                    </p>
+                    <p
+                      className={`text-xs sm:text-sm font-semibold mt-2 ${
+                        notice.notice_priority === "HIGH"
+                          ? "text-red-600"
+                          : notice.notice_priority === "MEDIUM"
+                          ? "text-yellow-600"
+                          : "text-green-600"
+                      }`}
                     >
-                      Delete
-                    </button>
-                  )}
-                </div>
-                <p className="text-sm sm:text-base text-para mt-2 sm:mt-4">
-                  {notice.content}
-                </p>
-                <p
-                  className={`text-xs sm:text-sm font-semibold mt-2 ${
-                    notice.notice_priority === "HIGH"
-                      ? "text-red-600"
-                      : notice.notice_priority === "MEDIUM"
-                      ? "text-yellow-600"
-                      : "text-green-600"
-                  }`}
-                >
-                  Priority: {notice.notice_priority}
-                </p>
+                      Priority: {notice.notice_priority}
+                    </p>
+                  </div>
+                ))}
               </div>
-            ))
-          ) : (
-            <p className="text-para font-roboto-regular col-span-2 text-center">
-              No notices found.
-            </p>
-          )}
-        </div>
-      )}
+            ) : (
+              <div className="flex items-center justify-center">
+                <div className="min-h-[200px] w-full max-w-lg mx-auto flex flex-col items-center justify-center bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                  <Bell className="w-16 h-16 text-gray-300 mb-4" />
+                  <p className="text-gray-500 text-lg font-medium mb-2">
+                    No Notices Found
+                  </p>
+                  <p className="text-gray-400 text-sm">
+                    Any new notices will appear here
+                  </p>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
 
       <div className="flex roboto-regular justify-between items-center mt-6">
         <button

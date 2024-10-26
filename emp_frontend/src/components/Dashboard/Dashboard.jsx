@@ -72,16 +72,24 @@ const ResponsiveAttendanceOverview = ({ attendanceData }) => {
   );
 };
 
+const SkeletonItem = () => (
+  <div className="bg-elight_primary p-4 rounded-md shadow-sm animate-pulse">
+    <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+    <div className="h-4 bg-gray-200 rounded w-1/2"></div>
+  </div>
+);
+
 const UpcomingHolidays = () => {
   const [upcomingHolidays, setUpcomingHolidays] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
   const API_KEY = "Nj0ZsnL16xt4sSlXuwylCD0jeEimgpwR";
 
   // Fixed-date holidays in India
   const fixedHolidays = [
-    { month: 1, day: 26, name: "Republic Day" }, // January 26
-    { month: 8, day: 15, name: "Independence Day" }, // August 15
-    { month: 10, day: 2, name: "Gandhi Jayanti" }, // October 2
-    { month: 12, day: 25, name: "Christmas Day" }, // December 25
+    { month: 1, day: 26, name: "Republic Day" },
+    { month: 8, day: 15, name: "Independence Day" },
+    { month: 10, day: 2, name: "Gandhi Jayanti" },
+    { month: 12, day: 25, name: "Christmas Day" },
   ];
 
   const fetchDynamicHolidays = async (year) => {
@@ -108,13 +116,13 @@ const UpcomingHolidays = () => {
 
   useEffect(() => {
     const fetchHolidays = async () => {
+      setIsLoading(true);
       const today = new Date();
       const currentYear = today.getFullYear();
       const nextYear = currentYear + 1;
       const fifteenDaysFromNow = new Date();
       fifteenDaysFromNow.setDate(today.getDate() + 15);
 
-      // Get all fixed-date holidays for current & next year
       const holidaysThisYear = fixedHolidays.map((holiday) => ({
         ...holiday,
         date: `${currentYear}-${String(holiday.month).padStart(
@@ -129,13 +137,11 @@ const UpcomingHolidays = () => {
         ).padStart(2, "0")}`,
       }));
 
-      // Fetch Hindu dynamic holidays from the API for current and next year
       const dynamicHolidaysCurrentYear = await fetchDynamicHolidays(
         currentYear
       );
       const dynamicHolidaysNextYear = await fetchDynamicHolidays(nextYear);
 
-      // Combine all holidays, sort, and filter to find only upcoming within 15 days
       const allUpcomingHolidays = [
         ...holidaysThisYear,
         ...holidaysNextYear,
@@ -152,6 +158,7 @@ const UpcomingHolidays = () => {
         .sort((a, b) => new Date(a.date) - new Date(b.date));
 
       setUpcomingHolidays(allUpcomingHolidays);
+      setIsLoading(false);
     };
 
     fetchHolidays();
@@ -163,20 +170,28 @@ const UpcomingHolidays = () => {
         Upcoming Holidays
       </h2>
       <ul className="overflow-auto flex-grow space-y-4 h-72">
-        {upcomingHolidays.map(({ date, name }) => (
-          <li
-            key={name}
-            className="bg-elight_primary p-4 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
-          >
-            <span className="font-semibold text-primary_color text-lg">
-              {name}
-            </span>
-            <br />
-            <span className="text-sm text-para">
-              {format(parse(date, "yyyy-MM-dd", new Date()), "MMMM d, yyyy")}
-            </span>
-          </li>
-        ))}
+        {isLoading ? (
+          <>
+            <SkeletonItem />
+            <SkeletonItem />
+            <SkeletonItem />
+          </>
+        ) : (
+          upcomingHolidays.map(({ date, name }) => (
+            <li
+              key={name}
+              className="bg-elight_primary p-4 rounded-md shadow-sm hover:shadow-md transition-shadow duration-200"
+            >
+              <span className="font-semibold text-primary_color text-lg">
+                {name}
+              </span>
+              <br />
+              <span className="text-sm text-para">
+                {format(parse(date, "yyyy-MM-dd", new Date()), "MMMM d, yyyy")}
+              </span>
+            </li>
+          ))
+        )}
       </ul>
     </div>
   );
