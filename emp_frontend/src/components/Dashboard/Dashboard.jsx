@@ -11,7 +11,26 @@ import { enqueueSnackbar } from "notistack";
 import axios from "axios";
 
 const ResponsiveAttendanceOverview = ({ attendanceData }) => {
-  const { present_days = 5, totalDays = 24 } = attendanceData || {};
+  const getBusinessDaysInMonth = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const currentDay = today.getDate();
+    let businessDays = 0;
+
+    for (let day = 1; day <= currentDay; day++) {
+      const date = new Date(year, month, day);
+      const dayOfWeek = date.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        businessDays++;
+      }
+    }
+    return businessDays;
+  };
+
+  const defaultTotalDays = getBusinessDaysInMonth();
+  const { present_days = 5, totalDays = defaultTotalDays } =
+    attendanceData || {};
   const percentage = ((present_days / totalDays) * 100).toFixed(2);
   const missedDays = totalDays - present_days;
 
@@ -367,6 +386,51 @@ const PerformanceOverview = () => {
   );
 };
 
+// const PerformanceOverview = () => {
+//   const performanceData = [
+//     { metric: "Productivity", value: 85 },
+//     { metric: "Quality of Work", value: 90 },
+//     { metric: "Team Collaboration", value: 78 },
+//     { metric: "Goal Achievement", value: 92 },
+//   ];
+
+//   return (
+//     <div className="relative h-full cursor-default">
+//       {/* Blurred content */}
+//       <div className="blur-sm p-4 h-full flex flex-col">
+//         <h2 className="text-2xl font-bold mb-4 text-primary_color">
+//           Performance Overview
+//         </h2>
+//         <div className="overflow-auto flex-grow">
+//           {performanceData.map(({ metric, value }) => (
+//             <div key={metric} className="mb-4">
+//               <div className="flex justify-between mb-1">
+//                 <span className="text-para">{metric}</span>
+//                 <span className="text-primary_color">{value}%</span>
+//               </div>
+//               <div className="w-full bg-elight_primary rounded">
+//                 <div
+//                   className="bg-light_primary rounded h-2"
+//                   style={{ width: `${value}%` }}
+//                 ></div>
+//               </div>
+//             </div>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* Overlay message */}
+//       <div className="absolute inset-0 flex items-center justify-center bg-black/5">
+//         <div className="bg-white px-6 py-3 rounded-lg shadow-lg">
+//           <p className="text-lg font-semibold text-gray-700">
+//             Under Development
+//           </p>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
 const Dashboard = () => {
   const [attendanceData, setAttendanceData] = useState(null);
   const [attendancePercentage, setAttendancePercentage] = useState(0);
@@ -374,10 +438,27 @@ const Dashboard = () => {
 
   const currentDayOfMonth = new Date().getDate();
 
+  const getBusinessDaysInMonth = () => {
+    const today = new Date();
+    const year = today.getFullYear();
+    const month = today.getMonth();
+    const currentDay = today.getDate();
+    let businessDays = 0;
+
+    for (let day = 1; day <= currentDay; day++) {
+      const date = new Date(year, month, day);
+      const dayOfWeek = date.getDay();
+      if (dayOfWeek !== 0 && dayOfWeek !== 6) {
+        businessDays++;
+      }
+    }
+    return businessDays;
+  };
+
   const totalDays =
     attendanceData && attendanceData.total_days > 0
       ? attendanceData.total_days
-      : currentDayOfMonth;
+      : getBusinessDaysInMonth();
 
   const [fetchAttendance, { error, isLoading }] = useFetchAttendanceMutation();
 
