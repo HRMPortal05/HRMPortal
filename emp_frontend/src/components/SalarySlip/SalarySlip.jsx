@@ -560,6 +560,9 @@ const SalarySlip = () => {
                     onChange={handleChange}
                     className={`w-full py-2 mt-2 pl-2 border border-[#aaa] rounded-md focus:outline-none focus:ring-1 `}
                   />
+                  <span className="text-xs text-gray-500 mt-1 block">
+                    Enter Email Address{" "}
+                  </span>
                 </Grid>
               </Grid>
             </div>
