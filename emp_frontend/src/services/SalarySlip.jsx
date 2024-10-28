@@ -4,7 +4,7 @@ export const SalarySlip = createApi({
   reducerPath: "SalarySlip",
   baseQuery: fetchBaseQuery({
     // baseUrl: `http://127.0.0.1:8000/salaryslip/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/salaryslip/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/salaryslip/",
   }),
   endpoints: (builder) => ({
     generateSalarySlip: builder.mutation({

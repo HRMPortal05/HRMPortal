@@ -4,7 +4,7 @@ export const LeaveManagement = createApi({
   reducerPath: "LeaveManagement",
   baseQuery: fetchBaseQuery({
     // baseUrl: `https://ems-igdr.onrender.com/leavemanagement/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/leavemanagement/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/leavemanagement/",
   }),
   endpoints: (builder) => ({
     createleave: builder.mutation({

@@ -4,7 +4,7 @@ export const Employee = createApi({
   reducerPath: "Employee",
   baseQuery: fetchBaseQuery({
     // baseUrl: `https://ems-igdr.onrender.com/employee/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/employee/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/employee/",
   }),
   endpoints: (builder) => ({
     fetchEmployee: builder.mutation({

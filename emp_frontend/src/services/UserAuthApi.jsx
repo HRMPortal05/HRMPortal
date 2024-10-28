@@ -4,7 +4,7 @@ export const UserAuthApi = createApi({
   reducerPath: "UserAuthApi",
   baseQuery: fetchBaseQuery({
     // baseUrl: `https://ems-igdr.onrender.com/api/user/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/api/user/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/api/user/",
   }),
   endpoints: (builder) => ({
     registerUser: builder.mutation({

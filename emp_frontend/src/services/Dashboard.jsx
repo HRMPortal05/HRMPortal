@@ -4,7 +4,7 @@ export const Dashboard = createApi({
   reducerPath: "Dashboard",
   baseQuery: fetchBaseQuery({
     // baseUrl: `https://ems-igdr.onrender.com/dashboard/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/dashboard/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/dashboard/",
   }),
   endpoints: (builder) => ({
     fetchAttendance: builder.mutation({

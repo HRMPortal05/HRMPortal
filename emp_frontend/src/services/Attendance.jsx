@@ -4,7 +4,7 @@ export const Attendance = createApi({
   reducerPath: "Attendance",
   baseQuery: fetchBaseQuery({
     // baseUrl: `http://127.0.0.1:8000/attendance/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/attendance/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/attendance/",
   }),
   endpoints: (builder) => ({
     fetchAttendance: builder.mutation({

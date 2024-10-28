@@ -4,7 +4,7 @@ export const Notice = createApi({
   reducerPath: "Notice",
   baseQuery: fetchBaseQuery({
     // baseUrl: `https://ems-igdr.onrender.com/notice/`,
-    baseUrl: `https://hrm-portal-backend.vercel.app/notice/`,
+    baseUrl: import.meta.env.VITE_API_BASE_URL + "/notice/",
   }),
   endpoints: (builder) => ({
     fetchNotice: builder.mutation({
