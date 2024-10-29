@@ -3,7 +3,6 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 export const Employee = createApi({
   reducerPath: "Employee",
   baseQuery: fetchBaseQuery({
-    // baseUrl: `https://ems-igdr.onrender.com/employee/`,
     baseUrl: import.meta.env.VITE_API_BASE_URL + "/employee/",
   }),
   endpoints: (builder) => ({
